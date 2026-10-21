@@ -104,15 +104,8 @@ jobs:
       - name: Launch test on emulator
         id: smoke
         continue-on-error: true
-        timeout-minutes: 20
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 34
-          arch: x86_64
-          target: google_apis
-          disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
-          script: bash .github/scripts/smoke.sh
+        timeout-minutes: 25
+        run: bash .github/scripts/emulator.sh
 
       - name: Publish test release
         id: release
@@ -155,7 +148,7 @@ jobs:
             echo
             echo "## Launch test"
             echo '```'
-            cat "$RUNNER_TEMP/smoke/result.txt" 2>/dev/null || echo "(not run)"
+            cat "$RUNNER_TEMP/smoke/result.txt" 2>/dev/null || { echo "(no result) emulator log:"; tail -60 "$RUNNER_TEMP/smoke/emulator.log" 2>/dev/null; }
             cat "$RUNNER_TEMP/smoke/logcat.txt" 2>/dev/null | tail -200
             echo '```'
             echo
