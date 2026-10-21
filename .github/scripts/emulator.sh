@@ -10,6 +10,10 @@ SDK="${ANDROID_HOME:-$ANDROID_SDK_ROOT}"
 SDKM="$SDK/cmdline-tools/latest/bin/sdkmanager"
 AVDM="$SDK/cmdline-tools/latest/bin/avdmanager"
 IMG="system-images;android-34;google_apis;x86_64"
+# avdmanager and the emulator must agree on where AVDs live.
+export ANDROID_AVD_HOME="$HOME/.android/avd"
+export ANDROID_USER_HOME="$HOME/.android"
+mkdir -p "$ANDROID_AVD_HOME"
 ls -la /dev/kvm || true
 
 yes | "$SDKM" --licenses > /dev/null 2>&1 || true
@@ -17,9 +21,10 @@ yes | "$SDKM" --licenses > /dev/null 2>&1 || true
 export PATH="$SDK/platform-tools:$SDK/emulator:$PATH"
 
 echo no | "$AVDM" create avd -n ci -k "$IMG" --force -d pixel_6 || echo no | "$AVDM" create avd -n ci -k "$IMG" --force
-emulator -avd ci -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -accel auto -memory 4096 > "$OUT/emulator-process.log" 2>&1 &
+"$SDK/emulator/emulator" -avd ci -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -accel auto -memory 4096 > "$OUT/emulator-process.log" 2>&1 &
 
-adb wait-for-device
+"$SDK/emulator/emulator" -list-avds
+timeout 300 adb wait-for-device || { echo "EMULATOR_NOT_DETECTED" > "$OUT/result.txt"; tail -60 "$OUT/emulator-process.log" >> "$OUT/result.txt"; exit 0; }
 for i in $(seq 1 120); do
   [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = "1" ] && break
   sleep 5
