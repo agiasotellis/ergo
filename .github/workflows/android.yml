@@ -19,7 +19,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
     env:
       EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
       EXPO_PUBLIC_SUPABASE_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_KEY }}
@@ -43,12 +43,15 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
 
       - name: Install dependencies
+        id: install
         run: set -o pipefail; npm ci 2>&1 | tee -a "$RUNNER_TEMP/steps.log"
 
       - name: Type-check
+        id: typecheck
         run: set -o pipefail; npx tsc --noEmit 2>&1 | tee -a "$RUNNER_TEMP/steps.log"
 
       - name: Generate native Android project
+        id: prebuild
         run: set -o pipefail; npx expo prebuild --platform android --no-install 2>&1 | tee -a "$RUNNER_TEMP/steps.log"
 
       - name: Prepare upload keystore
@@ -64,6 +67,7 @@ jobs:
           fi
 
       - name: Build APK and AAB
+        id: gradle
         working-directory: android
         env:
           ERGO_UPLOAD_STORE_PASSWORD: ${{ secrets.ERGO_UPLOAD_STORE_PASSWORD }}
@@ -76,20 +80,29 @@ jobs:
       - name: Collect outputs
         id: out
         run: |
-          VERSION=$(node -p "require('./package.json').version")
-          NAME="ergo-${VERSION}-build${{ github.run_number }}"
-          mkdir -p dist
-          cp android/app/build/outputs/apk/release/app-release.apk "dist/${NAME}.apk"
-          cp android/app/build/outputs/bundle/release/app-release.aab "dist/${NAME}.aab"
-          echo "name=${NAME}" >> "$GITHUB_OUTPUT"
+          set -o pipefail
+          {
+            VERSION=$(node -p "require('./package.json').version")
+            NAME="ergo-${VERSION}-build${{ github.run_number }}"
+            mkdir -p dist
+            echo "Build outputs:"; find android/app/build/outputs -type f \( -name '*.apk' -o -name '*.aab' \) -print
+            APK=$(find android/app/build/outputs/apk -type f -name '*release*.apk' | head -1)
+            AAB=$(find android/app/build/outputs/bundle -type f -name '*.aab' | head -1)
+            test -n "$APK" && cp "$APK" "dist/${NAME}.apk"
+            test -n "$AAB" && cp "$AAB" "dist/${NAME}.aab"
+            ls -la dist
+            echo "name=${NAME}" >> "$GITHUB_OUTPUT"
+          } 2>&1 | tee -a "$RUNNER_TEMP/steps.log"
 
       - uses: actions/upload-artifact@v4
+        id: artifact
         with:
           name: ${{ steps.out.outputs.name }}
           path: dist/*
           retention-days: 30
 
       - name: Publish test release
+        id: release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: build-${{ github.run_number }}
@@ -115,8 +128,24 @@ jobs:
             echo "- Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             echo "- Release: ${{ github.server_url }}/${{ github.repository }}/releases/tag/build-${{ github.run_number }}"
             echo
+            echo "| Step | Result |"
+            echo "|---|---|"
+            echo "| install | ${{ steps.install.outcome }} |"
+            echo "| typecheck | ${{ steps.typecheck.outcome }} |"
+            echo "| prebuild | ${{ steps.prebuild.outcome }} |"
+            echo "| gradle | ${{ steps.gradle.outcome }} |"
+            echo "| collect | ${{ steps.out.outcome }} |"
+            echo "| artifact | ${{ steps.artifact.outcome }} |"
+            echo "| release | ${{ steps.release.outcome }} |"
+            echo
+            echo "## Other steps (tail)"
             echo '```'
-            if [ -f "$RUNNER_TEMP/gradle.log" ]; then grep -nE "FAILURE|What went wrong|error:|e: |BUILD (SUCCESSFUL|FAILED)" "$RUNNER_TEMP/gradle.log" | tail -60; echo '---'; tail -120 "$RUNNER_TEMP/gradle.log"; else echo "Gradle did not run. Earlier steps:"; tail -80 "$RUNNER_TEMP/steps.log" 2>/dev/null || echo "(no log)"; fi
+            tail -40 "$RUNNER_TEMP/steps.log" 2>/dev/null || true
+            echo '```'
+            echo
+            echo "## Gradle"
+            echo '```'
+            if [ -f "$RUNNER_TEMP/gradle.log" ]; then grep -nE "FAILURE|What went wrong|error:|e: |BUILD (SUCCESSFUL|FAILED)" "$RUNNER_TEMP/gradle.log" | tail -60; echo '---'; tail -120 "$RUNNER_TEMP/gradle.log"; else echo "Gradle did not run."; fi
             echo '```'
           } > "$RUNNER_TEMP/STATUS.md"
           git config user.name "ergo-ci"
