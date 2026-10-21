@@ -8,7 +8,7 @@
 + ANDROID_USER_HOME=/home/runner/.android
 + mkdir -p /home/runner/.android/avd
 + ls -la /dev/kvm
-crw-rw-rw- 1 root kvm 10, 232 Oct 21 11:18 /dev/kvm
+crw-rw-rw- 1 root kvm 10, 232 Oct 21 11:23 /dev/kvm
 + yes
 + /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses
 yes: standard output: Broken pipe
@@ -26,6 +26,11 @@ ci
 * daemon not running; starting now at tcp:5037
 * daemon started successfully
 ++ seq 1 120
++ for i in $(seq 1 120)
+++ adb shell getprop sys.boot_completed
+++ tr -d '\r'
++ '[' '' = 1 ']'
++ sleep 5
 + for i in $(seq 1 120)
 ++ adb shell getprop sys.boot_completed
 ++ tr -d '\r'
