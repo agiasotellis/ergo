@@ -1,22 +1,86 @@
-/** Google Maps style for dark mode, tuned to the ergo navy palette. */
-export const darkMapStyle = [
-  { elementType: 'geometry', stylers: [{ color: '#0E1A30' }] },
-  { elementType: 'labels.text.fill', stylers: [{ color: '#8C9AB4' }] },
-  { elementType: 'labels.text.stroke', stylers: [{ color: '#0A1428' }] },
-  { featureType: 'administrative', elementType: 'geometry.stroke', stylers: [{ color: '#263757' }] },
-  { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] },
-  { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#132A24' }] },
-  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#1C2B4A' }] },
-  { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#14213D' }] },
-  { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#263757' }] },
-  { featureType: 'transit', stylers: [{ visibility: 'off' }] },
-  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#08203F' }] },
-  { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#4E6A94' }] },
-];
+import type { StyleSpecification } from '@maplibre/maplibre-react-native';
+import { useEffect, useState } from 'react';
 
-/** Light mode: hide business POIs so task pins stand out. */
-export const lightMapStyle = [
-  { featureType: 'poi.business', stylers: [{ visibility: 'off' }] },
-  { featureType: 'poi', elementType: 'labels.icon', stylers: [{ visibility: 'off' }] },
-  { featureType: 'transit', elementType: 'labels.icon', stylers: [{ visibility: 'off' }] },
-];
+import type { Lang } from '@/i18n/strings';
+
+/**
+ * Free OpenStreetMap vector maps from OpenFreeMap (no API key, no usage limits,
+ * commercial use allowed). Attribution to OpenFreeMap / OpenMapTiles / OpenStreetMap
+ * is shown by the map's attribution button.
+ */
+const STYLE_URL = {
+  light: 'https://tiles.openfreemap.org/styles/positron',
+  dark: 'https://tiles.openfreemap.org/styles/dark',
+} as const;
+
+const cache = new Map<string, StyleSpecification>();
+
+/** Labels in the app language, falling back to the Latin name and then the local name. */
+function localise(style: StyleSpecification, lang: Lang): StyleSpecification {
+  const name = ['coalesce', ['get', `name:${lang}`], ['get', 'name:latin'], ['get', 'name']];
+  return {
+    ...style,
+    layers: style.layers.map((layer) => {
+      if (layer.type !== 'symbol' || !layer.layout?.['text-field']) return layer;
+      // Keep non-name labels (house numbers, road shields) untouched.
+      const tf = JSON.stringify(layer.layout['text-field']);
+      if (!tf.includes('name')) return layer;
+      return { ...layer, layout: { ...layer.layout, 'text-field': name as never } };
+    }),
+  };
+}
+
+/**
+ * Returns the style to give `<Map mapStyle>`: the plain URL while the localised JSON
+ * loads (so the map appears immediately), then the localised style.
+ */
+export function useMapStyle(isDark: boolean, lang: Lang): string | StyleSpecification {
+  const url = STYLE_URL[isDark ? 'dark' : 'light'];
+  const key = `${url}|${lang}`;
+  const [style, setStyle] = useState<StyleSpecification | null>(cache.get(key) ?? null);
+
+  useEffect(() => {
+    const hit = cache.get(key);
+    if (hit) {
+      setStyle(hit);
+      return;
+    }
+    let alive = true;
+    setStyle(null);
+    fetch(url)
+      .then((r) => r.json())
+      .then((json: StyleSpecification) => {
+        const s = localise(json, lang);
+        cache.set(key, s);
+        if (alive) setStyle(s);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [key, url, lang]);
+
+  return style ?? url;
+}
+
+/** Greece incl. islands as [west, south, east, north]; the camera can't leave it. */
+export const GREECE_BOUNDS: [number, number, number, number] = [19.0, 34.5, 30.0, 42.0];
+
+/** Bounding box [w, s, e, n] around a point with a radius in km. */
+export function bboxAround(lat: number, lng: number, radiusKm: number): [number, number, number, number] {
+  const dLat = radiusKm / 111.32;
+  const dLng = radiusKm / (111.32 * Math.cos((lat * Math.PI) / 180));
+  return [lng - dLng, lat - dLat, lng + dLng, lat + dLat];
+}
+
+/** GeoJSON polygon approximating a circle on the ground. */
+export function circlePolygon(lat: number, lng: number, radiusKm: number, steps = 72): GeoJSON.Feature<GeoJSON.Polygon> {
+  const ring: [number, number][] = [];
+  for (let i = 0; i <= steps; i++) {
+    const a = (i / steps) * 2 * Math.PI;
+    const dLat = (radiusKm / 111.32) * Math.sin(a);
+    const dLng = (radiusKm / (111.32 * Math.cos((lat * Math.PI) / 180))) * Math.cos(a);
+    ring.push([lng + dLng, lat + dLat]);
+  }
+  return { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [ring] } };
+}

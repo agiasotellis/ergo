@@ -44,7 +44,8 @@ const config: ExpoConfig = {
         dark: { backgroundColor: '#0F1F3D', image: './assets/images/splash-icon.png' },
       },
     ],
-    ['react-native-maps', { androidGoogleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY ?? '' }],
+    // Free OpenStreetMap maps via MapLibre + OpenFreeMap: no API key needed.
+    '@maplibre/maplibre-react-native',
     [
       'expo-location',
       { locationWhenInUsePermission: 'Το ergo χρησιμοποιεί την τοποθεσία σου για να δείχνει εργασίες κοντά σου.' },
@@ -64,11 +65,6 @@ const config: ExpoConfig = {
     ['expo-build-properties', { android: { enableMinifyInReleaseBuilds: false, enableShrinkResourcesInReleaseBuilds: false } }],
     './plugins/withReleaseSigning',
   ],
-  extra: {
-    // Google Maps crashes on Android when its API key is missing, so screens only mount a
-    // MapView when the build was given a key.
-    mapsEnabled: !!process.env.GOOGLE_MAPS_API_KEY,
-  },
   experiments: {
     typedRoutes: true,
     reactCompiler: true,

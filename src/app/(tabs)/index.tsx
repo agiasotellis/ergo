@@ -1,12 +1,11 @@
 import { router } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, Pressable, RefreshControl, ScrollView, TextInput, View } from 'react-native';
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import { Camera, Map as MapLibreMap } from '@maplibre/maplibre-react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Icon } from '@/components/Icon';
-import { MapUnavailable, mapsEnabled } from '@/components/MapUnavailable';
 import { TaskCard } from '@/components/TaskCard';
 import { Avatar, Button, Chip, Empty, H1, IconButton, Loading, MAX_FONT_SCALE, Txt, font } from '@/components/ui';
 import { useI18n } from '@/i18n/I18nProvider';
@@ -15,7 +14,7 @@ import { useAuth } from '@/lib/auth';
 import { CATEGORIES } from '@/lib/categories';
 import { useLocation } from '@/lib/location';
 import { useUnreadNotifications } from '@/lib/notifications';
-import { darkMapStyle, lightMapStyle } from '@/lib/mapStyle';
+import { bboxAround, useMapStyle } from '@/lib/mapStyle';
 import type { CategoryKey, NearbyJob } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 
@@ -23,7 +22,8 @@ const HOME_RADIUS_KM = 10;
 
 export default function Home() {
   const { c, isDark, setPref } = useTheme();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const mapStyle = useMapStyle(isDark, lang);
   const { profile, userId } = useAuth();
   const unreadNotes = useUnreadNotifications(userId);
   const loc = useLocation();
@@ -147,18 +147,27 @@ export default function Home() {
           onPress={() => router.navigate('/(tabs)/map')}
           style={({ pressed }) => ({ height: 150, borderRadius: 26, overflow: 'hidden', transform: [{ scale: pressed ? 0.98 : 1 }] })}
         >
-          {mapsEnabled ? (
-            <MapView
-              provider={PROVIDER_GOOGLE}
-              liteMode
-              pointerEvents="none"
+          {/* Static preview: gestures off, tapping opens the full map. */}
+          <View pointerEvents="none" style={{ flex: 1 }}>
+            <MapLibreMap
               style={{ flex: 1 }}
-              customMapStyle={isDark ? darkMapStyle : lightMapStyle}
-              region={{ latitude: loc.lat, longitude: loc.lng, latitudeDelta: 0.05, longitudeDelta: 0.05 }}
-            />
-          ) : (
-            <MapUnavailable compact />
-          )}
+              mapStyle={mapStyle}
+              dragPan={false}
+              touchZoom={false}
+              doubleTapZoom={false}
+              doubleTapHoldZoom={false}
+              touchRotate={false}
+              touchPitch={false}
+              compass={false}
+              logo={false}
+              attribution={false}
+            >
+              <Camera bounds={bboxAround(loc.lat, loc.lng, 2.5)} duration={0} />
+            </MapLibreMap>
+          </View>
+          <Txt size={9} color={c.muted} style={{ position: 'absolute', right: 10, top: 6 }} maxFontSizeMultiplier={1}>
+            © OpenStreetMap
+          </Txt>
           <View style={{ position: 'absolute', left: 14, bottom: 14, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 16, backgroundColor: c.card }}>
             <Txt size={15} weight="700">
               {t.home.tasksWithin(jobs?.length ?? 0, HOME_RADIUS_KM)}

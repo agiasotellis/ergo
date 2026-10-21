@@ -4,7 +4,7 @@
 
 - **App:** Expo SDK 58 · React Native · Expo Router · TypeScript
 - **Backend:** Supabase (Postgres + RLS, Auth, Realtime, Storage) — project `taskmate`
-- **Map:** Google Maps (`react-native-maps`), limited to Greece, with full pinch / rotate / tilt gestures
+- **Map:** MapLibre with free OpenStreetMap tiles from [OpenFreeMap](https://openfreemap.org) (no API key, no billing), limited to Greece, with pinch / double-tap zoom and two-finger rotate; labels follow the app language
 - **Sign-in:** Google (native) and email + password, via Supabase Auth
 - **Languages:** Greek (default) and English · light and dark mode
 
@@ -36,7 +36,7 @@ cp .env.example .env      # fill in the keys
 npx expo run:android      # needs Android Studio / an emulator or a USB-connected phone
 ```
 
-Google sign-in and Google Maps use native code, so they don't work in Expo Go. Use `expo run:android` or the APK from GitHub.
+Google sign-in and the map use native code, so they don't work in Expo Go. Use `expo run:android` or the APK from GitHub.
 
 Checks: `npm run typecheck` and `npm run lint`.
 
@@ -59,18 +59,14 @@ The result of the latest build (and the end of the log if it failed) is also wri
 | `ERGO_UPLOAD_STORE_PASSWORD` | Keystore password |
 | `ERGO_UPLOAD_KEY_PASSWORD` | Same password |
 | `ERGO_UPLOAD_KEY_ALIAS` | `ergo-upload` |
-| `GOOGLE_MAPS_API_KEY` | Maps SDK for Android key (step 2) |
 | `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` | Web OAuth client ID (step 3) |
 | `EXPO_PUBLIC_SUPABASE_URL` / `EXPO_PUBLIC_SUPABASE_KEY` | Optional; defaults point at the `taskmate` project |
 
 Without the keystore secrets the APK is signed with the standard debug key. That's fine for testing, but every Google Play upload must use the same upload key. **Back up `ergo-upload.jks` and its password somewhere safe; if you lose it you can't update the app on Google Play.**
 
-### 2. Google Maps
+### 2. Maps
 
-In [Google Cloud Console](https://console.cloud.google.com/) create a project (e.g. `ergo`), enable **Maps SDK for Android**, then create an API key restricted to **Android apps** with:
-
-- Package name: `com.agiasotellis.ergo`
-- SHA-1: your upload key's SHA-1 (and the Play App Signing SHA-1 once the app is on Google Play)
+Nothing to set up. The map uses MapLibre with free OpenStreetMap vector tiles from [OpenFreeMap](https://openfreemap.org) (no API key, no billing, commercial use allowed). Keep the map's attribution button visible: OpenFreeMap requires the OpenMapTiles / OpenStreetMap credit.
 
 ### 3. Google sign-in
 

@@ -1,54 +1,40 @@
+import { Camera, GeoJSONSource, Layer, Map as MapLibreMap, Marker, NativeUserLocation, type CameraRef, type MapRef } from '@maplibre/maplibre-react-native';
 import { router } from 'expo-router';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, View } from 'react-native';
-import MapView, { Circle, Marker, PROVIDER_GOOGLE, type Region } from 'react-native-maps';
 import Animated, { FadeIn, FadeInDown, SlideInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CategoryTile } from '@/components/CategoryTile';
 import { Icon } from '@/components/Icon';
-import { MapUnavailable, mapsEnabled } from '@/components/MapUnavailable';
 import { Button, IconButton, Txt } from '@/components/ui';
 import { useI18n } from '@/i18n/I18nProvider';
 import { nearbyJobs } from '@/lib/api';
 import { categoryColors } from '@/lib/categories';
 import { euro, km } from '@/lib/format';
-import { GREECE, useLocation } from '@/lib/location';
-import { darkMapStyle, lightMapStyle } from '@/lib/mapStyle';
+import { useLocation } from '@/lib/location';
+import { GREECE_BOUNDS, bboxAround, circlePolygon, useMapStyle } from '@/lib/mapStyle';
 import type { NearbyJob } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 
 const RADII = [1, 3, 5, 10, 25];
+const MIN_ZOOM = 5.5;
+const MAX_ZOOM = 19;
 
-function deltaFor(radiusKm: number) {
-  // Fit the search circle with some margin; 1° latitude ≈ 111 km.
-  return (radiusKm * 2.6) / 111;
-}
-
-/** Price pin. `tracksViewChanges` is turned off after the first paint for smooth panning. */
+/** Price pin drawn as a native view on the map. */
 const PricePin = memo(function PricePin({ job, selected, onPress }: { job: NearbyJob; selected: boolean; onPress: () => void }) {
   const { c, isDark } = useTheme();
   const { lang } = useI18n();
-  // Re-render the native marker bitmap briefly whenever the selection changes.
-  const [settledFor, setSettledFor] = useState<boolean | null>(null);
-  const track = settledFor !== selected;
   const col = categoryColors(job.category, isDark);
 
-  useEffect(() => {
-    const id = setTimeout(() => setSettledFor(selected), 400);
-    return () => clearTimeout(id);
-  }, [selected]);
-
   return (
-    <Marker
-      coordinate={{ latitude: job.lat, longitude: job.lng }}
-      onPress={onPress}
-      tracksViewChanges={track}
-      anchor={{ x: 0.5, y: 1 }}
-      zIndex={selected ? 10 : 1}
-      accessibilityLabel={`${job.title}, ${euro(job.budget, lang)}`}
-    >
-      <View style={{ alignItems: 'center' }}>
+    <Marker id={`job-${job.id}`} lngLat={[job.lng, job.lat]} anchor="bottom" onPress={onPress}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`${job.title}, ${euro(job.budget, lang)}`}
+        onPress={onPress}
+        style={{ alignItems: 'center', zIndex: selected ? 10 : 1 }}
+      >
         <View
           style={{
             flexDirection: 'row',
@@ -61,6 +47,7 @@ const PricePin = memo(function PricePin({ job, selected, onPress }: { job: Nearb
             backgroundColor: selected ? c.inv : c.card,
             borderWidth: 1,
             borderColor: selected ? c.inv : c.line,
+            elevation: 3,
           }}
         >
           <View style={{ width: 26, height: 26, borderRadius: 13, backgroundColor: col.bg, alignItems: 'center', justifyContent: 'center' }}>
@@ -71,30 +58,26 @@ const PricePin = memo(function PricePin({ job, selected, onPress }: { job: Nearb
           </Txt>
         </View>
         <View style={{ width: 10, height: 10, marginTop: -5, backgroundColor: selected ? c.inv : c.card, transform: [{ rotate: '45deg' }] }} />
-      </View>
+      </Pressable>
     </Marker>
   );
 });
 
 export default function MapScreen() {
-  const insets = useSafeAreaInsets();
-  if (!mapsEnabled) return <MapUnavailable style={{ paddingTop: insets.top, paddingBottom: 120 }} />;
-  return <GoogleMapScreen />;
-}
-
-function GoogleMapScreen() {
   const { c, isDark } = useTheme();
   const { t, lang } = useI18n();
   const loc = useLocation();
   const insets = useSafeAreaInsets();
-  const mapRef = useRef<MapView>(null);
+  const mapRef = useRef<MapRef>(null);
+  const cameraRef = useRef<CameraRef>(null);
+  const mapStyle = useMapStyle(isDark, lang);
   const [radius, setRadius] = useState(5);
   // null = follow the device location; set when the user searches another area.
   const [searchCenter, setSearchCenter] = useState<{ lat: number; lng: number } | null>(null);
   const center = searchCenter ?? { lat: loc.lat, lng: loc.lng };
   const [jobs, setJobs] = useState<NearbyJob[]>([]);
   const [selected, setSelected] = useState<NearbyJob | null>(null);
-  const [moved, setMoved] = useState<Region | null>(null);
+  const [moved, setMoved] = useState<{ lat: number; lng: number } | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -110,12 +93,19 @@ function GoogleMapScreen() {
     load();
   }, [load]);
 
-  const fit = useCallback(
-    (lat: number, lng: number, r: number) => {
-      mapRef.current?.animateToRegion({ latitude: lat, longitude: lng, latitudeDelta: deltaFor(r), longitudeDelta: deltaFor(r) }, 450);
-    },
-    []
-  );
+  const padding = { top: insets.top + 130, right: 24, bottom: selected ? 280 : 130, left: 24 };
+
+  const fit = (lat: number, lng: number, r: number) => {
+    cameraRef.current?.fitBounds(bboxAround(lat, lng, r * 1.1), { padding, duration: 450, easing: 'ease' });
+  };
+
+  // Follow the device position once it is known (unless the user is browsing elsewhere).
+  useEffect(() => {
+    if (!searchCenter) fit(loc.lat, loc.lng, radius);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loc.lat, loc.lng]);
+
+  const ring = useMemo(() => circlePolygon(center.lat, center.lng, radius), [center.lat, center.lng, radius]);
 
   const pickRadius = (r: number) => {
     setRadius(r);
@@ -131,57 +121,56 @@ function GoogleMapScreen() {
 
   const searchHere = () => {
     if (!moved) return;
-    setSearchCenter({ lat: moved.latitude, lng: moved.longitude });
+    setSearchCenter(moved);
     setMoved(null);
   };
 
   const zoom = async (dir: 1 | -1) => {
-    const cam = await mapRef.current?.getCamera();
-    if (cam?.zoom != null) mapRef.current?.animateCamera({ zoom: Math.min(20, Math.max(5, cam.zoom + dir)) }, { duration: 250 });
+    const z = await mapRef.current?.getZoom();
+    if (z != null) cameraRef.current?.zoomTo(Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, z + dir)), { duration: 250, easing: 'ease' });
   };
 
   return (
     <View style={{ flex: 1, backgroundColor: c.bg }}>
-      <MapView
+      <MapLibreMap
         ref={mapRef}
-        provider={PROVIDER_GOOGLE}
         style={{ flex: 1 }}
-        initialRegion={{ latitude: loc.lat, longitude: loc.lng, latitudeDelta: deltaFor(radius), longitudeDelta: deltaFor(radius) }}
-        customMapStyle={isDark ? darkMapStyle : lightMapStyle}
-        // Full gesture support: pinch to zoom, two-finger rotate and tilt, pan.
-        zoomEnabled
-        zoomTapEnabled
-        scrollEnabled
-        rotateEnabled
-        pitchEnabled
-        scrollDuringRotateOrZoomEnabled
-        minZoomLevel={5.5}
-        maxZoomLevel={19}
-        showsUserLocation={loc.granted}
-        showsMyLocationButton={false}
-        showsCompass
-        toolbarEnabled={false}
-        moveOnMarkerPress={false}
-        mapPadding={{ top: insets.top + 120, right: 0, bottom: selected ? 260 : 120, left: 0 }}
-        onMapReady={() => mapRef.current?.setMapBoundaries(GREECE.northEast, GREECE.southWest)}
-        onPress={(e) => {
-          if (e.nativeEvent.action !== 'marker-press') setSelected(null);
-        }}
-        onRegionChangeComplete={(r, details) => {
-          if (details?.isGesture) setMoved(r);
+        mapStyle={mapStyle}
+        // Full gesture support: pan, pinch to zoom, double-tap zoom, two-finger rotate.
+        dragPan
+        touchZoom
+        doubleTapZoom
+        doubleTapHoldZoom
+        touchRotate
+        touchPitch={false}
+        compass
+        compassHiddenFacingNorth
+        compassPosition={{ top: insets.top + 130, left: 16 }}
+        logo={false}
+        attribution
+        attributionPosition={{ bottom: 104 + Math.max(insets.bottom, 12), left: 20 }}
+        onPress={() => setSelected(null)}
+        onRegionDidChange={(e) => {
+          const { center: cc, userInteraction } = e.nativeEvent;
+          if (userInteraction) setMoved({ lat: cc[1], lng: cc[0] });
         }}
       >
-        <Circle
-          center={{ latitude: center.lat, longitude: center.lng }}
-          radius={radius * 1000}
-          strokeColor={c.primary}
-          strokeWidth={1.5}
-          fillColor={c.mapRing}
+        <Camera
+          ref={cameraRef}
+          initialViewState={{ bounds: bboxAround(loc.lat, loc.lng, radius * 1.1), padding }}
+          minZoom={MIN_ZOOM}
+          maxZoom={MAX_ZOOM}
+          maxBounds={GREECE_BOUNDS}
         />
+        <GeoJSONSource id="search-ring" data={ring}>
+          <Layer id="search-ring-fill" type="fill" paint={{ 'fill-color': c.primary, 'fill-opacity': isDark ? 0.14 : 0.08 }} />
+          <Layer id="search-ring-line" type="line" paint={{ 'line-color': c.primary, 'line-width': 1.5, 'line-opacity': 0.8 }} />
+        </GeoJSONSource>
+        {loc.granted && <NativeUserLocation />}
         {jobs.map((j) => (
           <PricePin key={j.id} job={j} selected={selected?.id === j.id} onPress={() => setSelected(j)} />
         ))}
-      </MapView>
+      </MapLibreMap>
 
       {/* Top controls */}
       <Animated.View entering={FadeInDown.duration(400)} style={{ position: 'absolute', top: insets.top + 12, left: 16, right: 16, gap: 10 }}>
