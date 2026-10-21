@@ -61,7 +61,7 @@ const config: ExpoConfig = {
     'expo-font',
     // Code shrinking (R8) stays off until it's verified with every native library; it can strip
     // classes that are looked up by reflection and crash the app on launch.
-    'expo-build-properties',
+    ['expo-build-properties', { android: { enableMinifyInReleaseBuilds: false, enableShrinkResourcesInReleaseBuilds: false } }],
     './plugins/withReleaseSigning',
   ],
   extra: {
