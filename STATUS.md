@@ -1,10 +1,10 @@
-# Android build 16: failure
+# Android build 17: failure
 
-Disk: /dev/root        72G   68G  4.6G  94% /
+Disk: /dev/root        72G   52G   21G  72% /
 
-- Commit: 5f36a0e3955f4bb694487515a8afbc43f568624b
-- Run: https://github.com/agiasotellis/ergo/actions/runs/39680096723
-- Release: https://github.com/agiasotellis/ergo/releases/tag/build-16
+- Commit: 9fc12bc2493bdb368e4390d4e582efb9260a2691
+- Run: https://github.com/agiasotellis/ergo/actions/runs/39681329787
+- Release: https://github.com/agiasotellis/ergo/releases/tag/build-17
 
 | Step | Result |
 |---|---|
@@ -18,8 +18,8 @@ Disk: /dev/root        72G   68G  4.6G  94% /
 
 Files:
     total 8
-    drwxr-xr-x  2 runner runner 4096 Oct 21 21:43 .
-    drwxr-xr-x 14 runner runner 4096 Oct 21 21:43 ..
+    drwxr-xr-x  2 runner runner 4096 Oct 21 21:52 .
+    drwxr-xr-x 14 runner runner 4096 Oct 21 21:52 ..
 
 ## Launch test
 ```
@@ -58,8 +58,8 @@ find: ‘android/app/build/outputs/bundle’: No such file or directory
 
 ## Gradle
 ```
-977:w: file:///home/runner/work/ergo/ergo/android/app/src/main/java/com/agiasotellis/ergo/MainActivity.kt:40:20 'constructor(activity: ReactActivity, mainComponentName: String, fabricEnabled: Boolean): DefaultReactActivityDelegate' is deprecated. Creating DefaultReactActivityDelegate with flags is deprecated.
-1038:BUILD SUCCESSFUL in 5m 40s
+968:w: file:///home/runner/work/ergo/ergo/android/app/src/main/java/com/agiasotellis/ergo/MainActivity.kt:40:20 'constructor(activity: ReactActivity, mainComponentName: String, fabricEnabled: Boolean): DefaultReactActivityDelegate' is deprecated. Creating DefaultReactActivityDelegate with flags is deprecated.
+1026:BUILD SUCCESSFUL in 5m 20s
 ---
 > Task :react-native-masked-view_masked-view:assembleRelease
 > Task :react-native-reanimated:bundleReleaseAar
@@ -84,7 +84,7 @@ find: ‘android/app/build/outputs/bundle’: No such file or directory
 > Task :react-native-worklets:assembleRelease
 
 > Task :app:createBundleReleaseJsAndAssets
-Android Bundled 63464ms node_modules/expo-router/entry.js (2113 modules)
+Android Bundled 70113ms node_modules/expo-router/entry.js (2113 modules)
 Writing bundle output to: /home/runner/work/ergo/ergo/android/app/build/generated/assets/react/release/index.android.bundle
 Writing sourcemap output to: /home/runner/work/ergo/ergo/android/app/build/intermediates/sourcemaps/react/release/index.android.bundle.packager.map
 Copying 66 asset files
@@ -95,24 +95,23 @@ Done writing sourcemap output
 > Task :app:generateReleaseResValues
 > Task :app:generateReleaseResources FROM-CACHE
 > Task :app:packageReleaseResources
-> Task :app:mergeReleaseNativeLibs
 > Task :app:processReleaseNavigationResources FROM-CACHE
-> Task :app:stripReleaseDebugSymbols
-> Task :app:extractReleaseNativeSymbolTables FROM-CACHE
 > Task :app:parseReleaseLocalResources
 > Task :app:generateReleaseRFile FROM-CACHE
+> Task :app:mergeReleaseNativeLibs
+> Task :app:stripReleaseDebugSymbols
+> Task :app:extractReleaseNativeSymbolTables FROM-CACHE
 > Task :app:mergeReleaseNativeDebugMetadata
 > Task :app:javaPreCompileRelease FROM-CACHE
 > Task :app:checkReleaseAarMetadata
 > Task :app:mapReleaseSourceSetPaths
 > Task :app:compileReleaseNavigationResources FROM-CACHE
+> Task :app:mergeReleaseResources
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksRelease FROM-CACHE
 
 > Task :app:compileReleaseKotlin
 w: file:///home/runner/work/ergo/ergo/android/app/src/main/java/com/agiasotellis/ergo/MainActivity.kt:40:20 'constructor(activity: ReactActivity, mainComponentName: String, fabricEnabled: Boolean): DefaultReactActivityDelegate' is deprecated. Creating DefaultReactActivityDelegate with flags is deprecated.
-
-> Task :app:compileReleaseJavaWithJavac
-> Task :app:createReleaseCompatibleScreenManifests
-> Task :app:extractDeepLinksRelease FROM-CACHE
 
 > Task :app:processReleaseMainManifest
 /home/runner/work/ergo/ergo/android/app/src/main/AndroidManifest.xml:6:3-88 Warning:
@@ -122,44 +121,45 @@ w: file:///home/runner/work/ergo/ergo/android/app/src/main/java/com/agiasotellis
 /home/runner/work/ergo/ergo/android/app/src/main/AndroidManifest.xml Warning:
 	activity#expo.modules.imagepicker.ExpoCropImageActivity@android:exported was tagged at AndroidManifest.xml:0 to replace other declarations but no other declaration present
 
+> Task :app:compileReleaseJavaWithJavac
+
 > Task :app:expoReleaseOverrideMaxSdkConflicts
 [33m---------- Expo Max Sdk Override Plugin ----------[0m
 [32m>>> No 'android:maxSdkVersion' conflicts found[0m
 [33m--------------------------------------------------[0m
 
 > Task :app:processReleaseManifest
-> Task :app:processReleaseManifestForPackage
 > Task :app:desugarReleaseFileDependencies FROM-CACHE
 > Task :app:mergeReleaseStartupProfile
-> Task :app:mergeReleaseResources
-> Task :app:mergeExtDexRelease
+> Task :app:processReleaseManifestForPackage
+> Task :app:mergeExtDexRelease FROM-CACHE
 > Task :app:mergeReleaseArtProfile
 > Task :app:generateReleaseAssets UP-TO-DATE
 > Task :app:mergeReleaseAssets
-> Task :app:processReleaseResources
 > Task :app:compressReleaseAssets
-> Task :app:dexBuilderRelease
-> Task :app:mergeReleaseGlobalSynthetics FROM-CACHE
 > Task :app:extractReleaseVersionControlInfo
 > Task :app:extractProguardFiles
 > Task :app:generateReleaseLintVitalReportModel
+> Task :app:processReleaseResources
+> Task :app:dexBuilderRelease
+> Task :app:lintVitalAnalyzeRelease
+> Task :app:mergeReleaseGlobalSynthetics FROM-CACHE
 > Task :app:mergeDexRelease
-> Task :app:compileReleaseArtProfile
+> Task :app:lintVitalReportRelease
+> Task :app:lintVitalRelease
 > Task :app:processReleaseJavaRes
 > Task :app:mergeReleaseJavaResource
-> Task :app:lintVitalAnalyzeRelease
 > Task :app:optimizeReleaseResources
+> Task :app:compileReleaseArtProfile
 > Task :app:collectReleaseDependencies
 > Task :app:sdkReleaseDependencyData
 > Task :app:validateSigningRelease
 > Task :app:writeReleaseAppMetadata
 > Task :app:writeReleaseSigningConfigVersions
-> Task :app:lintVitalReportRelease
-> Task :app:lintVitalRelease
 > Task :app:packageRelease
 > Task :app:createReleaseApkListingFileRedirect
 > Task :app:assembleRelease
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/gradle-1792618665965.json
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/gradle-1792619255455.json
 
 [Incubating] Problems report is available at: file:///home/runner/work/ergo/ergo/android/build/reports/problems/problems-report.html
 
@@ -169,8 +169,8 @@ You can use '--warning-mode all' to show the individual deprecation warnings and
 
 For more on this, please refer to https://docs.gradle.org/9.4.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
 
-BUILD SUCCESSFUL in 5m 40s
-729 actionable tasks: 472 executed, 257 from cache
+BUILD SUCCESSFUL in 5m 20s
+729 actionable tasks: 466 executed, 263 from cache
 Cacheable calls:   348 / 353 (98.58%)
   Hits:            348 / 348 (100.0%)
     Direct:        348 / 348 (100.0%)
