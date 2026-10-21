@@ -94,9 +94,12 @@ jobs:
             echo "name=${NAME}" >> "$GITHUB_OUTPUT"
           } 2>&1 | tee -a "$RUNNER_TEMP/steps.log"
 
+      # Optional: artifact storage can run out on private repos; the Release below always has the files.
       - uses: actions/upload-artifact@v4
         id: artifact
+        continue-on-error: true
         with:
+          if-no-files-found: error
           name: ${{ steps.out.outputs.name }}
           path: dist/*
           retention-days: 30
@@ -137,6 +140,8 @@ jobs:
             echo "| collect | ${{ steps.out.outcome }} |"
             echo "| artifact | ${{ steps.artifact.outcome }} |"
             echo "| release | ${{ steps.release.outcome }} |"
+            echo
+            echo "Files:"; ls -la dist 2>/dev/null | sed 's/^/    /'
             echo
             echo "## Other steps (tail)"
             echo '```'
