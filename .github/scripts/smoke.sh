@@ -11,12 +11,17 @@ adb wait-for-device
 adb install -r -g "$APK" > "$OUT/install.txt" 2>&1 || { echo "INSTALL_FAILED" > "$OUT/result.txt"; cat "$OUT/install.txt" >> "$OUT/result.txt"; exit 0; }
 adb logcat -c
 adb shell monkey -p "$PKG" -c android.intent.category.LAUNCHER 1 > /dev/null 2>&1
-sleep 12
+# The CI emulator is slow and Android may show "System UI isn't responding"; dismiss such
+# system dialogs so the screenshots show the app.
+dismiss() { adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS > /dev/null 2>&1; }
+sleep 15; dismiss; sleep 2
 adb exec-out screencap -p > "$OUT/screen-1.png"
-sleep 18
+sleep 20; dismiss; sleep 2
 adb exec-out screencap -p > "$OUT/screen-2.png"
+sleep 25; dismiss; sleep 3
+adb exec-out screencap -p > "$OUT/screen-3.png"
 
-if adb shell pidof "$PKG" > /dev/null 2>&1; then echo "APP_RUNNING after 30s" > "$OUT/result.txt"; else echo "APP_NOT_RUNNING (crashed or exited)" > "$OUT/result.txt"; fi
+if adb shell pidof "$PKG" > /dev/null 2>&1; then echo "APP_RUNNING after ~70s" > "$OUT/result.txt"; else echo "APP_NOT_RUNNING (crashed or exited)" > "$OUT/result.txt"; fi
 
 {
   echo "=== crash / fatal ==="
