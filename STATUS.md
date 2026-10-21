@@ -1,8 +1,8 @@
-# Android build 11: success
+# Android build 12: success
 
-- Commit: 982f09fcc6d46dfd19a0c6fc792e3e2858b2f580
-- Run: https://github.com/agiasotellis/ergo/actions/runs/39602155160
-- Release: https://github.com/agiasotellis/ergo/releases/tag/build-11
+- Commit: a7f596e672b0ca152672c0b6c60fa962152cf506
+- Run: https://github.com/agiasotellis/ergo/actions/runs/39612299324
+- Release: https://github.com/agiasotellis/ergo/releases/tag/build-12
 
 | Step | Result |
 |---|---|
@@ -15,11 +15,11 @@
 | release | success |
 
 Files:
-    total 210000
-    drwxr-xr-x  2 runner runner      4096 Oct 21 13:30 .
-    drwxr-xr-x 13 runner runner      4096 Oct 21 13:30 ..
-    -rw-r--r--  1 runner runner  86743808 Oct 21 13:30 ergo-1.0.0-build11.aab
-    -rw-r--r--  1 runner runner 128277436 Oct 21 13:30 ergo-1.0.0-build11.apk
+    total 210084
+    drwxr-xr-x  2 runner runner      4096 Oct 21 14:28 .
+    drwxr-xr-x 13 runner runner      4096 Oct 21 14:28 ..
+    -rw-r--r--  1 runner runner  86755504 Oct 21 14:28 ergo-1.0.0-build12.aab
+    -rw-r--r--  1 runner runner 128301392 Oct 21 14:28 ergo-1.0.0-build12.apk
 
 ## Launch test
 ```
@@ -32,7 +32,7 @@ EMULATOR_NOT_DETECTED
 npm warn deprecated uuid@7.0.3: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
 npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
 
-added 821 packages, and audited 822 packages in 29s
+added 821 packages, and audited 822 packages in 13s
 
 174 packages are looking for funding
   run `npm fund` for details
@@ -53,13 +53,13 @@ Run `npm audit` for details.
 - Running prebuild
 ✔ Finished prebuild
 Build outputs:
-android/app/build/outputs/bundle/release/app-release.aab
 android/app/build/outputs/apk/release/app-release.apk
-total 209992
-drwxr-xr-x  2 runner runner      4096 Oct 21 13:30 .
-drwxr-xr-x 13 runner runner      4096 Oct 21 13:30 ..
--rw-r--r--  1 runner runner  86743808 Oct 21 13:30 ergo-1.0.0-build11.aab
--rw-r--r--  1 runner runner 128277436 Oct 21 13:30 ergo-1.0.0-build11.apk
+android/app/build/outputs/bundle/release/app-release.aab
+total 210076
+drwxr-xr-x  2 runner runner      4096 Oct 21 14:28 .
+drwxr-xr-x 13 runner runner      4096 Oct 21 14:28 ..
+-rw-r--r--  1 runner runner  86755504 Oct 21 14:28 ergo-1.0.0-build12.aab
+-rw-r--r--  1 runner runner 128301392 Oct 21 14:28 ergo-1.0.0-build12.apk
 ```
 
 ## Gradle
@@ -84,13 +84,13 @@ drwxr-xr-x 13 runner runner      4096 Oct 21 13:30 ..
 475:Note: Recompile with -Xlint:unchecked for details.
 486:Note: /home/runner/work/ergo/ergo/node_modules/@react-native-masked-view/masked-view/android/src/main/java/org/reactnative/maskedview/RNCMaskedViewPackage.java uses or overrides a deprecated API.
 487:Note: Recompile with -Xlint:deprecation for details.
-586:Note: Some input files use or override a deprecated API.
-587:Note: Recompile with -Xlint:deprecation for details.
-596:w: file:///home/runner/work/ergo/ergo/node_modules/@expo/dom-webview/android/src/main/java/expo/modules/webview/DomWebView.kt:254:18 'fun executeOnJavaScriptThread(runnable: Runnable): Unit' is deprecated. Use RuntimeContext.schedule instead.
-633:w: file:///home/runner/work/ergo/ergo/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NodesManager.kt:58:95 'fun resolveCustomDirectEventName(eventName: String): String?' is deprecated.
-634:w: file:///home/runner/work/ergo/ergo/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NodesManager.kt:232:29 'fun receiveEvent(surfaceId: Int, targetTag: Int, eventName: String, canCoalesceEvent: Boolean, customCoalesceKey: Int, params: WritableMap?, category: Int): Unit' is deprecated. Use the overload with eventTimestamp parameter instead.
-1169:w: file:///home/runner/work/ergo/ergo/android/app/src/main/java/com/agiasotellis/ergo/MainActivity.kt:40:20 'constructor(activity: ReactActivity, mainComponentName: String, fabricEnabled: Boolean): DefaultReactActivityDelegate' is deprecated. Creating DefaultReactActivityDelegate with flags is deprecated.
-1246:BUILD SUCCESSFUL in 43m 48s
+571:w: file:///home/runner/work/ergo/ergo/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NodesManager.kt:58:95 'fun resolveCustomDirectEventName(eventName: String): String?' is deprecated.
+572:w: file:///home/runner/work/ergo/ergo/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NodesManager.kt:232:29 'fun receiveEvent(surfaceId: Int, targetTag: Int, eventName: String, canCoalesceEvent: Boolean, customCoalesceKey: Int, params: WritableMap?, category: Int): Unit' is deprecated. Use the overload with eventTimestamp parameter instead.
+627:Note: Some input files use or override a deprecated API.
+628:Note: Recompile with -Xlint:deprecation for details.
+637:w: file:///home/runner/work/ergo/ergo/node_modules/@expo/dom-webview/android/src/main/java/expo/modules/webview/DomWebView.kt:254:18 'fun executeOnJavaScriptThread(runnable: Runnable): Unit' is deprecated. Use RuntimeContext.schedule instead.
+1167:w: file:///home/runner/work/ergo/ergo/android/app/src/main/java/com/agiasotellis/ergo/MainActivity.kt:40:20 'constructor(activity: ReactActivity, mainComponentName: String, fabricEnabled: Boolean): DefaultReactActivityDelegate' is deprecated. Creating DefaultReactActivityDelegate with flags is deprecated.
+1246:BUILD SUCCESSFUL in 30m 47s
 ---
 > Task :react-native-maps:bundleReleaseAar
 > Task :react-native-maps:mergeReleaseResources
@@ -120,8 +120,8 @@ drwxr-xr-x 13 runner runner      4096 Oct 21 13:30 ..
 > Task :react-native-worklets:mergeReleaseResources
 > Task :react-native-worklets:verifyReleaseResources
 > Task :react-native-worklets:assembleRelease
-> Task :app:buildCMakeRelWithDebInfo[armeabi-v7a]
 > Task :app:buildCMakeRelWithDebInfo[x86]
+> Task :app:configureCMakeRelWithDebInfo[x86_64]
 > Task :app:buildCMakeRelWithDebInfo[x86_64]
 > Task :app:generateReleaseResValues
 > Task :app:generateReleaseResources
@@ -129,21 +129,21 @@ drwxr-xr-x 13 runner runner      4096 Oct 21 13:30 ..
 > Task :app:processReleaseNavigationResources
 > Task :app:parseReleaseLocalResources
 > Task :app:generateReleaseRFile
-> Task :app:mergeReleaseNativeLibs
-> Task :app:stripReleaseDebugSymbols
 
 > Task :app:compileReleaseKotlin
 w: file:///home/runner/work/ergo/ergo/android/app/src/main/java/com/agiasotellis/ergo/MainActivity.kt:40:20 'constructor(activity: ReactActivity, mainComponentName: String, fabricEnabled: Boolean): DefaultReactActivityDelegate' is deprecated. Creating DefaultReactActivityDelegate with flags is deprecated.
 
 > Task :app:javaPreCompileRelease
-> Task :app:extractReleaseNativeSymbolTables
 > Task :app:compileReleaseJavaWithJavac
 > Task :app:checkReleaseAarMetadata
 > Task :app:mapReleaseSourceSetPaths
 > Task :app:compileReleaseNavigationResources
+> Task :app:mergeReleaseNativeLibs
+> Task :app:stripReleaseDebugSymbols
 > Task :app:mergeReleaseResources
 > Task :app:createReleaseCompatibleScreenManifests
 > Task :app:extractDeepLinksRelease
+> Task :app:extractReleaseNativeSymbolTables
 
 > Task :app:processReleaseMainManifest
 /home/runner/work/ergo/ergo/android/app/src/main/AndroidManifest.xml:6:3-88 Warning:
@@ -160,13 +160,13 @@ w: file:///home/runner/work/ergo/ergo/android/app/src/main/java/com/agiasotellis
 
 > Task :app:processReleaseManifest
 > Task :app:processReleaseManifestForPackage
+> Task :app:processReleaseResources
 > Task :app:mergeReleaseNativeDebugMetadata
+> Task :app:dexBuilderRelease
 > Task :app:desugarReleaseFileDependencies
 > Task :app:mergeReleaseStartupProfile
-> Task :app:processReleaseResources
-> Task :app:dexBuilderRelease
-> Task :app:mergeExtDexRelease
 > Task :app:mergeReleaseArtProfile
+> Task :app:mergeExtDexRelease
 > Task :app:mergeReleaseGlobalSynthetics
 > Task :app:generateReleaseAssets UP-TO-DATE
 > Task :app:mergeReleaseAssets
@@ -200,7 +200,7 @@ w: file:///home/runner/work/ergo/ergo/android/app/src/main/java/com/agiasotellis
 > Task :app:produceReleaseBundleIdeListingFile
 > Task :app:createReleaseBundleListingFileRedirect
 > Task :app:bundleRelease
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/gradle-1792586816740.json
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/gradle-1792591037409.json
 
 [Incubating] Problems report is available at: file:///home/runner/work/ergo/ergo/android/build/reports/problems/problems-report.html
 
@@ -210,6 +210,6 @@ You can use '--warning-mode all' to show the individual deprecation warnings and
 
 For more on this, please refer to https://docs.gradle.org/9.4.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
 
-BUILD SUCCESSFUL in 43m 48s
+BUILD SUCCESSFUL in 30m 47s
 770 actionable tasks: 770 executed
 ```
