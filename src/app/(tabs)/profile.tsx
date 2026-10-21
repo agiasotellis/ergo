@@ -1,6 +1,6 @@
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Alert, Pressable, ScrollView, View } from 'react-native';
+import { Alert, Pressable, ScrollView, Switch, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -10,6 +10,7 @@ import type { IconName } from '@/components/icons';
 import { Avatar, Badge, Card, Empty, H1, H2, Segmented, Stars, Txt } from '@/components/ui';
 import { useI18n } from '@/i18n/I18nProvider';
 import { deleteMyAccount, getStats, myJobs, pickAndUploadPhoto, reviewsFor, updateProfile } from '@/lib/api';
+import { useAppLock } from '@/lib/appLock';
 import { useAuth } from '@/lib/auth';
 import { ago, euro, rating } from '@/lib/format';
 import type { Job, ProfileStats, Review } from '@/lib/types';
@@ -39,6 +40,7 @@ export default function Profile() {
   const { c, pref, setPref } = useTheme();
   const { t, lang, setLang } = useI18n();
   const { userId, profile, refreshProfile, signOut } = useAuth();
+  const lock = useAppLock();
   const [stats, setStats] = useState<ProfileStats | null>(null);
   const [tab, setTab] = useState<'worker' | 'poster'>('worker');
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -228,6 +230,21 @@ export default function Profile() {
                 ]}
               />
             </View>
+            <Row icon="fingerprint" label={t.lock.setting}>
+              <Switch
+                accessibilityLabel={t.lock.setting}
+                value={lock.enabled}
+                disabled={!lock.available && !lock.enabled}
+                onValueChange={(on) => {
+                  lock.setEnabled(on).catch(() => Alert.alert('ergo', t.common.error));
+                }}
+                trackColor={{ false: c.line, true: c.primary }}
+                thumbColor="#FFFFFF"
+              />
+            </Row>
+            <Txt size={12} muted style={{ marginTop: -6, marginBottom: 6, marginLeft: 52 }}>
+              {lock.available || lock.enabled ? t.lock.settingHint : t.lock.unavailable}
+            </Txt>
             <Row
               icon="logout"
               label={t.profile.logout}

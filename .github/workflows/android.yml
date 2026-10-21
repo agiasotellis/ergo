@@ -197,7 +197,7 @@ jobs:
             echo
             echo "## Launch test"
             echo '```'
-            cat "$RUNNER_TEMP/smoke/result.txt" 2>/dev/null || { echo "(no result) emulator log:"; tail -60 "$RUNNER_TEMP/smoke/emulator.log" 2>/dev/null; }
+            cat "$RUNNER_TEMP/smoke/result.txt" 2>/dev/null || { if [ "$FULL" = "true" ]; then echo "(no result) emulator log:"; tail -60 "$RUNNER_TEMP/smoke/emulator.log" 2>/dev/null || true; else echo "(skipped for test builds)"; fi; }
             cat "$RUNNER_TEMP/smoke/logcat.txt" 2>/dev/null | tail -200
             echo '```'
             echo

@@ -13,7 +13,7 @@ import { supabase } from './supabase';
 import type { Profile } from './types';
 
 export class AuthError extends Error {
-  constructor(public code: 'google-not-configured' | 'google-no-play' | 'cancelled' | 'invalid' | 'other', message?: string) {
+  constructor(public code: 'google-not-configured' | 'google-no-play' | 'cancelled' | 'invalid' | 'code' | 'rate' | 'other', message?: string) {
     super(message ?? code);
   }
 }
@@ -28,6 +28,9 @@ type AuthCtx = {
   signInWithEmail: (email: string, password: string) => Promise<void>;
   signUpWithEmail: (name: string, email: string, password: string) => Promise<{ needsConfirmation: boolean }>;
   resetPassword: (email: string) => Promise<void>;
+  verifyResetCode: (email: string, code: string) => Promise<void>;
+  setNewPassword: (password: string) => Promise<void>;
+  recovering: boolean;
   signOut: () => Promise<void>;
 };
 
@@ -44,6 +47,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profileState, setProfile] = useState<Profile | null>(null);
   const [initializing, setInitializing] = useState(true);
+  /** True between verifying a reset code and saving the new password. */
+  const [recovering, setRecovering] = useState(false);
 
   const userId = session?.user.id ?? null;
   // Never expose a previous user's profile after switching accounts.
@@ -113,6 +118,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw new AuthError('other', error.message);
   }, []);
 
+  /** Verifies the recovery code from the email; on success the user is signed in. */
+  const verifyResetCode = useCallback(async (email: string, code: string) => {
+    setRecovering(true);
+    const { error } = await supabase.auth.verifyOtp({ email: email.trim(), token: code.trim(), type: 'recovery' });
+    if (error) {
+      setRecovering(false);
+      throw new AuthError(error.status === 429 ? 'rate' : 'code', error.message);
+    }
+  }, []);
+
+  const setNewPassword = useCallback(async (password: string) => {
+    const { error } = await supabase.auth.updateUser({ password });
+    if (error) throw new AuthError('other', error.message);
+    setRecovering(false);
+  }, []);
+
   const signOut = useCallback(async () => {
     try {
       if (googleConfigured) await GoogleSignin.signOut();
@@ -123,8 +144,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<AuthCtx>(
-    () => ({ session, userId, profile, initializing, refreshProfile, signInWithGoogle, signInWithEmail, signUpWithEmail, resetPassword, signOut }),
-    [session, userId, profile, initializing, refreshProfile, signInWithGoogle, signInWithEmail, signUpWithEmail, resetPassword, signOut]
+    () => ({ session, userId, profile, initializing, refreshProfile, signInWithGoogle, signInWithEmail, signUpWithEmail, resetPassword, verifyResetCode, setNewPassword, recovering, signOut }),
+    [session, userId, profile, initializing, refreshProfile, signInWithGoogle, signInWithEmail, signUpWithEmail, resetPassword, verifyResetCode, setNewPassword, recovering, signOut]
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

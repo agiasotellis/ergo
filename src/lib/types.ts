@@ -6,7 +6,8 @@ export type Profile = {
   full_name: string;
   avatar_url: string | null;
   bio: string | null;
-  locale: string | null;
+  /** Only writable; not readable through the API. */
+  locale?: string | null;
   created_at: string;
 };
 

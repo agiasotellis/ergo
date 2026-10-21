@@ -1,17 +1,19 @@
 import { Camera, GeoJSONSource, Layer, Map as MapLibreMap, Marker, NativeUserLocation, type CameraRef, type MapRef } from '@maplibre/maplibre-react-native';
+import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { Alert, Pressable, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, SlideInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CategoryTile } from '@/components/CategoryTile';
 import { Icon } from '@/components/Icon';
-import { Button, IconButton, Txt } from '@/components/ui';
+import { Avatar, Button, IconButton, Txt } from '@/components/ui';
 import { useI18n } from '@/i18n/I18nProvider';
-import { nearbyJobs } from '@/lib/api';
+import { useAuth } from '@/lib/auth';
+import { nearbyJobs, startConversation } from '@/lib/api';
 import { categoryColors } from '@/lib/categories';
-import { euro, km } from '@/lib/format';
+import { euro, km, when } from '@/lib/format';
 import { useLocation } from '@/lib/location';
 import { GREECE_BOUNDS, bboxAround, circlePolygon, useMapStyle } from '@/lib/mapStyle';
 import type { NearbyJob } from '@/lib/types';
@@ -67,6 +69,7 @@ export default function MapScreen() {
   const { c, isDark } = useTheme();
   const { t, lang } = useI18n();
   const loc = useLocation();
+  const { userId } = useAuth();
   const insets = useSafeAreaInsets();
   const mapRef = useRef<MapRef>(null);
   const cameraRef = useRef<CameraRef>(null);
@@ -78,20 +81,30 @@ export default function MapScreen() {
   const [jobs, setJobs] = useState<NearbyJob[]>([]);
   const [selected, setSelected] = useState<NearbyJob | null>(null);
   const [moved, setMoved] = useState<{ lat: number; lng: number } | null>(null);
-
-  const load = useCallback(async () => {
-    try {
-      const list = await nearbyJobs(center.lat, center.lng, radius);
-      setJobs(list);
-      setSelected((s) => (s && list.find((j) => j.id === s.id)) || null);
-    } catch {
-      setJobs([]);
-    }
-  }, [center.lat, center.lng, radius]);
+  // A pin tap also reaches the map's own onPress; remember it so the card isn't closed again.
+  const pinTapped = useRef(false);
+  const openPin = (j: NearbyJob) => {
+    pinTapped.current = true;
+    setTimeout(() => {
+      pinTapped.current = false;
+    }, 400);
+    setSelected(j);
+    cameraRef.current?.easeTo({ center: [j.lng, j.lat], duration: 350, easing: 'ease', padding: { ...padding, bottom: 330 } });
+  };
 
   useEffect(() => {
-    load();
-  }, [load]);
+    let alive = true;
+    nearbyJobs(center.lat, center.lng, radius)
+      .then((list) => {
+        if (!alive) return;
+        setJobs(list);
+        setSelected((s) => (s && list.find((j) => j.id === s.id)) || null);
+      })
+      .catch(() => alive && setJobs([]));
+    return () => {
+      alive = false;
+    };
+  }, [center.lat, center.lng, radius]);
 
   const padding = { top: insets.top + 130, right: 24, bottom: selected ? 280 : 130, left: 24 };
 
@@ -117,6 +130,15 @@ export default function MapScreen() {
     setSearchCenter(null);
     await loc.refresh();
     fit(loc.lat, loc.lng, radius);
+  };
+
+  const openChat = async (j: NearbyJob) => {
+    try {
+      const convId = await startConversation(j.id, j.poster_id);
+      router.push(`/chat/${convId}`);
+    } catch {
+      Alert.alert('ergo', t.common.error);
+    }
   };
 
   const searchHere = () => {
@@ -149,7 +171,9 @@ export default function MapScreen() {
         logo={false}
         attribution
         attributionPosition={{ bottom: 104 + Math.max(insets.bottom, 12), left: 20 }}
-        onPress={() => setSelected(null)}
+        onPress={() => {
+          if (!pinTapped.current) setSelected(null);
+        }}
         onRegionDidChange={(e) => {
           const { center: cc, userInteraction } = e.nativeEvent;
           if (userInteraction) setMoved({ lat: cc[1], lng: cc[0] });
@@ -168,7 +192,7 @@ export default function MapScreen() {
         </GeoJSONSource>
         {loc.granted && <NativeUserLocation />}
         {jobs.map((j) => (
-          <PricePin key={j.id} job={j} selected={selected?.id === j.id} onPress={() => setSelected(j)} />
+          <PricePin key={j.id} job={j} selected={selected?.id === j.id} onPress={() => openPin(j)} />
         ))}
       </MapLibreMap>
 
@@ -219,33 +243,56 @@ export default function MapScreen() {
         <IconButton name="locate" label={t.map.myLocation} color={c.primaryText} onPress={recenter} />
       </View>
 
-      {/* Selected task card */}
+      {/* Selected task card: summary, poster, and quick actions */}
       {selected && (
         <Animated.View
           key={selected.id}
           entering={SlideInDown.springify().damping(20)}
-          style={{ position: 'absolute', left: 16, right: 16, bottom: 100 + Math.max(insets.bottom, 12), backgroundColor: c.card, borderRadius: 28, padding: 16, gap: 14 }}
+          style={{ position: 'absolute', left: 12, right: 12, bottom: 96 + Math.max(insets.bottom, 12), backgroundColor: c.card, borderRadius: 28, padding: 16, gap: 12, elevation: 12, shadowColor: '#000', shadowOpacity: 0.15, shadowRadius: 16, shadowOffset: { width: 0, height: 6 } }}
         >
-          <View style={{ flexDirection: 'row', gap: 14 }}>
-            <CategoryTile cat={selected.category} size={60} />
-            <View style={{ flex: 1, gap: 3 }}>
-              <Txt size={12} weight="700" color={categoryColors(selected.category, isDark).ink} style={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
+          <Pressable accessibilityRole="button" accessibilityLabel={t.map.details} onPress={() => router.push(`/task/${selected.id}`)} style={{ flexDirection: 'row', gap: 12 }}>
+            {selected.photos[0] ? (
+              <Image source={{ uri: selected.photos[0] }} style={{ width: 64, height: 64, borderRadius: 18, backgroundColor: c.soft }} contentFit="cover" />
+            ) : (
+              <CategoryTile cat={selected.category} size={64} />
+            )}
+            <View style={{ flex: 1, gap: 2 }}>
+              <Txt size={12} weight="700" color={categoryColors(selected.category, isDark).ink} numberOfLines={1}>
                 {t.categories[selected.category]}
               </Txt>
               <Txt size={17} weight="800" numberOfLines={2}>
                 {selected.title}
               </Txt>
               <Txt size={13} muted numberOfLines={1}>
-                {[selected.poster_name, `${km(selected.distance_km, lang)} ${t.common.away}`].filter(Boolean).join(' · ')}
+                {[`${km(selected.distance_km, lang)} ${t.common.away}`, when(selected.scheduled_at, lang, t.task.flexible)].join(' · ')}
               </Txt>
             </View>
-            <Txt size={22} weight="800">
-              {euro(selected.budget, lang)}
+            <View style={{ alignItems: 'flex-end', gap: 6 }}>
+              <Txt size={22} weight="900" numberOfLines={1}>
+                {euro(selected.budget, lang)}
+              </Txt>
+              <IconButton name="close" label={t.common.cancel} size={32} bg={c.soft} onPress={() => setSelected(null)} />
+            </View>
+          </Pressable>
+          {!!selected.description && (
+            <Txt size={14} color={c.body} numberOfLines={3}>
+              {selected.description}
+            </Txt>
+          )}
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <Avatar name={selected.poster_name} url={selected.poster_avatar} size={32} />
+            <Txt size={14} weight="700" numberOfLines={1} style={{ flex: 1 }}>
+              {selected.poster_id === userId ? t.common.you : selected.poster_name || '—'}
             </Txt>
           </View>
-          <View style={{ flexDirection: 'row', gap: 10 }}>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            {selected.poster_id !== userId && (
+              <IconButton name="chat" label={t.task.message} bg={c.primarySoft} color={c.primaryText} size={46} onPress={() => openChat(selected)} />
+            )}
             <Button title={t.map.details} variant="secondary" size="md" style={{ flex: 1 }} onPress={() => router.push(`/task/${selected.id}`)} />
-            <Button title={t.map.offer} size="md" style={{ flex: 1.4 }} onPress={() => router.push(`/task/${selected.id}?offer=1`)} />
+            {selected.poster_id !== userId && (
+              <Button title={t.map.offer} size="md" style={{ flex: 1.2 }} onPress={() => router.push(`/task/${selected.id}?offer=1`)} />
+            )}
           </View>
         </Animated.View>
       )}

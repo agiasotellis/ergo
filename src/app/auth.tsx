@@ -26,7 +26,7 @@ function GoogleG() {
 export default function Auth() {
   const { c } = useTheme();
   const { t } = useI18n();
-  const { session, signInWithGoogle, signInWithEmail, signUpWithEmail, resetPassword } = useAuth();
+  const { session, recovering, signInWithGoogle, signInWithEmail, signUpWithEmail } = useAuth();
   const [mode, setMode] = useState<'signup' | 'login'>('signup');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -36,7 +36,7 @@ export default function Auth() {
   const [busy, setBusy] = useState<'google' | 'email' | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
-  if (session) return <Redirect href="/(tabs)" />;
+  if (session && !recovering) return <Redirect href="/(tabs)" />;
 
   const fail = (e: unknown) => {
     if (e instanceof AuthError) {
@@ -83,15 +83,7 @@ export default function Auth() {
     }
   };
 
-  const forgot = async () => {
-    if (!email.trim()) return Alert.alert('ergo', t.auth.needEmail);
-    try {
-      await resetPassword(email);
-      setNotice(t.auth.resetSent);
-    } catch (e) {
-      fail(e);
-    }
-  };
+  const forgot = () => router.push({ pathname: '/reset-password', params: { email: email.trim() } });
 
   const login = mode === 'login';
 
@@ -168,8 +160,8 @@ export default function Auth() {
               }
             />
             {login ? (
-              <Pressable accessibilityRole="button" onPress={forgot} style={{ alignSelf: 'flex-end', padding: 6 }}>
-                <Txt size={13} weight="700" color={c.primaryText}>
+              <Pressable accessibilityRole="button" onPress={forgot} hitSlop={8} style={{ alignSelf: 'flex-end', paddingVertical: 10, paddingHorizontal: 4 }}>
+                <Txt size={14} weight="700" color={c.primaryText}>
                   {t.auth.forgot}
                 </Txt>
               </Pressable>

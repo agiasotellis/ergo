@@ -4,6 +4,13 @@ import { supabase } from './supabase';
 import type { AppNotification, Application, CategoryKey, Conversation, Job, Message, NearbyJob, Profile, ProfileStats, Review } from './types';
 
 const PERSON = 'id, full_name, avatar_url';
+/** Profile columns other users may read (push token / locale are private). */
+const PROFILE = 'id, full_name, avatar_url, bio, created_at';
+/** Job columns readable by clients; coordinates are rounded to ~100 m server-side. */
+const JOB = 'id, poster_id, title, description, category, budget, lat:lat_approx, lng:lng_approx, address, photos, scheduled_at, status, assigned_to, created_at';
+/** Used only until the security migration (rounded coordinates) is applied to the database. */
+const JOB_LEGACY = 'id, poster_id, title, description, category, budget, lat, lng, address, photos, scheduled_at, status, assigned_to, created_at';
+const missingColumn = (e: { code?: string } | null) => e?.code === '42703' || e?.code === 'PGRST204';
 
 function must<T>(res: { data: T | null; error: { message: string } | null }): T {
   if (res.error) throw new Error(res.error.message);
@@ -22,12 +29,14 @@ export async function nearbyJobs(lat: number, lng: number, radiusKm: number, cat
 }
 
 export async function getJob(id: string) {
-  const res = await supabase.from('jobs').select('*').eq('id', id).single();
+  let res = await supabase.from('jobs').select(JOB).eq('id', id).single();
+  if (missingColumn(res.error)) res = await supabase.from('jobs').select(JOB_LEGACY).eq('id', id).single();
   return must<Job>(res);
 }
 
 export async function myJobs(userId: string) {
-  const res = await supabase.from('jobs').select('*').eq('poster_id', userId).order('created_at', { ascending: false });
+  let res = await supabase.from('jobs').select(JOB).eq('poster_id', userId).order('created_at', { ascending: false });
+  if (missingColumn(res.error)) res = await supabase.from('jobs').select(JOB_LEGACY).eq('poster_id', userId).order('created_at', { ascending: false });
   return must<Job[]>(res) ?? [];
 }
 
@@ -44,7 +53,9 @@ export type NewJob = {
 };
 
 export async function createJob(posterId: string, job: NewJob) {
-  const res = await supabase.from('jobs').insert({ ...job, poster_id: posterId }).select('*').single();
+  let res = await supabase.from('jobs').insert({ ...job, poster_id: posterId }).select(JOB).single();
+  // A failed RETURNING (missing column) aborts the insert, so retrying is safe.
+  if (missingColumn(res.error)) res = await supabase.from('jobs').insert({ ...job, poster_id: posterId }).select(JOB_LEGACY).single();
   return must<Job>(res);
 }
 
@@ -78,7 +89,7 @@ export async function pickAndUploadPhoto(userId: string, bucket: 'job-photos' | 
 
 // ---------- profiles ----------
 export async function getProfile(id: string) {
-  const res = await supabase.from('profiles').select('*').eq('id', id).single();
+  const res = await supabase.from('profiles').select(PROFILE).eq('id', id).single();
   return must<Profile>(res);
 }
 

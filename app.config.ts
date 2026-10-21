@@ -46,6 +46,9 @@ const config: ExpoConfig = {
     ],
     // Free OpenStreetMap maps via MapLibre + OpenFreeMap: no API key needed.
     '@maplibre/maplibre-react-native',
+    ['expo-local-authentication', { faceIDPermission: 'Το ergo χρησιμοποιεί το Face ID για να ξεκλειδώνει την εφαρμογή.' }],
+    // Keystore-backed storage for the session encryption key; excluded from Android backups.
+    ['expo-secure-store', { configureAndroidBackup: true }],
     [
       'expo-location',
       { locationWhenInUsePermission: 'Το ergo χρησιμοποιεί την τοποθεσία σου για να δείχνει εργασίες κοντά σου.' },
