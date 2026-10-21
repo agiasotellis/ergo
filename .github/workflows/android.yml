@@ -27,6 +27,18 @@ jobs:
       ERGO_VERSION_CODE: ${{ github.run_number }}
       NODE_OPTIONS: --max-old-space-size=4096
     steps:
+      # The runner has ~14 GB free; a React Native release build with MapLibre's native
+      # libraries for every CPU type needs more. Remove preinstalled tools we never use.
+      - name: Free disk space
+        run: |
+          df -h / | tail -1
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/.ghcup \
+            /usr/share/swift /usr/local/share/boost /opt/hostedtoolcache/CodeQL /usr/local/share/powershell \
+            /usr/local/share/chromium /usr/local/lib/node_modules/@aws-cdk "$AGENT_TOOLSDIRECTORY/PyPy" || true
+          sudo docker image prune -af > /dev/null 2>&1 || true
+          sudo apt-get clean || true
+          df -h / | tail -1
+
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
@@ -126,8 +138,12 @@ jobs:
         env:
           RESULT: ${{ job.status }}
         run: |
+          # Make room so the report can be written even if the build filled the disk.
+          rm -rf android/app/build/intermediates android/app/.cxx android/build ~/.gradle/caches/transforms-* 2>/dev/null || true
           {
             echo "# Android build ${{ github.run_number }}: ${RESULT}"
+            echo
+            echo "Disk: $(df -h / | tail -1)"
             echo
             echo "- Commit: ${{ github.sha }}"
             echo "- Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
