@@ -133,16 +133,20 @@ export default function Post() {
                     borderColor: on ? c.primary : c.card,
                     backgroundColor: c.card,
                     alignItems: 'center',
-                    justifyContent: 'center',
+                    justifyContent: 'flex-start',
                     gap: 8,
-                    padding: 6,
+                    paddingTop: 14,
+                    paddingHorizontal: 6,
                     transform: [{ scale: pressed ? 0.95 : on ? 1.02 : 1 }],
                   })}
                 >
                   <CategoryTile cat={k.key} size={40} />
-                  <Txt size={12} weight="700" center numberOfLines={2}>
-                    {t.categories[k.key]}
-                  </Txt>
+                  {/* Fixed two-line label box so every icon sits at the same height. */}
+                  <View style={{ minHeight: 32, justifyContent: 'center' }}>
+                    <Txt size={12} weight="700" center numberOfLines={2} style={{ lineHeight: 16 }}>
+                      {t.categories[k.key]}
+                    </Txt>
+                  </View>
                 </Pressable>
               );
             })}
