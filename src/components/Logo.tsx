@@ -8,7 +8,7 @@ import { brand } from '@/theme/tokens';
 const APath = Animated.createAnimatedComponent(Path);
 
 /** The ergo high-five symbol (viewBox 0 -6 200 150). `animate` draws the arms and rays in. */
-export function Symbol({ width = 120, animate = false }: { width?: number; animate?: boolean }) {
+export function LogoMark({ width = 120, animate = false }: { width?: number; animate?: boolean }) {
   const arm = useSharedValue(animate ? 90 : 0);
   const ray = useSharedValue(animate ? 24 : 0);
 
@@ -52,7 +52,7 @@ export function Wordmark({ size = 40, color }: { size?: number; color: string })
 export function LogoInline({ color }: { color: string }) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-      <Symbol width={40} />
+      <LogoMark width={40} />
       <Wordmark size={26} color={color} />
     </View>
   );

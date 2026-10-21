@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import Animated, { Easing, FadeInDown, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withTiming } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Symbol, Wordmark } from '@/components/Logo';
+import { LogoMark, Wordmark } from '@/components/Logo';
 import { Button, Segmented, Txt } from '@/components/ui';
 import { useI18n } from '@/i18n/I18nProvider';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -53,7 +53,7 @@ export default function Welcome() {
         <Ring delay={1200} />
         <Ring delay={2400} />
         <Animated.View entering={FadeInDown.duration(500)}>
-          <Symbol width={200} animate />
+          <LogoMark width={200} animate />
         </Animated.View>
         <Animated.View entering={FadeInDown.delay(300).duration(500)} style={{ marginTop: 6 }}>
           <Wordmark size={76} color={isDark ? '#FFFFFF' : '#0F1F3D'} />

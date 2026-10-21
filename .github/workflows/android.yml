@@ -46,9 +46,9 @@ jobs:
         id: install
         run: set -o pipefail; npm ci 2>&1 | tee -a "$RUNNER_TEMP/steps.log"
 
-      - name: Type-check
+      - name: Type-check and lint
         id: typecheck
-        run: set -o pipefail; npx tsc --noEmit 2>&1 | tee -a "$RUNNER_TEMP/steps.log"
+        run: set -o pipefail; { npx tsc --noEmit && npx eslint src app.config.ts --quiet; } 2>&1 | tee -a "$RUNNER_TEMP/steps.log"
 
       - name: Generate native Android project
         id: prebuild
