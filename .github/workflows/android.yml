@@ -47,14 +47,12 @@ jobs:
       # The runner has ~14 GB free; a React Native release build with MapLibre's native
       # libraries for every CPU type needs more. Remove preinstalled tools we never use.
       - name: Free disk space
-        if: env.FULL == 'true'
         run: |
           df -h / | tail -1
           sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/.ghcup \
             /usr/share/swift /usr/local/share/boost /opt/hostedtoolcache/CodeQL /usr/local/share/powershell \
             /usr/local/share/chromium /usr/local/lib/node_modules/@aws-cdk "$AGENT_TOOLSDIRECTORY/PyPy" || true
-          sudo docker image prune -af > /dev/null 2>&1 || true
-          sudo apt-get clean || true
+                    sudo apt-get clean || true
           df -h / | tail -1
 
       - uses: actions/checkout@v4
