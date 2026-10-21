@@ -83,6 +83,29 @@ The debug key's SHA-1 is `5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:
 
 `supabase/migrations/20261021000200_delete_my_account.sql` adds in-app account deletion, which Google Play requires. Run it in the Supabase SQL editor if it hasn't been applied yet.
 
+### 5. Email (password reset & sign-up)
+
+Supabase's built-in email only delivers to members of your Supabase team, max 2 emails per hour, so real users won't receive codes. Before launch:
+
+1. **Custom SMTP:** Supabase → Authentication → Emails → SMTP Settings. Any provider works (e.g. Resend, Brevo, Mailgun; most have a free tier).
+2. **Reset-password template:** Authentication → Emails → *Reset Password*. The app asks for a code, so the email must contain `{{ .Token }}`:
+
+   ```html
+   <h2>ergo — Επαναφορά κωδικού / Reset password</h2>
+   <p>Ο κωδικός σου είναι / Your code is:</p>
+   <p style="font-size:28px;font-weight:800;letter-spacing:6px">{{ .Token }}</p>
+   <p>Αν δεν το ζήτησες εσύ, αγνόησε αυτό το email. / If you didn't ask for this, ignore this email.</p>
+   ```
+
+## Security & privacy
+
+- **Database:** row-level security on every table. Users only see their own messages, offers and notifications; status changes go through checked server functions; other users see only name/photo/bio of a profile; task locations are rounded to ~100 m. See `supabase/migrations/`.
+- **On the phone:** the session is AES-256 encrypted, with the key in the Android Keystore (`src/lib/secureStorage.ts`). Optional fingerprint / face / PIN lock (Profile → Biometric lock).
+- **Account deletion:** in-app (Profile → Delete account), as Google Play requires.
+- **Cookies:** the app uses none, so no cookie banner is needed. A website for ergo would need one only if it adds analytics/ads cookies.
+- **Recommended Supabase settings:** Authentication → Providers → Email: *Prevent use of leaked passwords* (paid plans), minimum password length 8; Authentication → Rate Limits: keep defaults.
+- **Before Google Play:** a public privacy policy URL, the Data safety form (email, name, photos, approximate location, messages; encrypted in transit; users can delete their account), and an account-deletion URL or in-app path.
+
 ## Google Play checklist
 
 - [ ] Upload keystore in GitHub secrets, and a backup kept offline
