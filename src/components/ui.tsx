@@ -139,7 +139,7 @@ export function Button({ title, variant = 'primary', icon, iconRight, loading, d
         <>
           {left}
           {icon && <Icon name={icon} color={fg} size={20} />}
-          <Txt size={16} weight="700" color={fg} numberOfLines={1} center style={{ flexShrink: 1 }}>
+          <Txt size={16} weight="700" color={fg} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} center style={{ flexShrink: 1 }}>
             {title}
           </Txt>
           {iconRight && <Icon name={iconRight} color={fg} size={18} strokeWidth={2.4} />}

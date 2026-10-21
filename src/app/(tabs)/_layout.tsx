@@ -30,7 +30,7 @@ export default function TabsLayout() {
   if (!session) return <Redirect href="/auth" />;
 
   return (
-    <Tabs screenOptions={{ headerShown: false }} tabBar={(props) => <TabBar {...props} unread={unread} />}>
+    <Tabs screenOptions={{ headerShown: false, animation: 'shift' }} tabBar={(props) => <TabBar {...props} unread={unread} />}>
       <Tabs.Screen name="index" />
       <Tabs.Screen name="map" />
       <Tabs.Screen name="messages" />

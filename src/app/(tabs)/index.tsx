@@ -14,6 +14,7 @@ import { nearbyJobs } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { CATEGORIES } from '@/lib/categories';
 import { useLocation } from '@/lib/location';
+import { useUnreadNotifications } from '@/lib/notifications';
 import { darkMapStyle, lightMapStyle } from '@/lib/mapStyle';
 import type { CategoryKey, NearbyJob } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -23,7 +24,8 @@ const HOME_RADIUS_KM = 10;
 export default function Home() {
   const { c, isDark, setPref } = useTheme();
   const { t } = useI18n();
-  const { profile } = useAuth();
+  const { profile, userId } = useAuth();
+  const unreadNotes = useUnreadNotifications(userId);
   const loc = useLocation();
   const [cat, setCat] = useState<CategoryKey | null>(null);
   const [query, setQuery] = useState('');
@@ -77,11 +79,43 @@ export default function Home() {
             </Txt>
           </View>
         </View>
-        <IconButton
-          name={isDark ? 'sun' : 'moon'}
-          label={`${t.profile.theme}: ${isDark ? t.profile.themeLight : t.profile.themeDark}`}
-          onPress={() => setPref(isDark ? 'light' : 'dark')}
-        />
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          <IconButton
+            name={isDark ? 'sun' : 'moon'}
+            label={`${t.profile.theme}: ${isDark ? t.profile.themeLight : t.profile.themeDark}`}
+            onPress={() => setPref(isDark ? 'light' : 'dark')}
+          />
+          <View>
+            <IconButton
+              name="bell"
+              label={unreadNotes ? `${t.notifications.title}, ${unreadNotes}` : t.notifications.title}
+              onPress={() => router.push('/notifications')}
+            />
+            {unreadNotes > 0 && (
+              <View
+                pointerEvents="none"
+                style={{
+                  position: 'absolute',
+                  top: -2,
+                  right: -2,
+                  minWidth: 20,
+                  height: 20,
+                  paddingHorizontal: 4,
+                  borderRadius: 10,
+                  borderWidth: 2,
+                  borderColor: c.bg,
+                  backgroundColor: '#FF6A3D',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Txt size={10} weight="800" color="#0F1F3D" center style={{ lineHeight: 12 }} maxFontSizeMultiplier={1}>
+                  {unreadNotes > 9 ? '9+' : String(unreadNotes)}
+                </Txt>
+              </View>
+            )}
+          </View>
+        </View>
       </Animated.View>
 
       <Animated.View entering={FadeInDown.delay(60).duration(400)}>

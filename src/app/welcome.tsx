@@ -59,7 +59,15 @@ export default function Welcome() {
           <Wordmark size={76} color={isDark ? '#FFFFFF' : '#0F1F3D'} />
         </Animated.View>
         <Animated.View entering={FadeInDown.delay(450).duration(500)}>
-          <Txt size={12} weight="800" color={isDark ? '#C9D3E6' : '#3A4A66'} style={{ letterSpacing: 3, marginTop: 8 }} center>
+          {/* Two lines as in the brand lock-up. Letter-spacing also trails the last glyph,
+              so pad the left by the same amount to keep each line optically centred. */}
+          <Txt
+            size={13}
+            weight="800"
+            color={isDark ? '#C9D3E6' : '#3A4A66'}
+            center
+            style={{ letterSpacing: 3.4, lineHeight: 20, marginTop: 12, paddingLeft: 24 + 3.4, paddingRight: 24 }}
+          >
             {t.welcome.tagline}
           </Txt>
         </Animated.View>

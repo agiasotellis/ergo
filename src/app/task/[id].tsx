@@ -2,11 +2,13 @@ import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, Modal, Pressable, ScrollView, TextInput, View } from 'react-native';
-import Animated, { FadeIn, FadeInDown, SlideInDown, ZoomIn } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInDown, SlideInDown, ZoomIn, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CategoryTile } from '@/components/CategoryTile';
 import { Icon } from '@/components/Icon';
+import type { IconName } from '@/components/icons';
+import { TaskProgress } from '@/components/TaskProgress';
 import { Avatar, Badge, Button, Card, Field, H2, IconButton, Loading, MAX_FONT_SCALE, Txt, font } from '@/components/ui';
 import { useI18n } from '@/i18n/I18nProvider';
 import {
@@ -38,6 +40,7 @@ export default function TaskDetail() {
   const insets = useSafeAreaInsets();
   const [job, setJob] = useState<Job | null>(null);
   const [poster, setPoster] = useState<Profile | null>(null);
+  const [helper, setHelper] = useState<Profile | null>(null);
   const [stats, setStats] = useState<ProfileStats | null>(null);
   const [apps, setApps] = useState<Application[]>([]);
   const [mine, setMine] = useState<Application | null>(null);
@@ -58,9 +61,10 @@ export default function TaskDetail() {
       const j = await getJob(id);
       setJob(j);
       setAmount((a) => a || Number(j.budget ?? 20));
-      const [p, s] = await Promise.all([getProfile(j.poster_id), getStats(j.poster_id)]);
+      const [p, s, h] = await Promise.all([getProfile(j.poster_id), getStats(j.poster_id), j.assigned_to ? getProfile(j.assigned_to) : Promise.resolve(null)]);
       setPoster(p);
       setStats(s);
+      setHelper(h);
       if (j.poster_id === userId) setApps(await applicationsForJob(j.id));
       else setMine(await myApplication(j.id, userId));
       if (j.status === 'completed' && (j.poster_id === userId || j.assigned_to === userId)) setReviewed(!!(await myReviewForJob(j.id, userId)));
@@ -89,6 +93,8 @@ export default function TaskDetail() {
   };
 
   const active = job.status === 'open' || job.status === 'assigned';
+  const accepted = isOwner ? apps.find((a) => a.status === 'accepted') : mine?.status === 'accepted' ? mine : null;
+  const agreed = accepted?.amount ?? job.budget;
 
   const confirmComplete = () =>
     Alert.alert(t.task.markDone, t.task.doneConfirm, [
@@ -155,8 +161,8 @@ export default function TaskDetail() {
               {job.status !== 'open' && (
                 <Badge
                   label={t.task.status[job.status]}
-                  bg={job.status === 'completed' ? c.okSoft : job.status === 'cancelled' ? c.dangerSoft : c.soft}
-                  fg={job.status === 'completed' ? c.ok : job.status === 'cancelled' ? c.danger : c.muted}
+                  bg={job.status === 'completed' ? c.okSoft : job.status === 'cancelled' ? c.dangerSoft : c.warnSoft}
+                  fg={job.status === 'completed' ? c.ok : job.status === 'cancelled' ? c.danger : c.warn}
                 />
               )}
             </View>
@@ -189,6 +195,39 @@ export default function TaskDetail() {
               </Txt>
             </View>
           </View>
+
+          {job.status !== 'cancelled' && (isOwner || isWorker) && (
+            <TaskProgress step={job.status === 'open' ? 0 : job.status === 'assigned' ? 1 : 2} labels={[t.task.stepPosted, t.task.stepProgress, t.task.stepDone]} />
+          )}
+
+          {job.status === 'assigned' && (isOwner || isWorker) && (
+            <Animated.View entering={FadeInDown.springify().damping(18)}>
+              <Card style={{ gap: 12, backgroundColor: c.okSoft }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <LiveDot color={c.ok} />
+                  <Txt size={13} weight="800" color={c.ok} style={{ letterSpacing: 0.3 }}>
+                    {isOwner ? t.task.helperChosen : t.task.youWereChosen}
+                  </Txt>
+                </View>
+                {isOwner && helper && (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                    <Avatar name={helper.full_name} url={helper.avatar_url} size={48} />
+                    <View style={{ flex: 1 }}>
+                      <Txt size={16} weight="800" numberOfLines={1}>
+                        {helper.full_name || '—'}
+                      </Txt>
+                      <Txt size={13} color={c.body}>{`${t.task.agreed}: ${euro(agreed, lang)}`}</Txt>
+                    </View>
+                    <IconButton name="chat" label={t.task.message} bg={c.card} color={c.primaryText} onPress={() => openChat(helper.id)} />
+                  </View>
+                )}
+                {isWorker && <Txt size={13} color={c.body}>{`${t.task.agreed}: ${euro(agreed, lang)}`}</Txt>}
+                <Txt size={13} color={c.body}>
+                  {isOwner ? t.task.inProgressBody : t.task.inProgressWorker}
+                </Txt>
+              </Card>
+            </Animated.View>
+          )}
 
           {poster && (
             <Card style={{ flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 1.5, borderColor: c.line }}>
@@ -262,6 +301,18 @@ export default function TaskDetail() {
             </View>
           )}
 
+          {isOwner && (
+            <View style={{ gap: 10 }}>
+              <H2>{t.task.manage}</H2>
+              <Card style={{ paddingVertical: 4, borderWidth: 1.5, borderColor: c.line }}>
+                {active && (
+                  <ManageRow icon="close" label={t.task.cancelTask} onPress={confirmCancel} disabled={busy} />
+                )}
+                <ManageRow icon="trash" label={t.task.deleteTask} danger onPress={confirmDelete} disabled={busy} />
+              </Card>
+            </View>
+          )}
+
           {job.status === 'completed' && !!job.assigned_to && (isOwner || isWorker) && !reviewed && (
             <Animated.View entering={FadeIn}>
               <Card style={{ gap: 12, borderWidth: 1.5, borderColor: c.line }}>
@@ -325,24 +376,16 @@ export default function TaskDetail() {
         }}
       >
         {isOwner ? (
-          <>
-            {active ? (
-              <>
-                <Button title={t.task.markDoneShort} icon="check" style={{ flex: 1 }} loading={busy} onPress={confirmComplete} />
-                <Button title={t.common.cancel} variant="outline" style={{ flex: 1 }} disabled={busy} onPress={confirmCancel} />
-              </>
-            ) : (
-              <View style={{ flex: 1, alignItems: 'center' }}>
-                <Badge
-                  label={t.task.status[job.status]}
-                  bg={job.status === 'completed' ? c.okSoft : c.dangerSoft}
-                  fg={job.status === 'completed' ? c.ok : c.danger}
-                  style={{ alignSelf: 'center', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 14 }}
-                />
-              </View>
-            )}
-            <IconButton name="trash" label={t.task.deleteTask} bg={c.dangerSoft} color={c.danger} size={56} onPress={confirmDelete} />
-          </>
+          active ? (
+            <Button title={t.task.markDone} icon="check" style={{ flex: 1 }} loading={busy} onPress={confirmComplete} />
+          ) : (
+            <View style={{ flex: 1, height: 56, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 28, backgroundColor: job.status === 'completed' ? c.okSoft : c.dangerSoft }}>
+              <Icon name={job.status === 'completed' ? 'check' : 'close'} color={job.status === 'completed' ? c.ok : c.danger} size={20} strokeWidth={2.6} />
+              <Txt size={16} weight="800" color={job.status === 'completed' ? c.ok : c.danger}>
+                {t.task.status[job.status]}
+              </Txt>
+            </View>
+          )
         ) : (
           <>
             <Button title={t.task.message} variant="secondary" style={{ flex: 0.8 }} onPress={() => openChat(job.poster_id)} />
@@ -387,5 +430,39 @@ export default function TaskDetail() {
         </Animated.View>
       </Modal>
     </View>
+  );
+}
+
+function LiveDot({ color }: { color: string }) {
+  const p = useSharedValue(0);
+  useEffect(() => {
+    p.value = withRepeat(withTiming(1, { duration: 1400 }), -1);
+  }, [p]);
+  const halo = useAnimatedStyle(() => ({ opacity: 0.6 * (1 - p.value), transform: [{ scale: 1 + p.value * 1.6 }] }));
+  return (
+    <View style={{ width: 10, height: 10, alignItems: 'center', justifyContent: 'center' }}>
+      <Animated.View style={[{ position: 'absolute', width: 10, height: 10, borderRadius: 5, backgroundColor: color }, halo]} />
+      <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: color }} />
+    </View>
+  );
+}
+
+function ManageRow({ icon, label, onPress, danger, disabled }: { icon: IconName; label: string; onPress: () => void; danger?: boolean; disabled?: boolean }) {
+  const { c } = useTheme();
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      disabled={disabled}
+      style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 56, paddingVertical: 8, opacity: pressed ? 0.6 : 1 })}
+    >
+      <View style={{ width: 40, height: 40, borderRadius: 14, backgroundColor: danger ? c.dangerSoft : c.soft, alignItems: 'center', justifyContent: 'center' }}>
+        <Icon name={icon} color={danger ? c.danger : c.ink} size={20} />
+      </View>
+      <Txt weight="700" color={danger ? c.danger : c.ink} style={{ flex: 1 }}>
+        {label}
+      </Txt>
+      <Icon name="chevron" color={c.muted} size={18} />
+    </Pressable>
   );
 }

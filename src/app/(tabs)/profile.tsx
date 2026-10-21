@@ -183,8 +183,8 @@ export default function Profile() {
                   </Txt>
                   <Badge
                     label={t.task.status[j.status]}
-                    bg={j.status === 'open' ? c.primarySoft : j.status === 'completed' ? c.okSoft : j.status === 'cancelled' ? c.dangerSoft : c.soft}
-                    fg={j.status === 'open' ? c.primaryText : j.status === 'completed' ? c.ok : j.status === 'cancelled' ? c.danger : c.muted}
+                    bg={j.status === 'open' ? c.primarySoft : j.status === 'completed' ? c.okSoft : j.status === 'cancelled' ? c.dangerSoft : c.warnSoft}
+                    fg={j.status === 'open' ? c.primaryText : j.status === 'completed' ? c.ok : j.status === 'cancelled' ? c.danger : c.warn}
                   />
                 </View>
                 <Txt weight="800" numberOfLines={1}>

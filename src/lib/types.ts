@@ -85,3 +85,17 @@ export type Review = {
   reviewer?: Pick<Profile, 'id' | 'full_name' | 'avatar_url'> | null;
   job?: Pick<Job, 'id' | 'title'> | null;
 };
+
+export type NotificationType = 'offer' | 'accepted' | 'completed' | 'cancelled' | 'review';
+
+export type AppNotification = {
+  id: string;
+  user_id: string;
+  type: NotificationType;
+  job_id: string | null;
+  actor_id: string | null;
+  data: { title?: string; amount?: number; rating?: number };
+  read_at: string | null;
+  created_at: string;
+  actor?: Pick<Profile, 'id' | 'full_name' | 'avatar_url'> | null;
+};

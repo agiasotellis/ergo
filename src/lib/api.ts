@@ -1,7 +1,7 @@
 import * as ImagePicker from 'expo-image-picker';
 
 import { supabase } from './supabase';
-import type { Application, CategoryKey, Conversation, Job, Message, NearbyJob, Profile, ProfileStats, Review } from './types';
+import type { AppNotification, Application, CategoryKey, Conversation, Job, Message, NearbyJob, Profile, ProfileStats, Review } from './types';
 
 const PERSON = 'id, full_name, avatar_url';
 
@@ -188,4 +188,29 @@ export async function myReviewForJob(jobId: string, userId: string) {
 
 export async function leaveReview(r: Pick<Review, 'job_id' | 'reviewer_id' | 'reviewee_id' | 'reviewee_role' | 'rating' | 'comment'>) {
   must(await supabase.from('reviews').insert(r));
+}
+
+// ---------- notifications ----------
+export async function myNotifications(userId: string) {
+  const res = await supabase
+    .from('notifications')
+    .select(`*, actor:profiles!notifications_actor_id_fkey(${PERSON})`)
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(60);
+  return must<AppNotification[]>(res) ?? [];
+}
+
+export async function unreadNotifications(userId: string) {
+  const { count, error } = await supabase
+    .from('notifications')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', userId)
+    .is('read_at', null);
+  if (error) throw error;
+  return count ?? 0;
+}
+
+export async function markNotificationsRead(userId: string) {
+  must(await supabase.from('notifications').update({ read_at: new Date().toISOString() }).eq('user_id', userId).is('read_at', null));
 }
