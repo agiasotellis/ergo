@@ -1,0 +1,94 @@
++ SDK=/usr/local/lib/android/sdk
++ SDKM=/usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager
++ AVDM=/usr/local/lib/android/sdk/cmdline-tools/latest/bin/avdmanager
++ IMG='system-images;android-34;google_apis;x86_64'
++ export ANDROID_AVD_HOME=/home/runner/.android/avd
++ ANDROID_AVD_HOME=/home/runner/.android/avd
++ export ANDROID_USER_HOME=/home/runner/.android
++ ANDROID_USER_HOME=/home/runner/.android
++ mkdir -p /home/runner/.android/avd
++ ls -la /dev/kvm
+crw-rw-rw- 1 root kvm 10, 232 Oct 21 11:18 /dev/kvm
++ yes
++ /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+yes: standard output: Broken pipe
++ /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --install platform-tools emulator 'system-images;android-34;google_apis;x86_64'
++ export PATH=/usr/local/lib/android/sdk/platform-tools:/usr/local/lib/android/sdk/emulator:/snap/bin:/home/runner/.local/bin:/opt/pipx_bin:/home/runner/.cargo/bin:/home/runner/.config/composer/vendor/bin:/usr/local/.ghcup/bin:/home/runner/.dotnet/tools:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
++ PATH=/usr/local/lib/android/sdk/platform-tools:/usr/local/lib/android/sdk/emulator:/snap/bin:/home/runner/.local/bin:/opt/pipx_bin:/home/runner/.cargo/bin:/home/runner/.config/composer/vendor/bin:/usr/local/.ghcup/bin:/home/runner/.dotnet/tools:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
++ echo no
++ /usr/local/lib/android/sdk/cmdline-tools/latest/bin/avdmanager create avd -n ci -k 'system-images;android-34;google_apis;x86_64' --force -d pixel_6
+Loading local repository...                                                     [=========                              ] 25% Loading local repository...       [=========                              ] 25% Fetch remote repository...        [=======================================] 100% Fetch remote repository...       
+Auto-selecting single ABI x86_64
++ /usr/local/lib/android/sdk/emulator/emulator -list-avds
++ /usr/local/lib/android/sdk/emulator/emulator -avd ci -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -accel auto -memory 4096
+ci
++ timeout 300 adb wait-for-device
+* daemon not running; starting now at tcp:5037
+* daemon started successfully
+++ seq 1 120
++ for i in $(seq 1 120)
+++ adb shell getprop sys.boot_completed
+++ tr -d '\r'
++ '[' '' = 1 ']'
++ sleep 5
++ for i in $(seq 1 120)
+++ adb shell getprop sys.boot_completed
+++ tr -d '\r'
++ '[' '' = 1 ']'
++ sleep 5
++ for i in $(seq 1 120)
+++ adb shell getprop sys.boot_completed
+++ tr -d '\r'
++ '[' '' = 1 ']'
++ sleep 5
++ for i in $(seq 1 120)
+++ adb shell getprop sys.boot_completed
+++ tr -d '\r'
++ '[' '' = 1 ']'
++ sleep 5
++ for i in $(seq 1 120)
+++ adb shell getprop sys.boot_completed
+++ tr -d '\r'
++ '[' '' = 1 ']'
++ sleep 5
++ for i in $(seq 1 120)
+++ adb shell getprop sys.boot_completed
+++ tr -d '\r'
++ '[' '' = 1 ']'
++ sleep 5
++ for i in $(seq 1 120)
+++ adb shell getprop sys.boot_completed
+++ tr -d '\r'
++ '[' '' = 1 ']'
++ sleep 5
++ for i in $(seq 1 120)
+++ adb shell getprop sys.boot_completed
+++ tr -d '\r'
++ '[' '' = 1 ']'
++ sleep 5
++ for i in $(seq 1 120)
+++ adb shell getprop sys.boot_completed
+++ tr -d '\r'
++ '[' '' = 1 ']'
++ sleep 5
++ for i in $(seq 1 120)
+++ adb shell getprop sys.boot_completed
+++ tr -d '\r'
++ '[' '' = 1 ']'
++ sleep 5
++ for i in $(seq 1 120)
+++ adb shell getprop sys.boot_completed
+++ tr -d '\r'
++ '[' 1 = 1 ']'
++ break
+++ adb shell getprop sys.boot_completed
+++ tr -d '\r'
++ '[' 1 '!=' 1 ']'
++ adb shell settings put global window_animation_scale 0
++ adb shell settings put global transition_animation_scale 0
++ adb shell settings put global animator_duration_scale 0
++ adb shell input keyevent 82
++ bash .github/scripts/smoke.sh
++ adb emu kill
+OK: killing emulator, bye bye
+OK
