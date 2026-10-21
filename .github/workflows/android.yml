@@ -1,0 +1,131 @@
+name: Android build
+
+# Builds a signed release APK (for testing) and AAB (for Google Play) on every push to main.
+# Download the APK from the run's artifacts or from the "Releases" page of the repo.
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['**.md', 'docs/**', 'supabase/**']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
+      EXPO_PUBLIC_SUPABASE_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_KEY }}
+      EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID: ${{ secrets.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID }}
+      GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+      ERGO_VERSION_CODE: ${{ github.run_number }}
+      NODE_OPTIONS: --max-old-space-size=4096
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Install dependencies
+        run: set -o pipefail; npm ci 2>&1 | tee -a "$RUNNER_TEMP/steps.log"
+
+      - name: Type-check
+        run: set -o pipefail; npx tsc --noEmit 2>&1 | tee -a "$RUNNER_TEMP/steps.log"
+
+      - name: Generate native Android project
+        run: set -o pipefail; npx expo prebuild --platform android --no-install 2>&1 | tee -a "$RUNNER_TEMP/steps.log"
+
+      - name: Prepare upload keystore
+        env:
+          KEYSTORE_B64: ${{ secrets.ERGO_UPLOAD_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/ergo-upload.jks"
+            echo "ERGO_UPLOAD_STORE_FILE=$RUNNER_TEMP/ergo-upload.jks" >> "$GITHUB_ENV"
+            echo "Signing with the ergo upload key."
+          else
+            echo "::warning::ERGO_UPLOAD_KEYSTORE_BASE64 is not set; signing with the debug key (fine for testing, not for Google Play)."
+          fi
+
+      - name: Build APK and AAB
+        working-directory: android
+        env:
+          ERGO_UPLOAD_STORE_PASSWORD: ${{ secrets.ERGO_UPLOAD_STORE_PASSWORD }}
+          ERGO_UPLOAD_KEY_ALIAS: ${{ secrets.ERGO_UPLOAD_KEY_ALIAS }}
+          ERGO_UPLOAD_KEY_PASSWORD: ${{ secrets.ERGO_UPLOAD_KEY_PASSWORD }}
+        run: |
+          set -o pipefail
+          ./gradlew assembleRelease bundleRelease --no-daemon --stacktrace 2>&1 | tee "$RUNNER_TEMP/gradle.log"
+
+      - name: Collect outputs
+        id: out
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          NAME="ergo-${VERSION}-build${{ github.run_number }}"
+          mkdir -p dist
+          cp android/app/build/outputs/apk/release/app-release.apk "dist/${NAME}.apk"
+          cp android/app/build/outputs/bundle/release/app-release.aab "dist/${NAME}.aab"
+          echo "name=${NAME}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.out.outputs.name }}
+          path: dist/*
+          retention-days: 30
+
+      - name: Publish test release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: ergo build ${{ github.run_number }}
+          prerelease: true
+          body: |
+            Test build from ${{ github.sha }}.
+            Install `${{ steps.out.outputs.name }}.apk` on an Android phone to test.
+            The `.aab` file is for uploading to Google Play.
+          files: dist/*
+
+      # Writes the result and the end of the build log to the `ci-status` branch,
+      # so the build can be checked without access to the Actions UI.
+      - name: Report status
+        if: always()
+        env:
+          RESULT: ${{ job.status }}
+        run: |
+          {
+            echo "# Android build ${{ github.run_number }}: ${RESULT}"
+            echo
+            echo "- Commit: ${{ github.sha }}"
+            echo "- Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo "- Release: ${{ github.server_url }}/${{ github.repository }}/releases/tag/build-${{ github.run_number }}"
+            echo
+            echo '```'
+            if [ -f "$RUNNER_TEMP/gradle.log" ]; then grep -nE "FAILURE|What went wrong|error:|e: |BUILD (SUCCESSFUL|FAILED)" "$RUNNER_TEMP/gradle.log" | tail -60; echo '---'; tail -120 "$RUNNER_TEMP/gradle.log"; else echo "Gradle did not run. Earlier steps:"; tail -80 "$RUNNER_TEMP/steps.log" 2>/dev/null || echo "(no log)"; fi
+            echo '```'
+          } > "$RUNNER_TEMP/STATUS.md"
+          git config user.name "ergo-ci"
+          git config user.email "ci@users.noreply.github.com"
+          git fetch origin ci-status:ci-status 2>/dev/null || true
+          git worktree add -f "$RUNNER_TEMP/status" ci-status 2>/dev/null || { git worktree add -f --orphan -b ci-status "$RUNNER_TEMP/status" 2>/dev/null || git worktree add -f -b ci-status "$RUNNER_TEMP/status"; }
+          cd "$RUNNER_TEMP/status"
+          git rm -rq . 2>/dev/null || true
+          cp "$RUNNER_TEMP/STATUS.md" STATUS.md
+          git add STATUS.md
+          git commit -qm "Build ${{ github.run_number }}: ${RESULT}" || true
+          git push -q origin ci-status || true
