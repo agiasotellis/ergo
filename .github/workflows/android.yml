@@ -1,8 +1,9 @@
 name: Android build
 
 # Two kinds of build:
-# - Test build (every push to main): APK for real phones only (arm64-v8a), no AAB,
-#   no emulator test. Takes ~10-15 min. Download the APK from the repo's Releases page.
+# - Test build (every push to main): APK for 64-bit ARM phones + x86_64 (so the emulator
+#   launch test can run it), no AAB. The APK is published after ~10 min; the launch test
+#   runs afterwards. Download the APK from the repo's Releases page.
 # - Store build (Actions -> Android build -> Run workflow -> "store", or push a tag like v1.0.0):
 #   APK + AAB for every CPU type, plus the emulator launch test. Upload the AAB to Google Play.
 
@@ -72,7 +73,7 @@ jobs:
       - name: Restore native compile cache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: android-${{ env.FULL == 'true' && 'all' || 'arm64' }}
+          key: android-${{ env.FULL == 'true' && 'all' || 'test' }}
           max-size: 3G
 
       - name: Install dependencies
@@ -113,8 +114,8 @@ jobs:
             echo "Store build: all CPU types, APK + AAB"
             ./gradlew assembleRelease bundleRelease $FLAGS 2>&1 | tee "$RUNNER_TEMP/gradle.log"
           else
-            echo "Test build: arm64-v8a APK only"
-            ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a $FLAGS 2>&1 | tee "$RUNNER_TEMP/gradle.log"
+            echo "Test build: arm64-v8a + x86_64 APK"
+            ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a,x86_64 $FLAGS 2>&1 | tee "$RUNNER_TEMP/gradle.log"
           fi
           ccache --show-stats 2>/dev/null | tee -a "$RUNNER_TEMP/gradle.log" || true
 
@@ -137,21 +138,6 @@ jobs:
             echo "name=${NAME}" >> "$GITHUB_OUTPUT"
           } 2>&1 | tee -a "$RUNNER_TEMP/steps.log"
 
-      - name: Enable KVM for the emulator
-        if: env.FULL == 'true'
-        run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
-
-      # Installs the APK on an Android emulator, launches it and records logcat + screenshots.
-      - name: Launch test on emulator
-        id: smoke
-        if: env.FULL == 'true'
-        continue-on-error: true
-        timeout-minutes: 25
-        run: bash .github/scripts/emulator.sh
-
       - name: Publish test release
         id: release
         uses: softprops/action-gh-release@v2
@@ -160,10 +146,23 @@ jobs:
           name: ergo build ${{ github.run_number }}${{ env.FULL == 'true' && ' (store)' || '' }}
           prerelease: true
           body: |
-            ${{ env.FULL == 'true' && 'Store build' || 'Test build (arm64 phones)' }} from ${{ github.sha }}.
+            ${{ env.FULL == 'true' && 'Store build' || 'Test build (64-bit phones)' }} from ${{ github.sha }}.
             Install `${{ steps.out.outputs.name }}.apk` on an Android phone to test.
             ${{ env.FULL == 'true' && 'Upload the `.aab` file to Google Play.' || '' }}
           files: dist/*
+
+      - name: Enable KVM for the emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      # Installs the APK on an Android emulator, launches it and records logcat + screenshots.
+      - name: Launch test on emulator
+        id: smoke
+        continue-on-error: true
+        timeout-minutes: 25
+        run: bash .github/scripts/emulator.sh
 
       # Writes the result and the end of the build log to the `ci-status` branch,
       # so the build can be checked without access to the Actions UI.

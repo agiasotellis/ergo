@@ -1,4 +1,6 @@
 /**
+ * Also limits packaged native libraries to the CPU types being built.
+ *
  * Adds a `release` signing config to android/app/build.gradle that reads the
  * upload keystore from environment variables (set in CI from GitHub secrets).
  * Without those variables the release build falls back to the debug key, so
@@ -33,6 +35,17 @@ module.exports = function withReleaseSigning(config) {
       /(buildTypes\s*\{[\s\S]*?release\s*\{[\s\S]*?)signingConfig\s+signingConfigs\.debug/,
       "$1signingConfig System.getenv('ERGO_UPLOAD_STORE_FILE') ? signingConfigs.release : signingConfigs.debug"
     );
+
+    // Package only the CPU types being built (-PreactNativeArchitectures). Some prebuilt
+    // libraries ship every CPU type; a partial set makes Android pick the wrong one.
+    if (!src.includes('abiFilters(')) {
+      src = src.replace(
+        /defaultConfig\s*\{/,
+        (m) =>
+          m +
+          "\n        ndk { abiFilters(*((findProperty('reactNativeArchitectures') ?: 'armeabi-v7a,arm64-v8a,x86,x86_64').split(',').collect { it.trim() })) }"
+      );
+    }
 
     cfg.modResults.contents = src;
     return cfg;
