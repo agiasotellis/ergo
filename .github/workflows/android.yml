@@ -126,11 +126,13 @@ jobs:
             VERSION=$(node -p "require('./package.json').version")
             NAME="ergo-${VERSION}-build${{ github.run_number }}"
             mkdir -p dist
-            echo "Build outputs:"; find android/app/build/outputs -type f \( -name '*.apk' -o -name '*.aab' \) -print
-            APK=$(find android/app/build/outputs/apk -type f -name '*release*.apk' | head -1)
-            AAB=$(find android/app/build/outputs/bundle -type f -name '*.aab' | head -1)
-            test -n "$APK" && cp "$APK" "dist/${NAME}.apk"
-            test -n "$AAB" && cp "$AAB" "dist/${NAME}.aab"
+            echo "Build outputs:"; find android/app/build/outputs -type f \( -name '*.apk' -o -name '*.aab' \) -print 2>/dev/null || true
+            APK=$(find android/app/build/outputs/apk -type f -name '*release*.apk' 2>/dev/null | head -1 || true)
+            # Test builds don't make an AAB; only store builds do.
+            AAB=$(find android/app/build/outputs/bundle -type f -name '*.aab' 2>/dev/null | head -1 || true)
+            test -n "$APK" || { echo "No APK was produced"; exit 1; }
+            cp "$APK" "dist/${NAME}.apk"
+            if [ -n "$AAB" ]; then cp "$AAB" "dist/${NAME}.aab"; fi
             ls -la dist
             echo "name=${NAME}" >> "$GITHUB_OUTPUT"
           } 2>&1 | tee -a "$RUNNER_TEMP/steps.log"
