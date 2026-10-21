@@ -1,13 +1,22 @@
 name: Android build
 
-# Builds a signed release APK (for testing) and AAB (for Google Play) on every push to main.
-# Download the APK from the "Releases" page of the repo. Each build is also launch-tested on an emulator.
+# Two kinds of build:
+# - Test build (every push to main): APK for real phones only (arm64-v8a), no AAB,
+#   no emulator test. Takes ~10-15 min. Download the APK from the repo's Releases page.
+# - Store build (Actions -> Android build -> Run workflow -> "store", or push a tag like v1.0.0):
+#   APK + AAB for every CPU type, plus the emulator launch test. Upload the AAB to Google Play.
 
 on:
   push:
     branches: [main]
     paths-ignore: ['**.md', 'docs/**', 'supabase/**']
+    tags: ['v*']
   workflow_dispatch:
+    inputs:
+      store:
+        description: 'Store build: all CPU types + AAB for Google Play, with emulator test'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -26,10 +35,19 @@ jobs:
       EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID: ${{ secrets.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID }}
       ERGO_VERSION_CODE: ${{ github.run_number }}
       NODE_OPTIONS: --max-old-space-size=4096
+      FULL: ${{ startsWith(github.ref, 'refs/tags/v') || inputs.store == true }}
+      # Compile C/C++ through ccache so unchanged native code is reused between builds.
+      CMAKE_C_COMPILER_LAUNCHER: ccache
+      CMAKE_CXX_COMPILER_LAUNCHER: ccache
+      CCACHE_DIR: ${{ github.workspace }}/.ccache
+      CCACHE_MAXSIZE: 3G
+      CCACHE_COMPILERCHECK: content
+      CCACHE_SLOPPINESS: pch_defines,time_macros,include_file_mtime,include_file_ctime
     steps:
       # The runner has ~14 GB free; a React Native release build with MapLibre's native
       # libraries for every CPU type needs more. Remove preinstalled tools we never use.
       - name: Free disk space
+        if: env.FULL == 'true'
         run: |
           df -h / | tail -1
           sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/.ghcup \
@@ -52,6 +70,12 @@ jobs:
           java-version: 17
 
       - uses: gradle/actions/setup-gradle@v4
+
+      - name: Restore native compile cache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: android-${{ env.FULL == 'true' && 'all' || 'arm64' }}
+          max-size: 3G
 
       - name: Install dependencies
         id: install
@@ -77,7 +101,7 @@ jobs:
             echo "::warning::ERGO_UPLOAD_KEYSTORE_BASE64 is not set; signing with the debug key (fine for testing, not for Google Play)."
           fi
 
-      - name: Build APK and AAB
+      - name: Build
         id: gradle
         working-directory: android
         env:
@@ -86,7 +110,15 @@ jobs:
           ERGO_UPLOAD_KEY_PASSWORD: ${{ secrets.ERGO_UPLOAD_KEY_PASSWORD }}
         run: |
           set -o pipefail
-          ./gradlew assembleRelease bundleRelease --no-daemon --stacktrace 2>&1 | tee "$RUNNER_TEMP/gradle.log"
+          FLAGS="--no-daemon --stacktrace --build-cache --parallel"
+          if [ "$FULL" = "true" ]; then
+            echo "Store build: all CPU types, APK + AAB"
+            ./gradlew assembleRelease bundleRelease $FLAGS 2>&1 | tee "$RUNNER_TEMP/gradle.log"
+          else
+            echo "Test build: arm64-v8a APK only"
+            ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a $FLAGS 2>&1 | tee "$RUNNER_TEMP/gradle.log"
+          fi
+          ccache --show-stats 2>/dev/null | tee -a "$RUNNER_TEMP/gradle.log" || true
 
       - name: Collect outputs
         id: out
@@ -106,6 +138,7 @@ jobs:
           } 2>&1 | tee -a "$RUNNER_TEMP/steps.log"
 
       - name: Enable KVM for the emulator
+        if: env.FULL == 'true'
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
@@ -114,6 +147,7 @@ jobs:
       # Installs the APK on an Android emulator, launches it and records logcat + screenshots.
       - name: Launch test on emulator
         id: smoke
+        if: env.FULL == 'true'
         continue-on-error: true
         timeout-minutes: 25
         run: bash .github/scripts/emulator.sh
@@ -123,12 +157,12 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: build-${{ github.run_number }}
-          name: ergo build ${{ github.run_number }}
+          name: ergo build ${{ github.run_number }}${{ env.FULL == 'true' && ' (store)' || '' }}
           prerelease: true
           body: |
-            Test build from ${{ github.sha }}.
+            ${{ env.FULL == 'true' && 'Store build' || 'Test build (arm64 phones)' }} from ${{ github.sha }}.
             Install `${{ steps.out.outputs.name }}.apk` on an Android phone to test.
-            The `.aab` file is for uploading to Google Play.
+            ${{ env.FULL == 'true' && 'Upload the `.aab` file to Google Play.' || '' }}
           files: dist/*
 
       # Writes the result and the end of the build log to the `ci-status` branch,
