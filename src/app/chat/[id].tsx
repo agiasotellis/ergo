@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryTile } from '@/components/CategoryTile';
 import { Icon } from '@/components/Icon';
-import { Avatar, Badge, IconButton, Loading, Txt } from '@/components/ui';
+import { Avatar, Badge, font, IconButton, Loading, MAX_FONT_SCALE, Txt } from '@/components/ui';
 import { useI18n } from '@/i18n/I18nProvider';
 import { getConversation, markRead, messages as fetchMessages, sendMessage } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
@@ -133,7 +133,8 @@ export default function Chat() {
             placeholderTextColor={c.muted}
             multiline
             maxLength={4000}
-            style={{ flex: 1, minHeight: 46, maxHeight: 120, borderRadius: 23, backgroundColor: c.soft, paddingHorizontal: 16, paddingVertical: 12, fontSize: 15, color: c.ink }}
+            maxFontSizeMultiplier={MAX_FONT_SCALE}
+            style={{ flex: 1, minHeight: 46, maxHeight: 120, borderRadius: 23, backgroundColor: c.soft, paddingHorizontal: 16, paddingVertical: 12, fontSize: 15, fontFamily: font['400'], color: c.ink }}
           />
           <Pressable
             accessibilityRole="button"

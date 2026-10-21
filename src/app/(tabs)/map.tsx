@@ -243,7 +243,7 @@ function GoogleMapScreen() {
               <Txt size={12} weight="700" color={categoryColors(selected.category, isDark).ink} style={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
                 {t.categories[selected.category]}
               </Txt>
-              <Txt size={17} weight="700" numberOfLines={2}>
+              <Txt size={17} weight="800" numberOfLines={2}>
                 {selected.title}
               </Txt>
               <Txt size={13} muted numberOfLines={1}>

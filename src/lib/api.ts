@@ -52,6 +52,13 @@ export async function completeJob(id: string) {
   must(await supabase.rpc('complete_job', { p_job_id: id }));
 }
 
+/** Permanently deletes the poster's task (offers, chats and reviews cascade) and its photos. */
+export async function deleteJob(job: Pick<Job, 'id' | 'photos'>) {
+  must(await supabase.from('jobs').delete().eq('id', job.id));
+  const paths = job.photos.map((u) => u.split('/job-photos/')[1]).filter((p): p is string => !!p);
+  if (paths.length) await supabase.storage.from('job-photos').remove(paths).catch(() => {});
+}
+
 export async function cancelJob(id: string) {
   must(await supabase.rpc('cancel_job', { p_job_id: id }));
 }

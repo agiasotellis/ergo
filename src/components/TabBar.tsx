@@ -38,8 +38,9 @@ export function TabBar({ state, navigateToTab, unread = 0 }: BottomTabBarProps &
               position: 'absolute',
               top: 6,
               right: 4,
-              width: 20,
+              minWidth: 20,
               height: 20,
+              paddingHorizontal: 4,
               borderRadius: 10,
               borderWidth: 2,
               borderColor: c.card,
@@ -48,7 +49,7 @@ export function TabBar({ state, navigateToTab, unread = 0 }: BottomTabBarProps &
               justifyContent: 'center',
             }}
           >
-            <Txt size={10} weight="800" color="#0F1F3D" style={{ lineHeight: 12 }}>
+            <Txt size={10} weight="800" color="#0F1F3D" center style={{ lineHeight: 12 }} maxFontSizeMultiplier={1}>
               {unread > 9 ? '9+' : String(unread)}
             </Txt>
           </View>

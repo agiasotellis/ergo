@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, View, useWindowDimensions } from 'react-native';
 import Animated, { FadeIn, SlideInLeft, SlideInRight, ZoomIn } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -107,6 +107,7 @@ function StepDeal() {
 
 export default function Onboarding() {
   const { c } = useTheme();
+  const { height } = useWindowDimensions();
   const { t } = useI18n();
   const [step, setStep] = useState(0);
   const [dir, setDir] = useState<'f' | 'b'>('f');
@@ -138,7 +139,7 @@ export default function Onboarding() {
         </Pressable>
       </View>
 
-      <View style={{ marginHorizontal: 20, marginTop: 8, height: 380, borderRadius: 36, backgroundColor: c.primarySoft, overflow: 'hidden' }}>
+      <View style={{ marginHorizontal: 20, marginTop: 8, height: Math.min(380, Math.round(height * 0.44)), borderRadius: 36, backgroundColor: c.primarySoft, overflow: 'hidden' }}>
         <Animated.View key={step} entering={(dir === 'f' ? SlideInRight : SlideInLeft).springify().damping(20)} style={{ flex: 1 }}>
           <cur.Art />
         </Animated.View>
@@ -146,7 +147,7 @@ export default function Onboarding() {
 
       <Animated.View key={`copy-${step}`} entering={FadeIn.duration(400)} style={{ paddingHorizontal: 24, paddingTop: 28, gap: 10, flex: 1 }}>
         <H1>{cur.title}</H1>
-        <Txt size={16} muted style={{ lineHeight: 24 }}>
+        <Txt size={16} muted style={{ lineHeight: 24 }} numberOfLines={5}>
           {cur.body}
         </Txt>
       </Animated.View>
@@ -161,7 +162,7 @@ export default function Onboarding() {
           title={step < 2 ? t.onboarding.next : t.onboarding.go}
           iconRight="send"
           onPress={() => (step < 2 ? go(step + 1) : finish())}
-          style={{ paddingHorizontal: 26 }}
+          style={{ paddingHorizontal: 26, flexShrink: 1, marginLeft: 16 }}
         />
       </View>
     </SafeAreaView>

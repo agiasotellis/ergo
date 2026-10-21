@@ -86,19 +86,26 @@ export default function Post() {
 
   if (created) {
     return (
-      <Animated.View entering={FadeIn} style={{ flex: 1, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center', padding: 32, gap: 16 }}>
+      <Animated.View entering={FadeIn} style={{ flex: 1, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24, paddingVertical: 32, gap: 16 }}>
         <Animated.View entering={ZoomIn.springify().damping(12)} style={{ width: 120, height: 120, borderRadius: 60, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' }}>
           <Icon name="check" color={c.primary} size={56} strokeWidth={2.6} />
         </Animated.View>
-        <Txt size={28} weight="800" color="#FFFFFF" center>
+        <H1 center style={{ color: '#FFFFFF', maxWidth: 340 }}>
           {t.post.liveTitle}
-        </Txt>
-        <Txt size={16} color="#FFFFFF" center style={{ maxWidth: 300 }}>
+        </H1>
+        <Txt size={16} color="#FFFFFF" center style={{ maxWidth: 320, opacity: 0.92 }}>
           {t.post.liveBody}
         </Txt>
-        <View style={{ alignSelf: 'stretch', gap: 10, marginTop: 16 }}>
-          <Button title={t.post.seeIt} variant="outline" onPress={() => router.replace(`/task/${created.id}`)} />
-          <Button title={t.common.back} variant="ghost" onPress={() => router.back()} style={{ borderColor: 'transparent' }} />
+        <View style={{ alignSelf: 'stretch', gap: 6, marginTop: 16, maxWidth: 480, width: '100%' }}>
+          <Button
+            title={t.post.seeIt}
+            variant="outline"
+            iconRight="chevron"
+            onPress={() => router.replace(`/task/${created.id}`)}
+            style={{ backgroundColor: '#FFFFFF', borderColor: '#FFFFFF' }}
+            textColor="#0F1F3D"
+          />
+          <Button title={t.common.back} variant="onPrimary" onPress={() => router.back()} />
         </View>
       </Animated.View>
     );
@@ -109,7 +116,7 @@ export default function Post() {
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 8 }}>
           <IconButton name="close" label={t.common.cancel} onPress={() => router.back()} />
-          <Txt weight="700">{t.post.title}</Txt>
+          <Txt weight="800" numberOfLines={1} style={{ flexShrink: 1 }}>{t.post.title}</Txt>
           <View style={{ width: 46 }} />
         </View>
         <ScrollView contentContainerStyle={{ padding: 20, gap: 20, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
@@ -175,7 +182,7 @@ export default function Post() {
           </Card>
 
           <View style={{ gap: 10 }}>
-            <Txt weight="700">{t.post.when}</Txt>
+            <Txt weight="800">{t.post.when}</Txt>
             <Segmented<When>
               label={t.post.when}
               value={whenSel}
@@ -199,8 +206,8 @@ export default function Post() {
               </Txt>
             </View>
             <IconButton name="minus" label="−5 €" bg={c.soft} onPress={() => setBudget((b) => Math.max(5, b - 5))} />
-            <Animated.View key={budget} entering={ZoomIn.duration(180)} style={{ minWidth: 70, alignItems: 'center' }}>
-              <Txt size={24} weight="800">
+            <Animated.View key={budget} entering={ZoomIn.duration(180)} style={{ minWidth: 64, alignItems: 'center' }}>
+              <Txt size={22} weight="800" numberOfLines={1}>
                 {euro(budget, lang)}
               </Txt>
             </Animated.View>

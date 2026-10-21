@@ -8,7 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '@/components/Icon';
 import { MapUnavailable, mapsEnabled } from '@/components/MapUnavailable';
 import { TaskCard } from '@/components/TaskCard';
-import { Avatar, Button, Chip, Empty, H1, Loading, Txt } from '@/components/ui';
+import { Avatar, Button, Chip, Empty, H1, IconButton, Loading, MAX_FONT_SCALE, Txt, font } from '@/components/ui';
 import { useI18n } from '@/i18n/I18nProvider';
 import { nearbyJobs } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
@@ -21,7 +21,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 const HOME_RADIUS_KM = 10;
 
 export default function Home() {
-  const { c, isDark } = useTheme();
+  const { c, isDark, setPref } = useTheme();
   const { t } = useI18n();
   const { profile } = useAuth();
   const loc = useLocation();
@@ -72,11 +72,16 @@ export default function Home() {
           </Txt>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
             <Icon name="pin" size={16} color={c.primaryText} strokeWidth={2.2} />
-            <Txt size={16} weight="700" numberOfLines={1}>
+            <Txt size={16} weight="700" numberOfLines={1} style={{ flexShrink: 1 }}>
               {loc.area ?? (loc.granted ? '…' : 'Αθήνα')}
             </Txt>
           </View>
         </View>
+        <IconButton
+          name={isDark ? 'sun' : 'moon'}
+          label={`${t.profile.theme}: ${isDark ? t.profile.themeLight : t.profile.themeDark}`}
+          onPress={() => setPref(isDark ? 'light' : 'dark')}
+        />
       </Animated.View>
 
       <Animated.View entering={FadeInDown.delay(60).duration(400)}>
@@ -95,7 +100,8 @@ export default function Home() {
           onChangeText={setQuery}
           placeholder={t.home.search}
           placeholderTextColor={c.muted}
-          style={{ flex: 1, fontSize: 15, color: c.ink }}
+          maxFontSizeMultiplier={MAX_FONT_SCALE}
+          style={{ flex: 1, fontSize: 15, fontFamily: font['400'], color: c.ink, paddingVertical: 0 }}
           returnKeyType="search"
         />
       </Animated.View>
@@ -140,7 +146,7 @@ export default function Home() {
       </ScrollView>
 
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginTop: 4 }}>
-        <Txt size={18} weight="700">
+        <Txt size={18} weight="800">
           {t.home.nearest}
         </Txt>
         {!loc.granted && !loc.loading && (

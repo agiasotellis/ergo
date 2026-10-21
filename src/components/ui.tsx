@@ -21,9 +21,28 @@ import { Icon } from './Icon';
 import type { IconName } from './icons';
 
 // ---------- text ----------
+export type Weight = '400' | '500' | '600' | '700' | '800' | '900';
+
+/**
+ * Inter is bundled so text measures and renders identically on every Android phone
+ * (OEM system fonts on Samsung/Xiaomi/OnePlus otherwise mis-measure Greek text, which
+ * offsets centred labels and breaks words). Android needs one family per weight.
+ */
+export const font: Record<Weight, string> = {
+  '400': 'Inter_400Regular',
+  '500': 'Inter_500Medium',
+  '600': 'Inter_600SemiBold',
+  '700': 'Inter_700Bold',
+  '800': 'Inter_800ExtraBold',
+  '900': 'Inter_900Black',
+};
+
+/** Large accessibility font sizes still grow text, but not enough to break layouts. */
+export const MAX_FONT_SCALE = 1.3;
+
 type TxtProps = TextProps & {
   size?: number;
-  weight?: '400' | '500' | '600' | '700' | '800';
+  weight?: Weight;
   color?: string;
   muted?: boolean;
   center?: boolean;
@@ -33,9 +52,10 @@ export function Txt({ size = 15, weight = '400', color, muted, center, style, ..
   const { c } = useTheme();
   return (
     <Text
+      maxFontSizeMultiplier={MAX_FONT_SCALE}
       {...rest}
       style={[
-        { fontSize: size, fontWeight: weight, color: color ?? (muted ? c.muted : c.ink), lineHeight: Math.round(size * 1.4) },
+        { fontSize: size, fontFamily: font[weight], color: color ?? (muted ? c.muted : c.ink), lineHeight: Math.round(size * 1.4), includeFontPadding: false },
         center && { textAlign: 'center' },
         style,
       ]}
@@ -43,9 +63,19 @@ export function Txt({ size = 15, weight = '400', color, muted, center, style, ..
   );
 }
 
-export function H1({ children, style }: { children: ReactNode; style?: StyleProp<TextStyle> }) {
+/** Screen title: Inter Black. */
+export function H1({ children, style, center }: { children: ReactNode; style?: StyleProp<TextStyle>; center?: boolean }) {
   return (
-    <Txt size={28} weight="800" style={[{ letterSpacing: -0.5, lineHeight: 34 }, style]}>
+    <Txt size={28} weight="900" center={center} style={[{ letterSpacing: -0.6, lineHeight: 35 }, style]}>
+      {children}
+    </Txt>
+  );
+}
+
+/** Section / card title. */
+export function H2({ children, style, center }: { children: ReactNode; style?: StyleProp<TextStyle>; center?: boolean }) {
+  return (
+    <Txt size={19} weight="800" center={center} style={[{ letterSpacing: -0.3, lineHeight: 25 }, style]}>
       {children}
     </Txt>
   );
@@ -54,25 +84,30 @@ export function H1({ children, style }: { children: ReactNode; style?: StyleProp
 // ---------- buttons ----------
 type ButtonProps = Omit<PressableProps, 'style' | 'children'> & {
   title: string;
-  variant?: 'primary' | 'secondary' | 'inverse' | 'ghost' | 'outline' | 'danger';
+  variant?: 'primary' | 'secondary' | 'inverse' | 'ghost' | 'outline' | 'danger' | 'onPrimary';
   icon?: IconName;
   iconRight?: IconName;
   loading?: boolean;
   style?: StyleProp<ViewStyle>;
   size?: 'md' | 'lg';
   left?: ReactNode;
+  /** Overrides the label/icon colour of the variant. */
+  textColor?: string;
 };
 
-export function Button({ title, variant = 'primary', icon, iconRight, loading, disabled, style, size = 'lg', left, ...rest }: ButtonProps) {
+export function Button({ title, variant = 'primary', icon, iconRight, loading, disabled, style, size = 'lg', left, textColor, ...rest }: ButtonProps) {
   const { c } = useTheme();
   const palette = {
     primary: { bg: c.primary, fg: '#FFFFFF', border: c.primary },
     secondary: { bg: c.soft, fg: c.ink, border: c.soft },
     inverse: { bg: c.inv, fg: c.invInk, border: c.inv },
     ghost: { bg: 'transparent', fg: c.primaryText, border: 'transparent' },
+    /** Text button on a coloured (primary) background. */
+    onPrimary: { bg: 'transparent', fg: '#FFFFFF', border: 'transparent' },
     outline: { bg: c.card, fg: c.ink, border: c.line },
     danger: { bg: c.dangerSoft, fg: c.danger, border: c.dangerSoft },
   }[variant];
+  const fg = textColor ?? palette.fg;
   const h = size === 'lg' ? 56 : 46;
   return (
     <Pressable
@@ -99,15 +134,15 @@ export function Button({ title, variant = 'primary', icon, iconRight, loading, d
       {...rest}
     >
       {loading ? (
-        <ActivityIndicator color={palette.fg} />
+        <ActivityIndicator color={fg} />
       ) : (
         <>
           {left}
-          {icon && <Icon name={icon} color={palette.fg} size={20} />}
-          <Txt size={16} weight="700" color={palette.fg}>
+          {icon && <Icon name={icon} color={fg} size={20} />}
+          <Txt size={16} weight="700" color={fg} numberOfLines={1} center style={{ flexShrink: 1 }}>
             {title}
           </Txt>
-          {iconRight && <Icon name={iconRight} color={palette.fg} size={18} strokeWidth={2.4} />}
+          {iconRight && <Icon name={iconRight} color={fg} size={18} strokeWidth={2.4} />}
         </>
       )}
     </Pressable>
@@ -179,7 +214,7 @@ export function Chip({ label, selected, onPress }: { label: string; selected?: b
         transform: [{ scale: pressed ? 0.95 : 1 }],
       })}
     >
-      <Txt size={14} weight="600" color={selected ? c.invInk : c.ink}>
+      <Txt size={14} weight="600" color={selected ? c.invInk : c.ink} numberOfLines={1}>
         {label}
       </Txt>
     </Pressable>
@@ -252,7 +287,8 @@ export function Field({ label, icon, right, style, multiline, ...rest }: FieldPr
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           multiline={multiline}
-          style={[{ flex: 1, fontSize: 15, color: c.ink, minHeight: multiline ? 72 : 48, textAlignVertical: multiline ? 'top' : 'center' }, style]}
+          maxFontSizeMultiplier={MAX_FONT_SCALE}
+          style={[{ flex: 1, fontSize: 15, fontFamily: font['400'], color: c.ink, paddingVertical: 0, minHeight: multiline ? 72 : 48, textAlignVertical: multiline ? 'top' : 'center' }, style]}
           {...rest}
         />
         {right}
@@ -298,7 +334,7 @@ export function Loading() {
 export function Empty({ title, body, action }: { title: string; body?: string; action?: ReactNode }) {
   return (
     <View style={{ alignItems: 'center', padding: 28, gap: 10 }}>
-      <Txt size={17} weight="700" center>
+      <Txt size={17} weight="800" center>
         {title}
       </Txt>
       {body && (
@@ -311,10 +347,10 @@ export function Empty({ title, body, action }: { title: string; body?: string; a
   );
 }
 
-export function Badge({ label, bg, fg }: { label: string; bg: string; fg: string }) {
+export function Badge({ label, bg, fg, style }: { label: string; bg: string; fg: string; style?: StyleProp<ViewStyle> }) {
   return (
-    <View style={{ alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10, backgroundColor: bg }}>
-      <Txt size={12} weight="700" color={fg}>
+    <View style={[{ alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10, backgroundColor: bg }, style]}>
+      <Txt size={12} weight="700" color={fg} numberOfLines={1}>
         {label}
       </Txt>
     </View>

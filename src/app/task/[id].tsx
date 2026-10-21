@@ -3,17 +3,18 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, Modal, Pressable, ScrollView, TextInput, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, SlideInDown, ZoomIn } from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CategoryTile } from '@/components/CategoryTile';
 import { Icon } from '@/components/Icon';
-import { Avatar, Badge, Button, Card, Field, IconButton, Loading, Txt } from '@/components/ui';
+import { Avatar, Badge, Button, Card, Field, H2, IconButton, Loading, MAX_FONT_SCALE, Txt, font } from '@/components/ui';
 import { useI18n } from '@/i18n/I18nProvider';
 import {
   acceptOffer,
   applicationsForJob,
   cancelJob,
   completeJob,
+  deleteJob,
   getJob,
   getProfile,
   getStats,
@@ -34,6 +35,7 @@ export default function TaskDetail() {
   const { c, isDark } = useTheme();
   const { t, lang } = useI18n();
   const { userId } = useAuth();
+  const insets = useSafeAreaInsets();
   const [job, setJob] = useState<Job | null>(null);
   const [poster, setPoster] = useState<Profile | null>(null);
   const [stats, setStats] = useState<ProfileStats | null>(null);
@@ -86,6 +88,39 @@ export default function TaskDetail() {
     }
   };
 
+  const active = job.status === 'open' || job.status === 'assigned';
+
+  const confirmComplete = () =>
+    Alert.alert(t.task.markDone, t.task.doneConfirm, [
+      { text: t.common.back, style: 'cancel' },
+      { text: t.task.markDoneShort, onPress: () => run(() => completeJob(job.id)) },
+    ]);
+
+  const confirmCancel = () =>
+    Alert.alert(t.task.cancelTask, t.task.cancelConfirm, [
+      { text: t.common.back, style: 'cancel' },
+      { text: t.task.cancelTask, style: 'destructive', onPress: () => run(() => cancelJob(job.id)) },
+    ]);
+
+  const confirmDelete = () =>
+    Alert.alert(t.task.deleteTask, t.task.deleteConfirm, [
+      { text: t.common.back, style: 'cancel' },
+      {
+        text: t.task.deleteYes,
+        style: 'destructive',
+        onPress: async () => {
+          setBusy(true);
+          try {
+            await deleteJob(job);
+            router.back();
+          } catch {
+            setBusy(false);
+            Alert.alert('ergo', t.common.error);
+          }
+        },
+      },
+    ]);
+
   const openChat = async (other: string) => {
     try {
       const convId = await startConversation(job.id, other);
@@ -97,7 +132,7 @@ export default function TaskDetail() {
 
   return (
     <View style={{ flex: 1, backgroundColor: c.card }}>
-      <ScrollView contentContainerStyle={{ paddingBottom: 140 }}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 120 + insets.bottom }}>
         <View style={{ height: 280, backgroundColor: col.bg, alignItems: 'center', justifyContent: 'center' }}>
           {job.photos[0] ? (
             <Image source={{ uri: job.photos[0] }} style={{ position: 'absolute', inset: 0 }} contentFit="cover" />
@@ -117,14 +152,20 @@ export default function TaskDetail() {
           <Animated.View entering={FadeInDown.duration(400)} style={{ gap: 8 }}>
             <View style={{ flexDirection: 'row', gap: 8 }}>
               <Badge label={t.categories[job.category]} bg={col.bg} fg={col.ink} />
-              {job.status !== 'open' && <Badge label={t.task.status[job.status]} bg={c.soft} fg={c.muted} />}
+              {job.status !== 'open' && (
+                <Badge
+                  label={t.task.status[job.status]}
+                  bg={job.status === 'completed' ? c.okSoft : job.status === 'cancelled' ? c.dangerSoft : c.soft}
+                  fg={job.status === 'completed' ? c.ok : job.status === 'cancelled' ? c.danger : c.muted}
+                />
+              )}
             </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 12 }}>
-              <Txt size={26} weight="800" style={{ flex: 1, lineHeight: 32 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
+              <Txt size={26} weight="900" style={{ flex: 1, lineHeight: 32, letterSpacing: -0.5 }}>
                 {job.title}
               </Txt>
-              <View style={{ alignItems: 'flex-end' }}>
-                <Txt size={28} weight="800">
+              <View style={{ alignItems: 'flex-end', flexShrink: 0 }}>
+                <Txt size={28} weight="900" numberOfLines={1}>
                   {euro(job.budget, lang)}
                 </Txt>
                 <Txt size={12} muted>
@@ -162,9 +203,7 @@ export default function TaskDetail() {
 
           {!!job.description && (
             <View style={{ gap: 8 }}>
-              <Txt size={17} weight="700">
-                {t.task.about}
-              </Txt>
+              <H2>{t.task.about}</H2>
               <Txt size={15} color={c.body} style={{ lineHeight: 24 }}>
                 {job.description}
               </Txt>
@@ -173,9 +212,7 @@ export default function TaskDetail() {
 
           {job.photos.length > 1 && (
             <View style={{ gap: 10 }}>
-              <Txt size={17} weight="700">
-                {t.task.photos}
-              </Txt>
+              <H2>{t.task.photos}</H2>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10 }}>
                 {job.photos.map((p) => (
                   <Image key={p} source={{ uri: p }} style={{ width: 120, height: 96, borderRadius: 18 }} contentFit="cover" />
@@ -195,13 +232,13 @@ export default function TaskDetail() {
 
           {isOwner && (
             <View style={{ gap: 10 }}>
-              <Txt size={17} weight="700">{`${t.task.offers} (${apps.length})`}</Txt>
+              <H2>{`${t.task.offers} (${apps.length})`}</H2>
               {apps.length === 0 && <Txt muted>{t.task.noOffers}</Txt>}
               {apps.map((a) => (
                 <Card key={a.id} style={{ gap: 10, borderWidth: 1.5, borderColor: a.status === 'accepted' ? c.ok : c.line }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                     <Avatar name={a.applicant?.full_name} url={a.applicant?.avatar_url} size={40} />
-                    <Txt weight="700" style={{ flex: 1 }}>
+                    <Txt weight="700" style={{ flex: 1 }} numberOfLines={1}>
                       {a.applicant?.full_name || '—'}
                     </Txt>
                     <Txt size={18} weight="800">
@@ -214,19 +251,21 @@ export default function TaskDetail() {
                     {job.status === 'open' && a.status === 'pending' && (
                       <Button title={t.task.accept} size="md" style={{ flex: 1 }} loading={busy} onPress={() => run(() => acceptOffer(a.id))} />
                     )}
-                    {a.status === 'accepted' && <Badge label={t.task.accepted} bg={c.okSoft} fg={c.ok} />}
+                    {a.status === 'accepted' && (
+                      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                        <Badge label={t.task.accepted} bg={c.okSoft} fg={c.ok} style={{ alignSelf: 'center' }} />
+                      </View>
+                    )}
                   </View>
                 </Card>
               ))}
             </View>
           )}
 
-          {job.status === 'completed' && (isOwner || isWorker) && !reviewed && (
+          {job.status === 'completed' && !!job.assigned_to && (isOwner || isWorker) && !reviewed && (
             <Animated.View entering={FadeIn}>
               <Card style={{ gap: 12, borderWidth: 1.5, borderColor: c.line }}>
-                <Txt size={17} weight="700">
-                  {t.task.leaveReview}
-                </Txt>
+                <H2>{t.task.leaveReview}</H2>
                 <View style={{ flexDirection: 'row', gap: 6 }} accessibilityRole="adjustable" accessibilityValue={{ min: 1, max: 5, now: stars }}>
                   {[1, 2, 3, 4, 5].map((n) => (
                     <Pressable key={n} accessibilityRole="button" accessibilityLabel={`${n}`} onPress={() => setStars(n)} hitSlop={6}>
@@ -242,7 +281,8 @@ export default function TaskDetail() {
                   placeholder={t.task.reviewPlaceholder}
                   placeholderTextColor={c.muted}
                   multiline
-                  style={{ minHeight: 72, borderRadius: 16, borderWidth: 1.5, borderColor: c.line, padding: 12, color: c.ink, textAlignVertical: 'top' }}
+                  maxFontSizeMultiplier={MAX_FONT_SCALE}
+                  style={{ minHeight: 72, fontFamily: font['400'], fontSize: 15, borderRadius: 16, borderWidth: 1.5, borderColor: c.line, padding: 12, color: c.ink, textAlignVertical: 'top' }}
                 />
                 <Button
                   title={t.common.save}
@@ -267,21 +307,48 @@ export default function TaskDetail() {
         </View>
       </ScrollView>
 
-      <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: 16, paddingBottom: 26, backgroundColor: c.card, borderTopWidth: 1, borderColor: c.line, flexDirection: 'row', gap: 10 }}>
+      <View
+        style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          paddingHorizontal: 16,
+          paddingTop: 12,
+          paddingBottom: Math.max(insets.bottom, 12) + 4,
+          backgroundColor: c.card,
+          borderTopWidth: 1,
+          borderColor: c.line,
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 10,
+        }}
+      >
         {isOwner ? (
           <>
-            {job.status === 'assigned' && <Button title={t.task.markDone} style={{ flex: 1 }} loading={busy} onPress={() => run(() => completeJob(job.id))} />}
-            {(job.status === 'open' || job.status === 'assigned') && (
-              <Button title={t.task.cancelTask} variant="danger" style={{ flex: job.status === 'assigned' ? 0.8 : 1 }} disabled={busy} onPress={() => run(() => cancelJob(job.id))} />
+            {active ? (
+              <>
+                <Button title={t.task.markDoneShort} icon="check" style={{ flex: 1 }} loading={busy} onPress={confirmComplete} />
+                <Button title={t.common.cancel} variant="outline" style={{ flex: 1 }} disabled={busy} onPress={confirmCancel} />
+              </>
+            ) : (
+              <View style={{ flex: 1, alignItems: 'center' }}>
+                <Badge
+                  label={t.task.status[job.status]}
+                  bg={job.status === 'completed' ? c.okSoft : c.dangerSoft}
+                  fg={job.status === 'completed' ? c.ok : c.danger}
+                  style={{ alignSelf: 'center', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 14 }}
+                />
+              </View>
             )}
-            {(job.status === 'completed' || job.status === 'cancelled') && <Txt muted style={{ flex: 1, textAlign: 'center', paddingVertical: 16 }}>{t.task.status[job.status]}</Txt>}
+            <IconButton name="trash" label={t.task.deleteTask} bg={c.dangerSoft} color={c.danger} size={56} onPress={confirmDelete} />
           </>
         ) : (
           <>
-            <Button title={t.task.message} variant="secondary" style={{ width: 130 }} onPress={() => openChat(job.poster_id)} />
+            <Button title={t.task.message} variant="secondary" style={{ flex: 0.8 }} onPress={() => openChat(job.poster_id)} />
             <Button
               title={mine ? t.task.offerSent : t.task.makeOffer}
-              style={{ flex: 1 }}
+              style={{ flex: 1.2 }}
               disabled={!!mine || job.status !== 'open'}
               onPress={() => setSheet(true)}
             />
@@ -291,16 +358,16 @@ export default function TaskDetail() {
 
       <Modal visible={sheet && !isOwner && !mine} transparent animationType="fade" onRequestClose={() => setSheet(false)} statusBarTranslucent>
         <Pressable accessibilityRole="button" accessibilityLabel={t.common.cancel} onPress={() => setSheet(false)} style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' }} />
-        <Animated.View entering={SlideInDown.springify().damping(20)} style={{ backgroundColor: c.card, borderTopLeftRadius: 32, borderTopRightRadius: 32, padding: 20, paddingBottom: 32, gap: 16 }}>
+        <Animated.View entering={SlideInDown.springify().damping(20)} style={{ backgroundColor: c.card, borderTopLeftRadius: 32, borderTopRightRadius: 32, padding: 20, paddingBottom: Math.max(insets.bottom, 12) + 20, gap: 16 }}>
           <View style={{ width: 40, height: 5, borderRadius: 3, backgroundColor: c.line, alignSelf: 'center' }} />
-          <Txt size={22} weight="800">
+          <Txt size={22} weight="900">
             {t.task.yourOffer}
           </Txt>
           <Txt muted>{t.task.offerHint}</Txt>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: c.soft, borderRadius: 24, padding: 12 }}>
             <IconButton name="minus" label="−5 €" onPress={() => setAmount((a) => Math.max(5, a - 5))} size={56} />
-            <Animated.View key={amount} entering={ZoomIn.duration(180)}>
-              <Txt size={40} weight="800">
+            <Animated.View key={amount} entering={ZoomIn.duration(180)} style={{ flex: 1, alignItems: 'center' }}>
+              <Txt size={36} weight="900" numberOfLines={1} adjustsFontSizeToFit>
                 {euro(amount, lang)}
               </Txt>
             </Animated.View>

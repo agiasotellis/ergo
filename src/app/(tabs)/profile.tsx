@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { CategoryTile } from '@/components/CategoryTile';
 import { Icon } from '@/components/Icon';
 import type { IconName } from '@/components/icons';
-import { Avatar, Badge, Card, Empty, H1, Segmented, Stars, Txt } from '@/components/ui';
+import { Avatar, Badge, Card, Empty, H1, H2, Segmented, Stars, Txt } from '@/components/ui';
 import { useI18n } from '@/i18n/I18nProvider';
 import { deleteMyAccount, getStats, myJobs, pickAndUploadPhoto, reviewsFor, updateProfile } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
@@ -27,7 +27,7 @@ function Row({ icon, label, children, onPress, danger }: { icon: IconName; label
       <View style={{ width: 40, height: 40, borderRadius: 14, backgroundColor: danger ? c.dangerSoft : c.soft, alignItems: 'center', justifyContent: 'center' }}>
         <Icon name={icon} color={danger ? c.danger : c.ink} size={20} />
       </View>
-      <Txt weight="600" color={danger ? c.danger : c.ink} style={{ flex: 1 }}>
+      <Txt weight="600" color={danger ? c.danger : c.ink} style={{ flex: 1 }} numberOfLines={2}>
         {label}
       </Txt>
       {children}
@@ -109,7 +109,7 @@ export default function Profile() {
                 <Icon name="camera" color="#FFFFFF" size={14} strokeWidth={2.4} />
               </View>
             </Pressable>
-            <Txt size={22} weight="800" center>
+            <Txt size={24} weight="900" center numberOfLines={2} style={{ letterSpacing: -0.4 }}>
               {profile?.full_name || '—'}
             </Txt>
             <View style={{ flexDirection: 'row', gap: 8, width: '100%', marginTop: 6 }}>
@@ -118,11 +118,12 @@ export default function Profile() {
                 { v: String(doneCount), l: t.profile.done },
                 { v: String((stats?.worker_reviews ?? 0) + (stats?.poster_reviews ?? 0)), l: t.profile.reviewsCount },
               ].map((s) => (
-                <View key={s.l} style={{ flex: 1, backgroundColor: c.soft, borderRadius: 18, paddingVertical: 12, alignItems: 'center' }}>
-                  <Txt size={19} weight="800">
+                <View key={s.l} style={{ flex: 1, minWidth: 0, backgroundColor: c.soft, borderRadius: 18, paddingVertical: 14, paddingHorizontal: 6, alignItems: 'center', justifyContent: 'center', gap: 2 }}>
+                  <Txt size={20} weight="800" center numberOfLines={1}>
                     {s.v}
                   </Txt>
-                  <Txt size={12} muted>
+                  {/* One line that shrinks to fit, so long Greek words never break mid-word. */}
+                  <Txt size={12} weight="500" muted center numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75} style={{ alignSelf: 'stretch' }}>
                     {s.l}
                   </Txt>
                 </View>
@@ -132,9 +133,7 @@ export default function Profile() {
         </Animated.View>
 
         <View style={{ gap: 12 }}>
-          <Txt size={18} weight="700">
-            {t.profile.reviews}
-          </Txt>
+          <H2>{t.profile.reviews}</H2>
           <Segmented
             label={t.profile.reviews}
             value={tab}
@@ -171,9 +170,7 @@ export default function Profile() {
         </View>
 
         <View style={{ gap: 12 }}>
-          <Txt size={18} weight="700">
-            {t.profile.myTasks}
-          </Txt>
+          <H2>{t.profile.myTasks}</H2>
           {jobs.length === 0 ? (
             <Empty title={t.profile.noTasks} />
           ) : (
@@ -186,23 +183,24 @@ export default function Profile() {
                   </Txt>
                   <Badge
                     label={t.task.status[j.status]}
-                    bg={j.status === 'open' ? c.primarySoft : j.status === 'completed' ? c.okSoft : c.soft}
-                    fg={j.status === 'open' ? c.primaryText : j.status === 'completed' ? c.ok : c.muted}
+                    bg={j.status === 'open' ? c.primarySoft : j.status === 'completed' ? c.okSoft : j.status === 'cancelled' ? c.dangerSoft : c.soft}
+                    fg={j.status === 'open' ? c.primaryText : j.status === 'completed' ? c.ok : j.status === 'cancelled' ? c.danger : c.muted}
                   />
                 </View>
-                <Txt weight="800">{euro(j.budget, lang)}</Txt>
+                <Txt weight="800" numberOfLines={1}>
+                  {euro(j.budget, lang)}
+                </Txt>
+                <Icon name="chevron" color={c.muted} size={18} />
               </Card>
             ))
           )}
         </View>
 
         <View style={{ gap: 4 }}>
-          <Txt size={18} weight="700" style={{ marginBottom: 8 }}>
-            {t.profile.settings}
-          </Txt>
+          <H2 style={{ marginBottom: 8 }}>{t.profile.settings}</H2>
           <Card style={{ paddingVertical: 4 }}>
             <Row icon="globe" label={t.profile.language}>
-              <View style={{ width: 120 }}>
+              <View style={{ width: 116 }}>
                 <Segmented
                   label={t.profile.language}
                   value={lang}

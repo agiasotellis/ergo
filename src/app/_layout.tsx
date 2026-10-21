@@ -1,3 +1,11 @@
+import {
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+  Inter_800ExtraBold,
+  Inter_900Black,
+} from '@expo-google-fonts/inter';
 import { Nunito_800ExtraBold, Nunito_900Black, useFonts } from '@expo-google-fonts/nunito';
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider as NavThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -33,7 +41,16 @@ function Navigator() {
   const { c, isDark } = useTheme();
   const { ready } = useI18n();
   const { initializing } = useAuth();
-  const [fontsLoaded] = useFonts({ Nunito_800ExtraBold, Nunito_900Black });
+  const [fontsLoaded] = useFonts({
+    Nunito_800ExtraBold,
+    Nunito_900Black,
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+    Inter_800ExtraBold,
+    Inter_900Black,
+  });
 
   const appReady = ready && !initializing && fontsLoaded;
   useEffect(() => {
