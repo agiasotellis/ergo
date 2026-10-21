@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CategoryTile } from '@/components/CategoryTile';
 import { Icon } from '@/components/Icon';
+import { MapUnavailable, mapsEnabled } from '@/components/MapUnavailable';
 import { Button, IconButton, Txt } from '@/components/ui';
 import { useI18n } from '@/i18n/I18nProvider';
 import { nearbyJobs } from '@/lib/api';
@@ -76,6 +77,12 @@ const PricePin = memo(function PricePin({ job, selected, onPress }: { job: Nearb
 });
 
 export default function MapScreen() {
+  const insets = useSafeAreaInsets();
+  if (!mapsEnabled) return <MapUnavailable style={{ paddingTop: insets.top, paddingBottom: 120 }} />;
+  return <GoogleMapScreen />;
+}
+
+function GoogleMapScreen() {
   const { c, isDark } = useTheme();
   const { t, lang } = useI18n();
   const loc = useLocation();

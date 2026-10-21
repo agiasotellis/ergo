@@ -1,7 +1,7 @@
 name: Android build
 
 # Builds a signed release APK (for testing) and AAB (for Google Play) on every push to main.
-# Download the APK from the run's artifacts or from the "Releases" page of the repo.
+# Download the APK from the "Releases" page of the repo. Each build is also launch-tested on an emulator.
 
 on:
   push:
@@ -94,15 +94,25 @@ jobs:
             echo "name=${NAME}" >> "$GITHUB_OUTPUT"
           } 2>&1 | tee -a "$RUNNER_TEMP/steps.log"
 
-      # Optional: artifact storage can run out on private repos; the Release below always has the files.
-      - uses: actions/upload-artifact@v4
-        id: artifact
+      - name: Enable KVM for the emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      # Installs the APK on an Android emulator, launches it and records logcat + screenshots.
+      - name: Launch test on emulator
+        id: smoke
         continue-on-error: true
+        timeout-minutes: 20
+        uses: reactivecircus/android-emulator-runner@v2
         with:
-          if-no-files-found: error
-          name: ${{ steps.out.outputs.name }}
-          path: dist/*
-          retention-days: 30
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          script: bash .github/scripts/smoke.sh
 
       - name: Publish test release
         id: release
@@ -138,10 +148,16 @@ jobs:
             echo "| prebuild | ${{ steps.prebuild.outcome }} |"
             echo "| gradle | ${{ steps.gradle.outcome }} |"
             echo "| collect | ${{ steps.out.outcome }} |"
-            echo "| artifact | ${{ steps.artifact.outcome }} |"
+            echo "| launch test | ${{ steps.smoke.outcome }} |"
             echo "| release | ${{ steps.release.outcome }} |"
             echo
             echo "Files:"; ls -la dist 2>/dev/null | sed 's/^/    /'
+            echo
+            echo "## Launch test"
+            echo '```'
+            cat "$RUNNER_TEMP/smoke/result.txt" 2>/dev/null || echo "(not run)"
+            cat "$RUNNER_TEMP/smoke/logcat.txt" 2>/dev/null | tail -200
+            echo '```'
             echo
             echo "## Other steps (tail)"
             echo '```'
@@ -160,6 +176,8 @@ jobs:
           cd "$RUNNER_TEMP/status"
           git rm -rq . 2>/dev/null || true
           cp "$RUNNER_TEMP/STATUS.md" STATUS.md
-          git add STATUS.md
+          cp "$RUNNER_TEMP"/smoke/*.png . 2>/dev/null || true
+          cp "$RUNNER_TEMP/smoke/logcat.txt" . 2>/dev/null || true
+          git add -A
           git commit -qm "Build ${{ github.run_number }}: ${RESULT}" || true
           git push -q origin ci-status || true

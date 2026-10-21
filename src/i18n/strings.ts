@@ -79,6 +79,7 @@ const el = {
     offer: 'Κάνε προσφορά',
     zoomIn: 'Μεγέθυνση',
     zoomOut: 'Σμίκρυνση',
+    unavailable: 'Ο χάρτης δεν είναι διαθέσιμος σε αυτή την έκδοση. Οι εργασίες κοντά σου εμφανίζονται στην Αρχική.',
   },
   task: {
     fixed: 'προϋπολογισμός',
@@ -254,6 +255,7 @@ const en: Strings = {
     offer: 'Make an offer',
     zoomIn: 'Zoom in',
     zoomOut: 'Zoom out',
+    unavailable: 'The map isn’t available in this build. Tasks near you are listed on Home.',
   },
   task: {
     fixed: 'budget',

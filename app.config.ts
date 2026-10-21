@@ -59,9 +59,16 @@ const config: ExpoConfig = {
       { iosUrlScheme: process.env.GOOGLE_IOS_URL_SCHEME ?? 'com.googleusercontent.apps.ergo-ios-not-configured' },
     ],
     'expo-font',
-    ['expo-build-properties', { android: { enableMinifyInReleaseBuilds: true, enableShrinkResourcesInReleaseBuilds: true } }],
+    // Code shrinking (R8) stays off until it's verified with every native library; it can strip
+    // classes that are looked up by reflection and crash the app on launch.
+    'expo-build-properties',
     './plugins/withReleaseSigning',
   ],
+  extra: {
+    // Google Maps crashes on Android when its API key is missing, so screens only mount a
+    // MapView when the build was given a key.
+    mapsEnabled: !!process.env.GOOGLE_MAPS_API_KEY,
+  },
   experiments: {
     typedRoutes: true,
     reactCompiler: true,

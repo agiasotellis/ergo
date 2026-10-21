@@ -6,6 +6,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Icon } from '@/components/Icon';
+import { MapUnavailable, mapsEnabled } from '@/components/MapUnavailable';
 import { TaskCard } from '@/components/TaskCard';
 import { Avatar, Button, Chip, Empty, H1, Loading, Txt } from '@/components/ui';
 import { useI18n } from '@/i18n/I18nProvider';
@@ -106,14 +107,18 @@ export default function Home() {
           onPress={() => router.navigate('/(tabs)/map')}
           style={({ pressed }) => ({ height: 150, borderRadius: 26, overflow: 'hidden', transform: [{ scale: pressed ? 0.98 : 1 }] })}
         >
-          <MapView
-            provider={PROVIDER_GOOGLE}
-            liteMode
-            pointerEvents="none"
-            style={{ flex: 1 }}
-            customMapStyle={isDark ? darkMapStyle : lightMapStyle}
-            region={{ latitude: loc.lat, longitude: loc.lng, latitudeDelta: 0.05, longitudeDelta: 0.05 }}
-          />
+          {mapsEnabled ? (
+            <MapView
+              provider={PROVIDER_GOOGLE}
+              liteMode
+              pointerEvents="none"
+              style={{ flex: 1 }}
+              customMapStyle={isDark ? darkMapStyle : lightMapStyle}
+              region={{ latitude: loc.lat, longitude: loc.lng, latitudeDelta: 0.05, longitudeDelta: 0.05 }}
+            />
+          ) : (
+            <MapUnavailable compact />
+          )}
           <View style={{ position: 'absolute', left: 14, bottom: 14, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 16, backgroundColor: c.card }}>
             <Txt size={15} weight="700">
               {t.home.tasksWithin(jobs?.length ?? 0, HOME_RADIUS_KM)}
