@@ -1,10 +1,10 @@
-# Android build 23: success
+# Android build 24: success
 
-Disk: /dev/root        72G   59G   14G  82% /
+Disk: /dev/root        72G   58G   15G  81% /
 
-- Commit: 4128aa7846c4aa164e6c18b39c7a2b026e366c34
-- Run: https://github.com/agiasotellis/ergo/actions/runs/39753138806
-- Release: https://github.com/agiasotellis/ergo/releases/tag/build-23
+- Commit: 9363921f1d47552768d9e345e8eb978b96c220c0
+- Run: https://github.com/agiasotellis/ergo/actions/runs/39756365347
+- Release: https://github.com/agiasotellis/ergo/releases/tag/build-24
 
 | Step | Result |
 |---|---|
@@ -17,172 +17,172 @@ Disk: /dev/root        72G   59G   14G  82% /
 | release | success |
 
 Files:
-    total 102956
-    drwxr-xr-x  2 runner runner      4096 Oct 22 09:17 .
-    drwxr-xr-x 14 runner runner      4096 Oct 22 09:17 ..
-    -rw-r--r--  1 runner runner 105416671 Oct 22 09:17 ergo-1.0.0-build23.apk
+    total 102976
+    drwxr-xr-x  2 runner runner      4096 Oct 22 09:41 .
+    drwxr-xr-x 14 runner runner      4096 Oct 22 09:41 ..
+    -rw-r--r--  1 runner runner 105436927 Oct 22 09:41 ergo-1.0.0-build24.apk
 
 ## Launch test
 ```
 APP_RUNNING after ~70s
 === crash / fatal ===
-10-22 09:20:49.114 D/AndroidRuntime( 3506): >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
-10-22 09:20:49.139 I/AndroidRuntime( 3506): Using default boot image
-10-22 09:20:49.142 I/AndroidRuntime( 3506): Leaving lock profiling enabled
-10-22 09:20:49.614 D/AndroidRuntime( 3506): Calling main entry com.android.commands.monkey.Monkey
-10-22 09:20:49.839 I/AndroidRuntime( 3506): VM exiting with result code 0.
+10-22 09:44:43.614 D/AndroidRuntime( 3451): >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+10-22 09:44:43.619 I/AndroidRuntime( 3451): Using default boot image
+10-22 09:44:43.626 I/AndroidRuntime( 3451): Leaving lock profiling enabled
+10-22 09:44:43.895 D/AndroidRuntime( 3451): Calling main entry com.android.commands.monkey.Monkey
+10-22 09:44:45.540 I/AndroidRuntime( 3451): VM exiting with result code 0.
 
 === React Native / Expo ===
-10-22 09:21:16.094 W/SnapshotHandler( 3084): Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
-10-22 09:21:16.191 W/etl     ( 3073): FenceOperationException(errorCode=TIMEOUT_ERROR, gmsCoreApiException=null, gmsCoreApiAvailabilityException=null, cause=lnc: Timed out: iiu@1f9c103[status=PENDING, info=[hun@b784880]])
-10-22 09:21:16.369 W/SnapshotHandler( 3084): java.io.FileNotFoundException: /data/user/0/com.google.android.googlequicksearchbox/files/phenotype/shared/com.google.android.libraries.consentverifier#com.google.android.googlequicksearchbox.pb: open failed: ENOENT (No such file or directory)
-10-22 09:21:16.369 W/SnapshotHandler( 3084): Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
-10-22 09:21:16.739 W/AsyncOperation( 4010): OperationException[Status{statusCode=unknown status code: 29503, resolution=null}]
-10-22 09:21:16.791 W/SnapshotHandler( 3084): java.io.FileNotFoundException: /data/user/0/com.google.android.googlequicksearchbox/files/phenotype/shared/com.google.android.libraries.notifications.platform#com.google.android.googlequicksearchbox.pb: open failed: ENOENT (No such file or directory)
-10-22 09:21:16.791 W/SnapshotHandler( 3084): Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
-10-22 09:21:18.366 W/Conscrypt( 4010): Could not set socket write timeout: java.net.SocketException: Socket closed
-10-22 09:21:19.524 W/AsyncOperation( 4010): OperationException[Status{statusCode=unknown status code: 29503, resolution=null}]
-10-22 09:21:19.816 W/Conscrypt( 3505): Could not set socket write timeout: java.net.SocketException: Socket closed
-10-22 09:21:21.273 W/Conscrypt( 4010): Could not set socket write timeout: java.net.SocketException: Socket closed
-10-22 09:21:21.624 W/WellbeingSettingsProvid( 3073): java.util.concurrent.TimeoutException: Waited 5000 milliseconds (plus 156552 nanoseconds delay) for lki@88cc262[status=PENDING, info=[inputFuture=[lkh@f4cff3[status=PENDING, setFuture=[ljp@88ac4b0[status=PENDING, info=[inputFuture=[lki@b238f29[status=PENDING, info=[inputFuture=[lki@678a2ae[status=PENDING, info=[inputFuture=[lld@382784f[status=PENDING, info=[futures=[lki@b4f7bdc[status=PENDING, info=[inputFuture=[lki@bcf4e5[status=PENDING, info=[inputFuture=[lmb@1303bba[status=PENDING, info=[delegate=[lng@f984a6b[status=PENDING, info=[task=[running=[NOT STARTED YET], propagating=[bwh@44679c8]]]]]]]], function=[propagating=[bvr@3ccfa61]]]]], function=[propagating=[cur@a965986]]]]]]]], function=[propagating=[dce@b32b78f]]]]], function=[propagating=[bvq@4ef2247]]]]], exceptionType=[class java.lang.Throwable], fallback=[propagating=[bwc@4936625]]]]]]], function=[propagating=[bvq@2d6a74]]]]
-10-22 09:21:21.691 W/Conscrypt( 3505): Could not set socket write timeout: java.net.SocketException: Socket closed
-10-22 09:21:26.639 W/WellbeingSettingsProvid( 3073): java.util.concurrent.TimeoutException: Waited 5000 milliseconds (plus 1 milliseconds, 417911 nanoseconds delay) for lki@f14f2[status=PENDING, info=[inputFuture=[lkh@3f9d743[status=PENDING, setFuture=[ljp@1c941c0[status=PENDING, info=[inputFuture=[lki@f39aef9[status=PENDING, info=[inputFuture=[lki@c758e3e[status=PENDING, info=[inputFuture=[lld@158a49f[status=PENDING, info=[futures=[lki@6e0b9ec[status=PENDING, info=[inputFuture=[lki@edd41b5[status=PENDING, info=[inputFuture=[lmb@538504a[status=PENDING, info=[delegate=[lng@4acebbb[status=PENDING, info=[task=[running=[NOT STARTED YET], propagating=[bwh@b1588d8]]]]]]]], function=[propagating=[bvr@6ed4431]]]]], function=[propagating=[cur@cb32716]]]]]]]], function=[propagating=[dce@b32b78f]]]]], function=[propagating=[bvq@f348897]]]]], exceptionType=[class java.lang.Throwable], fallback=[propagating=[bwc@4936625]]]]]]], function=[propagating=[bvq@6c65a84]]]]
-10-22 09:21:29.712 W/Icing   ( 3505): Failed to get Lockbox signed-in status: java.util.concurrent.TimeoutException: Timed out waiting for Task
-10-22 09:21:29.857 E/SystemServiceRegistry(  952): android.os.ServiceManager$ServiceNotFoundException: No service published for: ethernet
-10-22 09:21:30.215 W/Icing   ( 3505): Failed to get Lockbox signed-in status: java.util.concurrent.TimeoutException: Timed out waiting for Task
-10-22 09:21:30.717 W/Icing   ( 3505): Failed to get Lockbox signed-in status: java.util.concurrent.TimeoutException: Timed out waiting for Task
-10-22 09:21:31.220 W/Icing   ( 3505): Failed to get Lockbox signed-in status: java.util.concurrent.TimeoutException: Timed out waiting for Task
-10-22 09:21:31.423 E/BatteryInfoBroadcast( 4154): java.lang.SecurityException: Failed to find provider com.google.android.apps.turbo.estimated_time_remaining for user 0; expected to find a valid ContentProvider for this authority
-10-22 09:21:31.423 E/BatteryInfoBroadcast( 4154): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3057)
-10-22 09:21:31.423 E/BatteryInfoBroadcast( 4154): 	at android.os.Parcel.createException(Parcel.java:3041)
-10-22 09:21:31.423 E/BatteryInfoBroadcast( 4154): 	at android.os.Parcel.readException(Parcel.java:3024)
-10-22 09:21:31.423 E/BatteryInfoBroadcast( 4154): 	at android.os.Parcel.readException(Parcel.java:2966)
-10-22 09:21:31.423 E/BatteryInfoBroadcast( 4154): Caused by: android.os.RemoteException: Remote stack trace:
-10-22 09:21:31.947 W/WellbeingSettingsProvid( 3073): java.util.concurrent.TimeoutException: Waited 5000 milliseconds (plus 138644 nanoseconds delay) for lki@4cc2092[status=PENDING, info=[inputFuture=[lkh@fc28a63[status=PENDING, setFuture=[ljp@7914660[status=PENDING, info=[inputFuture=[lki@a8c6719[status=PENDING, info=[inputFuture=[lki@b87b3de[status=PENDING, info=[inputFuture=[lld@d4969bf[status=PENDING, info=[futures=[lki@f34688c[status=PENDING, info=[inputFuture=[lki@9735bd5[status=PENDING, info=[inputFuture=[lmb@7d72fea[status=PENDING, info=[delegate=[lng@34e2db[status=PENDING, info=[task=[running=[NOT STARTED YET], propagating=[bwh@4058178]]]]]]]], function=[propagating=[bvr@e9ae051]]]]], function=[propagating=[cur@7f060b6]]]]]]]], function=[propagating=[dce@b32b78f]]]]], function=[propagating=[bvq@194d1b7]]]]], exceptionType=[class java.lang.Throwable], fallback=[propagating=[bwc@4936625]]]]]]], function=[propagating=[bvq@ecd3d24]]]]
-10-22 09:21:32.595 W/AsyncOperation( 4010): OperationException[Status{statusCode=unknown status code: 29503, resolution=null}]
-10-22 09:21:33.205 W/A       ( 3084): Exception while fetching versionCode for package[com.google.android.apps.tv.dreamx].
-10-22 09:21:33.205 W/A       ( 3084): android.content.pm.PackageManager$NameNotFoundException: com.google.android.apps.tv.dreamx
-10-22 09:21:33.275 W/A       ( 3084): Exception while fetching versionCode for package[com.google.android.apps.tv.launcherx].
-10-22 09:21:33.275 W/A       ( 3084): android.content.pm.PackageManager$NameNotFoundException: com.google.android.apps.tv.launcherx
-10-22 09:21:33.488 E/cr_CronetUrlRequestContext( 3084): Exception in upload method
-10-22 09:21:33.488 E/cr_CronetUrlRequestContext( 3084): com.google.android.apps.gsa.shared.r.d: Error code: 262182
-10-22 09:21:33.494 E/A       ( 3084): onError
-10-22 09:21:34.973 E/dlpn    ( 4010): RuntimeException while executing runnable dlqc{qze@c89372f} with executor MoreExecutors.directExecutor()
-10-22 09:21:34.973 E/dlpn    ( 4010): java.lang.NullPointerException: Attempt to get length of null array
-10-22 09:21:35.757 E/SystemServiceRegistry(  952): android.os.ServiceManager$ServiceNotFoundException: No service published for: ethernet
-10-22 09:21:37.056 W/Icing   ( 3505): Failed to get Lockbox signed-in status: java.util.concurrent.TimeoutException: Timed out waiting for Task
-10-22 09:21:37.978 I/NearbyDiscovery( 4010): java.util.concurrent.TimeoutException: Timed out waiting for Task
-10-22 09:21:38.235 E/GmsCoreLogger( 4010): java.util.concurrent.ExecutionException: java.util.concurrent.TimeoutException
-10-22 09:21:38.235 E/GmsCoreLogger( 4010): Caused by: java.util.concurrent.TimeoutException
-10-22 09:21:39.040 E/constellation( 3505): java.io.IOException: AUTHENTICATION_FAILED
-10-22 09:21:40.502 W/ModernMediaScanner( 1590): android.database.sqlite.SQLiteConstraintException: UNIQUE constraint failed: files._data (code 2067 SQLITE_CONSTRAINT_UNIQUE)
-10-22 09:21:40.606 W/Conscrypt( 3505): Could not set socket write timeout: java.net.SocketException: Socket closed
-10-22 09:21:41.008 W/ConfigFileUtils( 3505): Failed to read asset ChimeraModuleSetList.pb: java.io.FileNotFoundException: ChimeraModuleSetList.pb
-10-22 09:21:41.433 W/FileUtils(  515): android.system.ErrnoException: chmod failed: ENOENT (No such file or directory)
-10-22 09:21:42.033 W/Conscrypt( 3505): Could not set socket write timeout: java.net.SocketException: Socket closed
-10-22 09:21:42.098 E/PhoneInterfaceManager( 1022): isVoNrEnabled: CommandException: com.android.internal.telephony.CommandException: REQUEST_NOT_SUPPORTED
-10-22 09:21:42.112 E/PhoneInterfaceManager( 1022): isVoNrEnabled: CommandException: com.android.internal.telephony.CommandException: REQUEST_NOT_SUPPORTED
-10-22 09:21:42.249 I/NearbyDiscovery( 4010): java.util.concurrent.TimeoutException: Timed out waiting for Task
-10-22 09:21:43.980 I/NearbyDiscovery( 4010): java.util.concurrent.TimeoutException: Timed out waiting for Task
-10-22 09:21:44.057 E/PhenotypeFlagCommitter( 3505): java.util.concurrent.TimeoutException: Timed out waiting for Task
-10-22 09:21:44.420 W/Icing   ( 3505): Failed to get Lockbox signed-in status: java.util.concurrent.TimeoutException: Timed out waiting for Task
-10-22 09:21:45.322 W/BugleRcs( 4957): android.content.pm.PackageManager$NameNotFoundException: com.google.android.ims
-10-22 09:21:46.568 W/SemanticLocation( 4010): java.util.concurrent.TimeoutException: Waited 5000 milliseconds (plus 180283 nanoseconds delay) for dlnx@9608a75[status=PENDING, info=[function=[bzrs@3c8ca0a]]]
-10-22 09:21:47.351 W/Looper  ( 4010): java.lang.RuntimeException: Handler (acdu) {47ec6be} sendMessageAtTime() called with no mQueue
-10-22 09:21:47.564 W/AiAiFed ( 1599): java.lang.IllegalArgumentException: Unsupported response code3
-10-22 09:21:49.845 E/A       ( 3084): onError
-10-22 09:21:49.878 E/JavaBinder( 4992): *** Uncaught remote exception! Exceptions are not yet supported across processes. Client PID 4044 UID 10118.
-10-22 09:21:49.878 E/JavaBinder( 4992): android.database.StaleDataException: Attempted to access a cursor after it has been closed.
-10-22 09:21:50.027 E/cr_CronetUrlRequestContext( 3084): Exception in upload method
-10-22 09:21:50.027 E/cr_CronetUrlRequestContext( 3084): com.google.android.apps.gsa.shared.r.d: Error code: 262182
-10-22 09:21:50.604 W/PhenotypeRegOp( 3505): java.util.concurrent.TimeoutException: Timed out waiting for Task
-10-22 09:21:51.325 I/SemanticLocation( 4010): java.io.FileNotFoundException: /data/user/0/com.google.android.gms/files/default_model_bundle_metadata.pb: open failed: ENOENT (No such file or directory)
-10-22 09:21:51.325 I/SemanticLocation( 4010): Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
-10-22 09:21:51.352 W/PhenotypeCommitHelper( 4010): java.util.concurrent.TimeoutException: Timed out waiting for Task
-10-22 09:21:51.352 E/PhenotypeFlagCommitter( 4010): java.util.concurrent.TimeoutException: Timed out waiting for Task
-10-22 09:21:51.458 I/SemanticLocation( 4010): java.io.FileNotFoundException: /data/user/0/com.google.android.gms/files/model_bundle_metadata.pb: open failed: ENOENT (No such file or directory)
-10-22 09:21:51.458 I/SemanticLocation( 4010): Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
-10-22 09:21:52.618 I/SemanticLocation( 4010): java.io.FileNotFoundException: /data/user/0/com.google.android.gms/files/model_bundle_metadata.pb: open failed: ENOENT (No such file or directory)
-10-22 09:21:52.618 I/SemanticLocation( 4010): Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
-10-22 09:21:53.030 W/Conscrypt( 4010): Could not set socket write timeout: java.net.SocketException: Socket closed
-10-22 09:21:53.210 W/Conscrypt( 3505): Could not set socket write timeout: java.net.SocketException: Socket closed
-10-22 09:21:53.480 W/GCM-GMS ( 3505): Failed to get registration: java.io.IOException: AUTHENTICATION_FAILED
-10-22 09:21:53.552 W/Conscrypt( 4010): Could not set socket write timeout: java.net.SocketException: Socket closed
-10-22 09:21:53.625 W/Conscrypt( 3505): Could not set socket write timeout: java.net.SocketException: Socket closed
-10-22 09:21:53.855 W/GLSUser ( 4010): [AppCertManager] Exception while requesting key: 
-10-22 09:21:53.855 W/GLSUser ( 4010): java.io.IOException: Invalid device key response.
-10-22 09:21:54.178 W/Conscrypt( 4010): Could not set socket write timeout: java.net.SocketException: Socket closed
-10-22 09:21:54.189 W/GCM-GMS ( 3505): Failed to get direct boot token: java.io.IOException: AUTHENTICATION_FAILED
-10-22 09:21:54.625 W/Conscrypt( 4010): Could not set socket write timeout: java.net.SocketException: Socket closed
-10-22 09:21:55.258 W/FontLog ( 4010): java.util.concurrent.TimeoutException: Waited 10000 milliseconds (plus 347797 nanoseconds delay) for dlrl@408f37a[status=PENDING]
-10-22 09:21:55.271 W/Bugle   ( 4957): java.lang.RuntimeException: fetchFonts result is not OK. (2)
-10-22 09:21:56.100 W/SnapshotHandler( 5156): java.io.FileNotFoundException: /data/user_de/0/com.google.android.googlequicksearchbox/files/phenotype/shared/com.google.android.libraries.performance.primes#com.google.android.googlequicksearchbox.pb: open failed: ENOENT (No such file or directory)
-10-22 09:21:56.100 W/SnapshotHandler( 5156): Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
-10-22 09:21:56.557 E/bwel    ( 4010): java.util.concurrent.TimeoutException: Timed out waiting for Task
-10-22 09:21:56.693 E/RecoverySnapshotStorage(  515): Error reading snapshot for 10130 from disk
-10-22 09:21:56.693 E/RecoverySnapshotStorage(  515): java.io.FileNotFoundException: /data/system/recoverablekeystore/snapshots/10130.xml: open failed: ENOENT (No such file or directory)
-10-22 09:21:56.693 E/RecoverySnapshotStorage(  515): Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
-10-22 09:21:57.104 E/Vision  ( 3505): Couldn't read checkbot setting: android.provider.Settings$SettingNotFoundException: multi_cb
-10-22 09:21:57.436 E/RecoverySnapshotStorage(  515): Error reading snapshot for 10130 from disk
-10-22 09:21:57.436 E/RecoverySnapshotStorage(  515): java.io.FileNotFoundException: /data/system/recoverablekeystore/snapshots/10130.xml: open failed: ENOENT (No such file or directory)
-10-22 09:21:57.436 E/RecoverySnapshotStorage(  515): Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
-10-22 09:21:57.439 E/keystore2(  145):     3: Error::Rc(r#SYSTEM_ERROR)
-10-22 09:21:57.440 W/RecoverableKeyStoreGms( 3505): [WrappingKeyManager] InternalRecoveryServiceException during wrapping key generation [CONTEXT service_id=172 ]
-10-22 09:21:57.440 W/RecoverableKeyStoreGms( 3505): android.security.keystore.recovery.InternalRecoveryServiceException: Failed to import secret key.
-10-22 09:21:57.440 W/RecoverableKeyStoreGms( 3505): 	at android.security.keystore.recovery.RecoveryController.wrapUnexpectedServiceSpecificException(RecoveryController.java:783)
-10-22 09:21:57.440 W/RecoverableKeyStoreGms( 3505): Caused by: android.os.ServiceSpecificException: Failed to import secret key. (code 22)
-10-22 09:21:57.440 W/RecoverableKeyStoreGms( 3505): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3071)
-10-22 09:21:57.440 W/RecoverableKeyStoreGms( 3505): 	at android.os.Parcel.createException(Parcel.java:3041)
-10-22 09:21:57.440 W/RecoverableKeyStoreGms( 3505): 	at android.os.Parcel.readException(Parcel.java:3024)
-10-22 09:21:57.440 W/RecoverableKeyStoreGms( 3505): 	at android.os.Parcel.readException(Parcel.java:2966)
-10-22 09:21:58.281 W/NetworkScheduler( 4010): java.lang.IllegalArgumentException: Only the following extra parameter types are supported: Integer, Long, Double, String, Boolean, and nested Bundles with the same restrictions.
-10-22 09:22:00.699 W/PhenotypeRegOp( 3505): java.util.concurrent.TimeoutException: Timed out waiting for Task
-10-22 09:22:00.789 E/RecoverySnapshotStorage(  515): Error reading snapshot for 10130 from disk
-10-22 09:22:00.789 E/RecoverySnapshotStorage(  515): java.io.FileNotFoundException: /data/system/recoverablekeystore/snapshots/10130.xml: open failed: ENOENT (No such file or directory)
-10-22 09:22:00.789 E/RecoverySnapshotStorage(  515): Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
-10-22 09:22:00.792 E/keystore2(  145):     3: Error::Rc(r#SYSTEM_ERROR)
-10-22 09:22:00.793 W/RecoverableKeyStoreGms( 3505): [WrappingKeyManager] InternalRecoveryServiceException during wrapping key generation [CONTEXT service_id=172 ]
-10-22 09:22:00.793 W/RecoverableKeyStoreGms( 3505): android.security.keystore.recovery.InternalRecoveryServiceException: Failed to import secret key.
-10-22 09:22:00.793 W/RecoverableKeyStoreGms( 3505): 	at android.security.keystore.recovery.RecoveryController.wrapUnexpectedServiceSpecificException(RecoveryController.java:783)
-10-22 09:22:00.793 W/RecoverableKeyStoreGms( 3505): Caused by: android.os.ServiceSpecificException: Failed to import secret key. (code 22)
-10-22 09:22:00.793 W/RecoverableKeyStoreGms( 3505): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3071)
-10-22 09:22:00.793 W/RecoverableKeyStoreGms( 3505): 	at android.os.Parcel.createException(Parcel.java:3041)
-10-22 09:22:00.793 W/RecoverableKeyStoreGms( 3505): 	at android.os.Parcel.readException(Parcel.java:3024)
-10-22 09:22:00.793 W/RecoverableKeyStoreGms( 3505): 	at android.os.Parcel.readException(Parcel.java:2966)
-10-22 09:22:00.975 W/RcsClientLib( 4957): Error while stopping RCS engine.
-10-22 09:22:00.975 W/RcsClientLib( 4957): java.lang.IllegalStateException: JibeService Not Initialized
-10-22 09:22:00.975 W/RcsClientLib( 4957): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3065)
-10-22 09:22:00.975 W/RcsClientLib( 4957): 	at android.os.Parcel.createException(Parcel.java:3041)
-10-22 09:22:00.975 W/RcsClientLib( 4957): 	at android.os.Parcel.readException(Parcel.java:3024)
-10-22 09:22:00.975 W/RcsClientLib( 4957): 	at android.os.Parcel.readException(Parcel.java:2966)
-10-22 09:22:00.975 W/RcsClientLib( 4957): 	at com.google.android.aidl.BaseProxy.transactAndReadExceptionReturnVoid(PG:3)
-10-22 09:22:01.476 W/RcsClientLib( 4957): Error while stopping RCS engine.
-10-22 09:22:01.476 W/RcsClientLib( 4957): java.lang.IllegalStateException: JibeService Not Initialized
-10-22 09:22:01.476 W/RcsClientLib( 4957): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3065)
-10-22 09:22:01.476 W/RcsClientLib( 4957): 	at android.os.Parcel.createException(Parcel.java:3041)
-10-22 09:22:01.476 W/RcsClientLib( 4957): 	at android.os.Parcel.readException(Parcel.java:3024)
-10-22 09:22:01.476 W/RcsClientLib( 4957): 	at android.os.Parcel.readException(Parcel.java:2966)
-10-22 09:22:01.476 W/RcsClientLib( 4957): 	at com.google.android.aidl.BaseProxy.transactAndReadExceptionReturnVoid(PG:3)
-10-22 09:22:02.039 W/Conscrypt( 4010): Could not set socket write timeout: java.net.SocketException: Socket closed
-10-22 09:22:02.057 W/Conscrypt( 4010): Could not set socket write timeout: java.net.SocketException: Socket closed
-10-22 09:22:02.184 W/Conscrypt( 4010): Could not set socket write timeout: java.net.SocketException: Socket closed
-10-22 09:22:02.486 E/BugleRcsEngine( 5297): [2] JibeService.onDestroy: JibeService: onDestroy() unregister factory exception: java.lang.IllegalArgumentException: Receiver not registered: com.google.android.ims.receiver.sip.DebugOptionsReceiver@9a0f75a
-10-22 09:22:02.873 W/Conscrypt( 4010): Could not set socket write timeout: java.net.SocketException: Socket closed
-10-22 09:22:02.934 W/Conscrypt( 4010): Could not set socket write timeout: java.net.SocketException: Socket closed
-10-22 09:22:02.968 W/Conscrypt( 4010): Could not set socket write timeout: java.net.SocketException: Socket closed
-10-22 09:22:02.984 E/enyj    ( 3505): java.lang.RuntimeException: ManagedChannel allocation site
-10-22 09:22:03.099 E/enyj    ( 3505): java.lang.RuntimeException: ManagedChannel allocation site
-10-22 09:22:03.291 E/PhenotypeFlagCommitter( 3505): java.util.concurrent.TimeoutException: Timed out waiting for Task
-10-22 09:22:03.302 W/PeoplePU( 3505): java.lang.IllegalArgumentException: Unknown component: ComponentInfo{com.google.android.syncadapters.contacts/com.google.android.syncadapters.contacts.ProxyGalProvider}
-10-22 09:22:03.302 W/PeoplePU( 3505): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3061)
-10-22 09:22:03.302 W/PeoplePU( 3505): 	at android.os.Parcel.createException(Parcel.java:3041)
-10-22 09:22:03.302 W/PeoplePU( 3505): 	at android.os.Parcel.readException(Parcel.java:3024)
-10-22 09:22:03.302 W/PeoplePU( 3505): 	at android.os.Parcel.readException(Parcel.java:2966)
-10-22 09:22:03.302 W/PeoplePU( 3505): Caused by: android.os.RemoteException: Remote stack trace:
-10-22 09:22:03.324 W/PeoplePU( 3505): android.content.pm.PackageManager$NameNotFoundException: ComponentInfo{com.google.android.gms/com.google.android.gms.people.sync.focus.ContactsSyncAdapterService}
-10-22 09:22:03.414 W/CardCollectorTask( 5400): android.os.DeadObjectException: Transaction failed on small parcel; remote process probably died, but this could also be caused by running out of binder buffer space
-10-22 09:22:05.998 I/NearbyDiscovery( 4010): java.util.concurrent.TimeoutException: Timed out waiting for Task
-10-22 09:22:06.734 E/PhenotypeFlagCommitter( 3505): java.util.concurrent.TimeoutException: Timed out waiting for Task
+10-22 09:45:44.717 W/PeoplePU( 3826): 	at android.os.Parcel.createException(Parcel.java:3041)
+10-22 09:45:44.717 W/PeoplePU( 3826): 	at android.os.Parcel.readException(Parcel.java:3024)
+10-22 09:45:44.717 W/PeoplePU( 3826): 	at android.os.Parcel.readException(Parcel.java:2966)
+10-22 09:45:44.717 W/PeoplePU( 3826): Caused by: android.os.RemoteException: Remote stack trace:
+10-22 09:45:45.160 E/RecoverySnapshotStorage(  513): Error reading snapshot for 10131 from disk
+10-22 09:45:45.160 E/RecoverySnapshotStorage(  513): java.io.FileNotFoundException: /data/system/recoverablekeystore/snapshots/10131.xml: open failed: ENOENT (No such file or directory)
+10-22 09:45:45.160 E/RecoverySnapshotStorage(  513): Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
+10-22 09:45:45.864 E/A       ( 2769): onError
+10-22 09:45:46.074 E/RecoverySnapshotStorage(  513): Error reading snapshot for 10131 from disk
+10-22 09:45:46.074 E/RecoverySnapshotStorage(  513): java.io.FileNotFoundException: /data/system/recoverablekeystore/snapshots/10131.xml: open failed: ENOENT (No such file or directory)
+10-22 09:45:46.074 E/RecoverySnapshotStorage(  513): Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
+10-22 09:45:46.078 E/keystore2(  146):     3: Error::Rc(r#SYSTEM_ERROR)
+10-22 09:45:46.079 W/RecoverableKeyStoreGms( 3826): [WrappingKeyManager] InternalRecoveryServiceException during wrapping key generation [CONTEXT service_id=172 ]
+10-22 09:45:46.079 W/RecoverableKeyStoreGms( 3826): android.security.keystore.recovery.InternalRecoveryServiceException: Failed to import secret key.
+10-22 09:45:46.079 W/RecoverableKeyStoreGms( 3826): 	at android.security.keystore.recovery.RecoveryController.wrapUnexpectedServiceSpecificException(RecoveryController.java:783)
+10-22 09:45:46.079 W/RecoverableKeyStoreGms( 3826): Caused by: android.os.ServiceSpecificException: Failed to import secret key. (code 22)
+10-22 09:45:46.079 W/RecoverableKeyStoreGms( 3826): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3071)
+10-22 09:45:46.079 W/RecoverableKeyStoreGms( 3826): 	at android.os.Parcel.createException(Parcel.java:3041)
+10-22 09:45:46.079 W/RecoverableKeyStoreGms( 3826): 	at android.os.Parcel.readException(Parcel.java:3024)
+10-22 09:45:46.079 W/RecoverableKeyStoreGms( 3826): 	at android.os.Parcel.readException(Parcel.java:2966)
+10-22 09:45:46.602 W/Looper  ( 3558): java.lang.RuntimeException: Handler (acdu) {2e10b90} sendMessageAtTime() called with no mQueue
+10-22 09:45:47.312 W/AiAiAutofill( 1525): java.lang.SecurityException: caller is not user's Augmented Autofill Service
+10-22 09:45:47.566 I/SemanticLocation( 3558): java.io.FileNotFoundException: /data/user/0/com.google.android.gms/files/model_bundle_metadata.pb: open failed: ENOENT (No such file or directory)
+10-22 09:45:47.566 I/SemanticLocation( 3558): Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
+10-22 09:45:48.036 E/RecoverySnapshotStorage(  513): Error reading snapshot for 10131 from disk
+10-22 09:45:48.036 E/RecoverySnapshotStorage(  513): java.io.FileNotFoundException: /data/system/recoverablekeystore/snapshots/10131.xml: open failed: ENOENT (No such file or directory)
+10-22 09:45:48.036 E/RecoverySnapshotStorage(  513): Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
+10-22 09:45:48.042 E/keystore2(  146):     3: Error::Rc(r#SYSTEM_ERROR)
+10-22 09:45:48.042 W/RecoverableKeyStoreGms( 3826): [WrappingKeyManager] InternalRecoveryServiceException during wrapping key generation [CONTEXT service_id=172 ]
+10-22 09:45:48.042 W/RecoverableKeyStoreGms( 3826): android.security.keystore.recovery.InternalRecoveryServiceException: Failed to import secret key.
+10-22 09:45:48.042 W/RecoverableKeyStoreGms( 3826): 	at android.security.keystore.recovery.RecoveryController.wrapUnexpectedServiceSpecificException(RecoveryController.java:783)
+10-22 09:45:48.042 W/RecoverableKeyStoreGms( 3826): Caused by: android.os.ServiceSpecificException: Failed to import secret key. (code 22)
+10-22 09:45:48.042 W/RecoverableKeyStoreGms( 3826): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3071)
+10-22 09:45:48.042 W/RecoverableKeyStoreGms( 3826): 	at android.os.Parcel.createException(Parcel.java:3041)
+10-22 09:45:48.042 W/RecoverableKeyStoreGms( 3826): 	at android.os.Parcel.readException(Parcel.java:3024)
+10-22 09:45:48.042 W/RecoverableKeyStoreGms( 3826): 	at android.os.Parcel.readException(Parcel.java:2966)
+10-22 09:45:48.099 I/SemanticLocation( 3558): java.io.FileNotFoundException: /data/user/0/com.google.android.gms/files/model_bundle_metadata.pb: open failed: ENOENT (No such file or directory)
+10-22 09:45:48.099 I/SemanticLocation( 3558): Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
+10-22 09:45:48.188 W/Icing   ( 3826): Failed to get Lockbox signed-in status: java.util.concurrent.TimeoutException: Timed out waiting for Task
+10-22 09:45:49.110 W/FontLog ( 3558): java.util.concurrent.TimeoutException: Waited 10000 milliseconds (plus 1 milliseconds, 377297 nanoseconds delay) for dlrl@605ab25[status=PENDING]
+10-22 09:45:49.193 W/Bugle   ( 4976): java.lang.RuntimeException: fetchFonts result is not OK. (2)
+10-22 09:45:49.373 W/SliceDataConverter( 1017): java.lang.IllegalStateException: Invalid preference controller: com.android.settings.accessibility.VibrationMainSwitchPreferenceController
+10-22 09:45:49.373 W/SliceDataConverter( 1017): Caused by: java.lang.reflect.InvocationTargetException
+10-22 09:45:49.373 W/SliceDataConverter( 1017): Caused by: java.lang.RuntimeException: Can't create handler inside thread Thread[binder:1017_3,5,main] that has not called Looper.prepare()
+10-22 09:45:49.397 W/SliceDataConverter( 1017): java.lang.IllegalStateException: Invalid preference controller: com.android.settings.development.DevelopmentMemtagFooterPreferenceController
+10-22 09:45:49.397 W/SliceDataConverter( 1017): Caused by: java.lang.ClassNotFoundException: com.android.settings.development.DevelopmentMemtagFooterPreferenceController
+10-22 09:45:49.397 W/SliceDataConverter( 1017): Caused by: java.lang.ClassNotFoundException: com.android.settings.development.DevelopmentMemtagFooterPreferenceController
+10-22 09:45:49.406 E/HardwareInfoFeatureProviderImpl( 1017): java.lang.NumberFormatException: For input string: "E"
+10-22 09:45:49.408 W/SliceDataConverter( 1017): java.lang.IllegalStateException: Invalid preference controller: com.android.settings.network.telephony.CallsDefaultSubscriptionController
+10-22 09:45:49.408 W/SliceDataConverter( 1017): Caused by: java.lang.NoSuchMethodException: com.android.settings.network.telephony.CallsDefaultSubscriptionController.<init> [class android.content.Context, class java.lang.String]
+10-22 09:45:49.421 W/SliceDataConverter( 1017): java.lang.IllegalStateException: Invalid preference controller: com.android.settings.applications.appinfo.ManageAppLocalePreferenceController
+10-22 09:45:49.421 W/SliceDataConverter( 1017): Caused by: java.lang.ClassNotFoundException: com.android.settings.applications.appinfo.ManageAppLocalePreferenceController
+10-22 09:45:49.421 W/SliceDataConverter( 1017): Caused by: java.lang.ClassNotFoundException: com.android.settings.applications.appinfo.ManageAppLocalePreferenceController
+10-22 09:45:49.443 W/SliceDataConverter( 1017): java.lang.IllegalStateException: Invalid preference controller: com.android.settings.network.telephony.CallsDefaultSubscriptionController
+10-22 09:45:49.443 W/SliceDataConverter( 1017): Caused by: java.lang.NoSuchMethodException: com.android.settings.network.telephony.CallsDefaultSubscriptionController.<init> [class android.content.Context, class java.lang.String]
+10-22 09:45:49.487 W/SliceDataConverter( 1017): java.lang.IllegalStateException: Invalid preference controller: com.android.settings.applications.appinfo.ManageAppLocalePreferenceController
+10-22 09:45:49.487 W/SliceDataConverter( 1017): Caused by: java.lang.ClassNotFoundException: com.android.settings.applications.appinfo.ManageAppLocalePreferenceController
+10-22 09:45:49.487 W/SliceDataConverter( 1017): Caused by: java.lang.ClassNotFoundException: com.android.settings.applications.appinfo.ManageAppLocalePreferenceController
+10-22 09:45:49.493 W/SliceDataConverter( 1017): java.lang.IllegalStateException: Invalid preference controller: com.android.settings.network.NetworkProviderSimsCategoryController
+10-22 09:45:49.493 W/SliceDataConverter( 1017): Caused by: java.lang.NoSuchMethodException: com.android.settings.network.NetworkProviderSimsCategoryController.<init> [class android.content.Context, class java.lang.String]
+10-22 09:45:49.500 E/SystemServiceRegistry( 1017): android.os.ServiceManager$ServiceNotFoundException: No service published for: ethernet
+10-22 09:45:49.512 W/SliceDataConverter( 1017): java.lang.IllegalStateException: Invalid preference controller: com.android.settings.applications.credentials.CredentialManagerPreferenceController
+10-22 09:45:49.512 W/SliceDataConverter( 1017): Caused by: java.lang.reflect.InvocationTargetException
+10-22 09:45:49.512 W/SliceDataConverter( 1017): Caused by: java.lang.RuntimeException: Can't create handler inside thread Thread[binder:1017_3,5,main] that has not called Looper.prepare()
+10-22 09:45:49.526 W/SliceDataConverter( 1017): java.lang.IllegalStateException: Invalid preference controller: com.android.settings.fuelgauge.batteryusage.BatteryChartPreferenceController
+10-22 09:45:49.526 W/SliceDataConverter( 1017): Caused by: java.lang.NoSuchMethodException: com.android.settings.fuelgauge.batteryusage.BatteryChartPreferenceController.<init> [class android.content.Context, class java.lang.String]
+10-22 09:45:49.595 W/AiAiFed ( 1525): java.lang.IllegalArgumentException: Unsupported response code3
+10-22 09:45:50.099 W/AiAiAutofill( 1525): java.lang.SecurityException: caller is not user's Augmented Autofill Service
+10-22 09:45:50.602 E/enyj    ( 3558): java.lang.RuntimeException: ManagedChannel allocation site
+10-22 09:45:50.678 W/NetworkScheduler( 3558): java.lang.IllegalArgumentException: Only the following extra parameter types are supported: Integer, Long, Double, String, Boolean, and nested Bundles with the same restrictions.
+10-22 09:45:50.715 W/Conscrypt( 3558): Could not set socket write timeout: java.net.SocketException: Socket closed
+10-22 09:45:50.931 W/Conscrypt( 3558): Could not set socket write timeout: java.net.SocketException: Socket closed
+10-22 09:45:51.255 W/NetworkScheduler( 3558): java.lang.IllegalArgumentException: Only the following extra parameter types are supported: Integer, Long, Double, String, Boolean, and nested Bundles with the same restrictions.
+10-22 09:45:51.466 W/Conscrypt( 3826): Could not set socket write timeout: java.net.SocketException: Socket closed
+10-22 09:45:51.765 W/Conscrypt( 3826): Could not set socket write timeout: java.net.SocketException: Socket closed
+10-22 09:45:53.249 E/RecoverySnapshotStorage(  513): Error reading snapshot for 10131 from disk
+10-22 09:45:53.249 E/RecoverySnapshotStorage(  513): java.io.FileNotFoundException: /data/system/recoverablekeystore/snapshots/10131.xml: open failed: ENOENT (No such file or directory)
+10-22 09:45:53.249 E/RecoverySnapshotStorage(  513): Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
+10-22 09:45:53.257 E/keystore2(  146):     3: Error::Rc(r#SYSTEM_ERROR)
+10-22 09:45:53.299 W/RecoverableKeyStoreGms( 3826): [WrappingKeyManager] InternalRecoveryServiceException during wrapping key generation [CONTEXT service_id=172 ]
+10-22 09:45:53.299 W/RecoverableKeyStoreGms( 3826): android.security.keystore.recovery.InternalRecoveryServiceException: Failed to import secret key.
+10-22 09:45:53.299 W/RecoverableKeyStoreGms( 3826): 	at android.security.keystore.recovery.RecoveryController.wrapUnexpectedServiceSpecificException(RecoveryController.java:783)
+10-22 09:45:53.299 W/RecoverableKeyStoreGms( 3826): Caused by: android.os.ServiceSpecificException: Failed to import secret key. (code 22)
+10-22 09:45:53.299 W/RecoverableKeyStoreGms( 3826): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3071)
+10-22 09:45:53.299 W/RecoverableKeyStoreGms( 3826): 	at android.os.Parcel.createException(Parcel.java:3041)
+10-22 09:45:53.299 W/RecoverableKeyStoreGms( 3826): 	at android.os.Parcel.readException(Parcel.java:3024)
+10-22 09:45:53.299 W/RecoverableKeyStoreGms( 3826): 	at android.os.Parcel.readException(Parcel.java:2966)
+10-22 09:45:53.606 W/NetworkScheduler( 3558): java.lang.IllegalArgumentException: Only the following extra parameter types are supported: Integer, Long, Double, String, Boolean, and nested Bundles with the same restrictions.
+10-22 09:45:54.407 W/RcsClientLib( 4976): Error while stopping RCS engine.
+10-22 09:45:54.407 W/RcsClientLib( 4976): java.lang.IllegalStateException: JibeService Not Initialized
+10-22 09:45:54.407 W/RcsClientLib( 4976): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3065)
+10-22 09:45:54.407 W/RcsClientLib( 4976): 	at android.os.Parcel.createException(Parcel.java:3041)
+10-22 09:45:54.407 W/RcsClientLib( 4976): 	at android.os.Parcel.readException(Parcel.java:3024)
+10-22 09:45:54.407 W/RcsClientLib( 4976): 	at android.os.Parcel.readException(Parcel.java:2966)
+10-22 09:45:54.407 W/RcsClientLib( 4976): 	at com.google.android.aidl.BaseProxy.transactAndReadExceptionReturnVoid(PG:3)
+10-22 09:45:55.061 E/BugleRcsEngine( 5319): [2] JibeService.onDestroy: JibeService: onDestroy() unregister factory exception: java.lang.IllegalArgumentException: Receiver not registered: com.google.android.ims.receiver.sip.DebugOptionsReceiver@7034e19
+10-22 09:45:55.212 W/Conscrypt( 3558): Could not set socket write timeout: java.net.SocketException: Socket closed
+10-22 09:45:55.213 W/Conscrypt( 3558): Could not set socket write timeout: java.net.SocketException: Socket closed
+10-22 09:45:55.640 W/Conscrypt( 3558): Could not set socket write timeout: java.net.SocketException: Socket closed
+10-22 09:45:55.649 W/Conscrypt( 3558): Could not set socket write timeout: java.net.SocketException: Socket closed
+10-22 09:45:55.977 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:45:56.423 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:45:56.425 W/Conscrypt( 3826): Could not set socket write timeout: java.net.SocketException: Socket closed
+10-22 09:45:56.426 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:45:56.436 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:45:56.447 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:45:56.449 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:45:56.462 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:45:56.466 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:45:56.475 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:45:56.477 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:45:56.492 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:45:56.514 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:45:56.526 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:45:56.528 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:45:56.557 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:45:56.762 W/Conscrypt( 3826): Could not set socket write timeout: java.net.SocketException: Socket closed
+10-22 09:45:57.227 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:00.154 W/ModernMediaScanner( 1527): android.database.sqlite.SQLiteConstraintException: UNIQUE constraint failed: files._data (code 2067 SQLITE_CONSTRAINT_UNIQUE)
+10-22 09:46:00.175 W/ModernMediaScanner( 1527): android.database.sqlite.SQLiteConstraintException: UNIQUE constraint failed: files._data (code 2067 SQLITE_CONSTRAINT_UNIQUE)
+10-22 09:46:00.939 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:00.944 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:00.945 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:01.119 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:01.122 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:01.123 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:01.124 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:01.125 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:01.196 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:01.227 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:01.237 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:01.243 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:01.244 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:01.245 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:01.247 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:01.248 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:02.328 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:02.332 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:02.586 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:02.778 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:02.860 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:02.863 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:02.872 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:02.874 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:02.880 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:04.261 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:04.338 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:04.611 E/NotificationListeners(  513): android.os.DeadObjectException
+10-22 09:46:04.778 W/ModernMediaScanner( 1527): Failed to visit /data/data/com.android.providers.downloads/cache/08202014-metadata.txt: java.nio.file.NoSuchFileException: /data/data/com.android.providers.downloads/cache/08202014-metadata.txt
+10-22 09:46:05.236 W/ModernMediaScanner( 1527): Failed to visit /data/data/com.android.providers.downloads/cache/08202014-pins.txt: java.nio.file.NoSuchFileException: /data/data/com.android.providers.downloads/cache/08202014-pins.txt
 ```
 
 ## Other steps (tail)
@@ -190,7 +190,7 @@ APP_RUNNING after ~70s
 npm warn deprecated uuid@7.0.3: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
 npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
 
-added 838 packages, and audited 839 packages in 22s
+added 838 packages, and audited 839 packages in 21s
 
 180 packages are looking for funding
   run `npm fund` for details
@@ -212,26 +212,26 @@ Run `npm audit` for details.
 ✔ Finished prebuild
 Build outputs:
 android/app/build/outputs/apk/release/app-release.apk
-total 102956
-drwxr-xr-x  2 runner runner      4096 Oct 22 09:17 .
-drwxr-xr-x 14 runner runner      4096 Oct 22 09:17 ..
--rw-r--r--  1 runner runner 105416671 Oct 22 09:17 ergo-1.0.0-build23.apk
+total 102976
+drwxr-xr-x  2 runner runner      4096 Oct 22 09:41 .
+drwxr-xr-x 14 runner runner      4096 Oct 22 09:41 ..
+-rw-r--r--  1 runner runner 105436927 Oct 22 09:41 ergo-1.0.0-build24.apk
 ```
 
 ## Gradle
 ```
-584:w: file:///home/runner/work/ergo/ergo/android/app/src/main/java/com/agiasotellis/ergo/MainActivity.kt:40:20 'constructor(activity: ReactActivity, mainComponentName: String, fabricEnabled: Boolean): DefaultReactActivityDelegate' is deprecated. Creating DefaultReactActivityDelegate with flags is deprecated.
-1040:BUILD SUCCESSFUL in 6m 58s
+609:w: file:///home/runner/work/ergo/ergo/android/app/src/main/java/com/agiasotellis/ergo/MainActivity.kt:40:20 'constructor(activity: ReactActivity, mainComponentName: String, fabricEnabled: Boolean): DefaultReactActivityDelegate' is deprecated. Creating DefaultReactActivityDelegate with flags is deprecated.
+1041:BUILD SUCCESSFUL in 6m 10s
 ---
 > Task :react-native-google-signin_google-signin:writeReleaseLintModelMetadata
 > Task :react-native-reanimated:lintVitalAnalyzeRelease SKIPPED
-> Task :react-native-safe-area-context:lintVitalAnalyzeRelease SKIPPED
-> Task :react-native-safe-area-context:writeReleaseLintModelMetadata
 > Task :react-native-masked-view_masked-view:writeReleaseLintModelMetadata
+> Task :react-native-safe-area-context:lintVitalAnalyzeRelease SKIPPED
 > Task :react-native-screens:lintVitalAnalyzeRelease SKIPPED
+> Task :react-native-safe-area-context:writeReleaseLintModelMetadata
 > Task :react-native-svg:lintVitalAnalyzeRelease SKIPPED
-> Task :react-native-worklets:lintVitalAnalyzeRelease SKIPPED
 > Task :react-native-screens:writeReleaseLintModelMetadata
+> Task :react-native-worklets:lintVitalAnalyzeRelease SKIPPED
 > Task :expo:generateReleaseLintVitalModel
 > Task :expo-constants:generateReleaseLintVitalModel
 > Task :expo-dom-webview:generateReleaseLintVitalModel
@@ -314,14 +314,14 @@ drwxr-xr-x 14 runner runner      4096 Oct 22 09:17 ..
 > Task :react-native-svg:mergeReleaseResources FROM-CACHE
 > Task :react-native-svg:verifyReleaseResources FROM-CACHE
 > Task :react-native-svg:assembleRelease
+> Task :app:packageRelease
+> Task :app:createReleaseApkListingFileRedirect
+> Task :app:assembleRelease
 > Task :react-native-worklets:bundleReleaseAar
 > Task :react-native-worklets:mergeReleaseResources FROM-CACHE
 > Task :react-native-worklets:verifyReleaseResources FROM-CACHE
 > Task :react-native-worklets:assembleRelease
-> Task :app:packageRelease
-> Task :app:createReleaseApkListingFileRedirect
-> Task :app:assembleRelease
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/gradle-1792660257295.json
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/gradle-1792661741802.json
 
 [Incubating] Problems report is available at: file:///home/runner/work/ergo/ergo/android/build/reports/problems/problems-report.html
 
@@ -331,7 +331,7 @@ You can use '--warning-mode all' to show the individual deprecation warnings and
 
 For more on this, please refer to https://docs.gradle.org/9.4.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
 
-BUILD SUCCESSFUL in 6m 58s
+BUILD SUCCESSFUL in 6m 10s
 741 actionable tasks: 478 executed, 263 from cache
 Cacheable calls:   696 / 706 (98.58%)
   Hits:            696 / 696 (100.0%)
