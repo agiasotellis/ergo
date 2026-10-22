@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { memo, useEffect, useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, TextInput, View } from 'react-native';
@@ -13,6 +13,7 @@ import { Button, Card, Field, H1, IconButton, Loading, MAX_FONT_SCALE, Txt, font
 import { useI18n } from '@/i18n/I18nProvider';
 import { createJob, getJob, pickAndUploadPhoto, updateJob } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { peekEditDraft } from '@/lib/editDraft';
 import { CATEGORIES } from '@/lib/categories';
 import { euro, when as formatWhen } from '@/lib/format';
 import { useLocation } from '@/lib/location';
@@ -33,17 +34,24 @@ function scheduledFor(w: When, custom: Date | null): string | null {
 }
 
 export default function Post() {
+  return <TaskForm />;
+}
+
+/** New task form; with `editId` it edits that (open) task instead. */
+export function TaskForm({ editId }: { editId?: string }) {
   const { c } = useTheme();
   const { t, lang } = useI18n();
   const { userId } = useAuth();
   const loc = useLocation();
-  const [cat, setCat] = useState<CategoryKey>('home');
-  const [title, setTitle] = useState('');
-  const [desc, setDesc] = useState('');
-  const [whenSel, setWhen] = useState<When>('today');
-  const [customDate, setCustomDate] = useState<Date | null>(null);
+  const edit = editId;
+  const draft = peekEditDraft(editId);
+  const [cat, setCat] = useState<CategoryKey>(draft?.category ?? 'home');
+  const [title, setTitle] = useState(draft?.title ?? '');
+  const [desc, setDesc] = useState(draft?.description ?? '');
+  const [whenSel, setWhen] = useState<When>(draft ? (draft.scheduled_at ? 'custom' : 'flexible') : 'today');
+  const [customDate, setCustomDate] = useState<Date | null>(draft?.scheduled_at ? new Date(draft.scheduled_at) : null);
   const [calendar, setCalendar] = useState(false);
-  const [budget, setBudget] = useState(30);
+  const [budget, setBudget] = useState(draft ? Number(draft.budget ?? 30) : 30);
   // Text while the amount is being typed; committed (and clamped) on blur.
   const [budgetText, setBudgetText] = useState<string | null>(null);
   const typed = budgetText == null ? NaN : Math.round(Number(budgetText));
@@ -54,20 +62,19 @@ export default function Post() {
     setBudget(finalBudget);
     setBudgetText(null);
   };
-  const [photos, setPhotos] = useState<string[]>([]);
+  const [photos, setPhotos] = useState<string[]>(draft?.photos ?? []);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [created, setCreated] = useState<Job | null>(null);
-  // Edit mode: /post?edit=<task id> loads the task and saves changes instead of publishing.
-  const { edit } = useLocalSearchParams<{ edit?: string }>();
-  const [loadingEdit, setLoadingEdit] = useState(!!edit);
+  // Edit mode: filled from the task screen right away; only fetched if opened some other way.
+  const [loadingEdit, setLoadingEdit] = useState(!!edit && !draft);
 
   useEffect(() => {
-    if (!edit) return;
+    if (!edit || draft) return;
     getJob(edit)
       .then((j) => {
         if (j.poster_id !== userId || j.status !== 'open') {
-          router.back();
+          Alert.alert('ergo', t.post.notEditable, [{ text: 'OK', onPress: () => router.back() }]);
           return;
         }
         setCat(j.category);
@@ -80,12 +87,10 @@ export default function Post() {
           setWhen('custom');
         } else setWhen('flexible');
       })
-      .catch(() => {
-        Alert.alert('ergo', t.common.error);
-        router.back();
-      })
+      .catch(() => Alert.alert('ergo', t.common.error, [{ text: 'OK', onPress: () => router.back() }]))
       .finally(() => setLoadingEdit(false));
-  }, [edit, userId, t.common.error]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [edit, userId]);
 
   const addPhoto = async () => {
     if (!userId) return;

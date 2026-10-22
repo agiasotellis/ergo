@@ -140,6 +140,7 @@ function Navigator() {
             name="post"
             options={{ presentation: "modal", animation: "slide_from_bottom" }}
           />
+          <Stack.Screen name="edit-task/[id]" options={{ animation: "slide_from_bottom" }} />
         </Stack>
       </AppLockProvider>
     </NavThemeProvider>

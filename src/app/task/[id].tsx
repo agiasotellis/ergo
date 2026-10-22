@@ -1,3 +1,4 @@
+import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
@@ -28,6 +29,7 @@ import {
   startConversation,
 } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { setEditDraft } from '@/lib/editDraft';
 import { categoryColors } from '@/lib/categories';
 import { euro, rating, when } from '@/lib/format';
 import type { Application, Job, Profile, ProfileStats, ReportTarget } from '@/lib/types';
@@ -315,7 +317,10 @@ export default function TaskDetail() {
               <H2>{t.task.manage}</H2>
               <Card style={{ paddingVertical: 4, borderWidth: 1.5, borderColor: c.line }}>
                 {job.status === 'open' && (
-                  <ManageRow icon="pencil" label={t.task.editTask} onPress={() => router.push({ pathname: '/post', params: { edit: job.id } })} disabled={busy} />
+                  <ManageRow icon="pencil" label={t.task.editTask} onPress={() => {
+                    setEditDraft(job);
+                    router.push(`/edit-task/${job.id}`);
+                  }} disabled={busy} />
                 )}
                 {active && (
                   <ManageRow icon="close" label={t.task.cancelTask} onPress={confirmCancel} disabled={busy} />
@@ -484,7 +489,10 @@ function ManageRow({ icon, label, onPress, danger, disabled }: { icon: IconName;
   return (
     <Pressable
       accessibilityRole="button"
-      onPress={onPress}
+      onPress={() => {
+        Haptics.selectionAsync().catch(() => {});
+        onPress();
+      }}
       disabled={disabled}
       style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 56, paddingVertical: 8, opacity: pressed ? 0.6 : 1 })}
     >
