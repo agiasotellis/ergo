@@ -157,3 +157,10 @@ returns boolean language sql stable security definer set search_path to 'public'
   select (select auth.uid()) in (a, b)
      and exists (select 1 from public.blocks where (blocker_id = a and blocked_id = b) or (blocker_id = b and blocked_id = a));
 $$;
+
+-- Applied separately: is_blocked only answers for pairs that include the caller.
+create or replace function public.is_blocked(a uuid, b uuid)
+returns boolean language sql stable security definer set search_path to 'public' as $$
+  select (select auth.uid()) in (a, b)
+     and exists (select 1 from public.blocks where (blocker_id = a and blocked_id = b) or (blocker_id = b and blocked_id = a));
+$$;
