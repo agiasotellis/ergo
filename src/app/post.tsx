@@ -1,25 +1,29 @@
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
-import Animated, { FadeIn, ZoomIn } from 'react-native-reanimated';
+import * as Haptics from 'expo-haptics';
+import { memo, useEffect, useState } from 'react';
+import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, TextInput, View } from 'react-native';
+import Animated, { FadeIn, ZoomIn, ZoomOut, interpolateColor, useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryTile } from '@/components/CategoryTile';
+import { DateTimeSheet } from '@/components/DateTimeSheet';
 import { Icon } from '@/components/Icon';
-import { Button, Card, Field, H1, IconButton, Segmented, Txt } from '@/components/ui';
+import { Button, Card, Field, H1, IconButton, MAX_FONT_SCALE, Txt, font } from '@/components/ui';
 import { useI18n } from '@/i18n/I18nProvider';
 import { createJob, pickAndUploadPhoto } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { CATEGORIES } from '@/lib/categories';
-import { euro } from '@/lib/format';
+import { euro, when as formatWhen } from '@/lib/format';
 import { useLocation } from '@/lib/location';
 import type { CategoryKey, Job } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 
-type When = 'today' | 'tomorrow' | 'week' | 'flexible';
+type When = 'today' | 'tomorrow' | 'week' | 'flexible' | 'custom';
+const MAX_BUDGET = 100000;
 
-function scheduledFor(w: When): string | null {
+function scheduledFor(w: When, custom: Date | null): string | null {
+  if (w === 'custom') return custom ? custom.toISOString() : null;
   const d = new Date();
   if (w === 'flexible') return null;
   if (w === 'tomorrow') d.setDate(d.getDate() + 1);
@@ -37,7 +41,19 @@ export default function Post() {
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
   const [whenSel, setWhen] = useState<When>('today');
+  const [customDate, setCustomDate] = useState<Date | null>(null);
+  const [calendar, setCalendar] = useState(false);
   const [budget, setBudget] = useState(30);
+  // Text while the amount is being typed; committed (and clamped) on blur.
+  const [budgetText, setBudgetText] = useState<string | null>(null);
+  const typed = budgetText == null ? NaN : Math.round(Number(budgetText));
+  // What will be published: the amount being typed (if valid), else the stepped amount.
+  const finalBudget = Number.isFinite(typed) && typed > 0 ? Math.min(MAX_BUDGET, typed) : budget;
+  const commitBudget = () => {
+    if (budgetText == null) return;
+    setBudget(finalBudget);
+    setBudgetText(null);
+  };
   const [photos, setPhotos] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -69,12 +85,12 @@ export default function Post() {
         title: title.trim(),
         description: desc.trim(),
         category: cat,
-        budget,
+        budget: finalBudget,
         lat: loc.lat,
         lng: loc.lng,
         address: loc.area ?? '',
         photos,
-        scheduled_at: scheduledFor(whenSel),
+        scheduled_at: scheduledFor(whenSel, customDate),
       });
       setCreated(job);
     } catch {
@@ -123,40 +139,9 @@ export default function Post() {
           <H1>{t.post.h1}</H1>
 
           <View accessibilityRole="radiogroup" accessibilityLabel={t.post.category} style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
-            {CATEGORIES.map((k) => {
-              const on = k.key === cat;
-              return (
-                <Pressable
-                  key={k.key}
-                  accessibilityRole="radio"
-                  accessibilityState={{ checked: on }}
-                  onPress={() => setCat(k.key)}
-                  style={({ pressed }) => ({
-                    width: '31%',
-                    flexGrow: 1,
-                    height: 100,
-                    borderRadius: 22,
-                    borderWidth: 2,
-                    borderColor: on ? c.primary : c.card,
-                    backgroundColor: c.card,
-                    alignItems: 'center',
-                    justifyContent: 'flex-start',
-                    gap: 8,
-                    paddingTop: 14,
-                    paddingHorizontal: 6,
-                    transform: [{ scale: pressed ? 0.95 : on ? 1.02 : 1 }],
-                  })}
-                >
-                  <CategoryTile cat={k.key} size={40} />
-                  {/* Fixed two-line label box so every icon sits at the same height. */}
-                  <View style={{ minHeight: 32, justifyContent: 'center' }}>
-                    <Txt size={12} weight="700" center numberOfLines={2} style={{ lineHeight: 16 }}>
-                      {t.categories[k.key]}
-                    </Txt>
-                  </View>
-                </Pressable>
-              );
-            })}
+            {CATEGORIES.map((k) => (
+              <CategoryOption key={k.key} cat={k.key} label={t.categories[k.key]} on={k.key === cat} onSelect={setCat} />
+            ))}
           </View>
 
           <Card style={{ gap: 14 }}>
@@ -183,35 +168,61 @@ export default function Post() {
 
           <View style={{ gap: 10 }}>
             <Txt weight="800">{t.post.when}</Txt>
-            <Segmented<When>
-              label={t.post.when}
-              value={whenSel}
-              onChange={setWhen}
-              options={[
-                { value: 'today', label: t.post.today },
-                { value: 'tomorrow', label: t.post.tomorrow },
-                { value: 'week', label: t.post.week },
-                { value: 'flexible', label: t.post.flexible },
-              ]}
-            />
+            <View accessibilityRole="radiogroup" accessibilityLabel={t.post.when} style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+              {(
+                [
+                  ['today', t.post.today],
+                  ['tomorrow', t.post.tomorrow],
+                  ['week', t.post.week],
+                  ['flexible', t.post.flexible],
+                ] as const
+              ).map(([v, label]) => (
+                <WhenOption key={v} label={label} on={whenSel === v} onPress={() => setWhen(v)} />
+              ))}
+              <WhenOption
+                full
+                icon="calendar"
+                label={whenSel === 'custom' && customDate ? formatWhen(customDate.toISOString(), lang, '') : t.post.pickDate}
+                trailing={whenSel === 'custom' && customDate ? t.post.changeDate : undefined}
+                on={whenSel === 'custom'}
+                onPress={() => setCalendar(true)}
+              />
+            </View>
           </View>
 
-          <Card style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
-            <View style={{ flex: 1 }}>
-              <Txt size={13} weight="700">
+          <Card style={{ gap: 14 }}>
+            <View style={{ gap: 2 }}>
+              <Txt size={15} weight="800">
                 {t.post.budget}
               </Txt>
-              <Txt size={12} muted>
+              <Txt size={13} muted>
                 {t.post.budgetHint}
               </Txt>
             </View>
-            <IconButton name="minus" label="−5 €" bg={c.soft} onPress={() => setBudget((b) => Math.max(5, b - 5))} />
-            <Animated.View key={budget} entering={ZoomIn.duration(180)} style={{ minWidth: 64, alignItems: 'center' }}>
-              <Txt size={22} weight="800" numberOfLines={1}>
-                {euro(budget, lang)}
-              </Txt>
-            </Animated.View>
-            <IconButton name="plus" label="+5 €" bg={c.soft} onPress={() => setBudget((b) => b + 5)} />
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+              <IconButton name="minus" label="−5 €" bg={c.soft} size={52} onPress={() => setBudget((b) => Math.max(5, b - 5))} />
+              {/* Tap the amount to type it; the buttons still step by 5 €. */}
+              <View style={{ flex: 1, height: 64, borderRadius: 20, backgroundColor: c.soft, borderWidth: 1.5, borderColor: budgetText != null ? c.primary : c.soft, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12 }}>
+                <TextInput
+                  accessibilityLabel={t.post.budget}
+                  accessibilityHint={t.post.budgetEdit}
+                  value={budgetText ?? String(budget)}
+                  onFocus={() => setBudgetText(String(budget))}
+                  onChangeText={(v) => setBudgetText(v.replace(/[^0-9]/g, '').slice(0, 6))}
+                  onBlur={commitBudget}
+                  onSubmitEditing={commitBudget}
+                  keyboardType="number-pad"
+                  returnKeyType="done"
+                  selectTextOnFocus
+                  maxFontSizeMultiplier={MAX_FONT_SCALE}
+                  style={{ minWidth: 40, fontSize: 30, fontFamily: font['900'], color: c.ink, textAlign: 'right', paddingVertical: 0, includeFontPadding: false }}
+                />
+                <Txt size={30} weight="900" style={{ lineHeight: 36, marginLeft: 4 }}>
+                  €
+                </Txt>
+              </View>
+              <IconButton name="plus" label="+5 €" bg={c.soft} size={52} onPress={() => setBudget((b) => Math.min(MAX_BUDGET, b + 5))} />
+            </View>
           </Card>
 
           <Card style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
@@ -227,9 +238,120 @@ export default function Post() {
           </Card>
         </ScrollView>
         <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: 16, paddingBottom: 24, backgroundColor: c.bg }}>
-          <Button title={`${t.post.publish} · ${euro(budget, lang)}`} loading={saving} onPress={publish} />
+          <Button title={`${t.post.publish} · ${euro(finalBudget, lang)}`} loading={saving} onPress={publish} />
         </View>
       </KeyboardAvoidingView>
+      <DateTimeSheet
+        visible={calendar}
+        value={customDate}
+        onClose={() => setCalendar(false)}
+        onPick={(d) => {
+          setCustomDate(d);
+          setWhen('custom');
+          setCalendar(false);
+        }}
+      />
     </SafeAreaView>
+  );
+}
+
+/** Category tile: springs and tints on the UI thread when chosen, so switching feels instant. */
+const CategoryOption = memo(function CategoryOption({ cat, label, on, onSelect }: { cat: CategoryKey; label: string; on: boolean; onSelect: (k: CategoryKey) => void }) {
+  const { c } = useTheme();
+  const sel = useSharedValue(on ? 1 : 0);
+  const press = useSharedValue(1);
+  const pop = useSharedValue(1);
+
+  useEffect(() => {
+    sel.value = withSpring(on ? 1 : 0, { damping: 16, stiffness: 240 });
+    if (on) pop.value = withSequence(withTiming(1.18, { duration: 120 }), withSpring(1, { damping: 8, stiffness: 260 }));
+  }, [on, sel, pop]);
+
+  const tile = useAnimatedStyle(() => ({
+    transform: [{ scale: press.value * (1 + sel.value * 0.03) }],
+    borderColor: interpolateColor(sel.value, [0, 1], [c.card, c.primary]),
+    backgroundColor: interpolateColor(sel.value, [0, 1], [c.card, c.primarySoft]),
+  }));
+  const icon = useAnimatedStyle(() => ({ transform: [{ scale: pop.value }, { translateY: -sel.value * 2 }] }));
+
+  return (
+    <Pressable
+      accessibilityRole="radio"
+      accessibilityState={{ checked: on }}
+      accessibilityLabel={label}
+      onPressIn={() => {
+        press.value = withTiming(0.94, { duration: 90 });
+      }}
+      onPressOut={() => {
+        press.value = withSpring(1, { damping: 12, stiffness: 300 });
+      }}
+      onPress={() => {
+        if (!on) Haptics.selectionAsync().catch(() => {});
+        onSelect(cat);
+      }}
+      style={{ width: '31%', flexGrow: 1 }}
+    >
+      <Animated.View style={[{ height: 104, borderRadius: 22, borderWidth: 2, alignItems: 'center', justifyContent: 'flex-start', gap: 8, paddingTop: 14, paddingHorizontal: 6 }, tile]}>
+        <Animated.View style={icon}>
+          <CategoryTile cat={cat} size={40} />
+        </Animated.View>
+        {/* Fixed two-line label box so every icon sits at the same height. */}
+        <View style={{ minHeight: 32, justifyContent: 'center' }}>
+          <Txt size={12} weight={on ? '800' : '700'} center numberOfLines={2} style={{ lineHeight: 16 }}>
+            {label}
+          </Txt>
+        </View>
+        {on && (
+          <Animated.View
+            entering={ZoomIn.springify().damping(12)}
+            exiting={ZoomOut.duration(120)}
+            style={{ position: 'absolute', top: 8, right: 8, width: 20, height: 20, borderRadius: 10, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' }}
+          >
+            <Icon name="check" color="#FFFFFF" size={12} strokeWidth={3.2} />
+          </Animated.View>
+        )}
+      </Animated.View>
+    </Pressable>
+  );
+});
+
+/** "Πότε;" choice: two per row, roomy enough for the full label; `full` spans the row. */
+function WhenOption({ label, on, onPress, full, icon, trailing }: { label: string; on: boolean; onPress: () => void; full?: boolean; icon?: 'calendar'; trailing?: string }) {
+  const { c } = useTheme();
+  return (
+    <Pressable
+      accessibilityRole="radio"
+      accessibilityState={{ checked: on }}
+      onPress={() => {
+        if (!on) Haptics.selectionAsync().catch(() => {});
+        onPress();
+      }}
+      style={({ pressed }) => ({
+        width: full ? '100%' : '48%',
+        flexGrow: 1,
+        minHeight: 50,
+        borderRadius: 16,
+        paddingHorizontal: 14,
+        paddingVertical: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: full ? 'flex-start' : 'center',
+        gap: 10,
+        backgroundColor: on ? c.inv : c.card,
+        borderWidth: 1.5,
+        borderColor: on ? c.inv : c.line,
+        transform: [{ scale: pressed ? 0.97 : 1 }],
+      })}
+    >
+      {icon && <Icon name={icon} color={on ? c.invInk : c.primaryText} size={20} />}
+      <Txt size={15} weight="700" color={on ? c.invInk : c.ink} numberOfLines={1} style={{ flexShrink: 1 }}>
+        {label}
+      </Txt>
+      {trailing && (
+        <Txt size={13} weight="700" color={on ? c.invInk : c.primaryText} style={{ marginLeft: 'auto', opacity: 0.85 }}>
+          {trailing}
+        </Txt>
+      )}
+    </Pressable>
   );
 }
