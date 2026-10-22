@@ -63,9 +63,6 @@ export function useMapStyle(isDark: boolean, lang: Lang): string | StyleSpecific
   return style ?? url;
 }
 
-/** Greece incl. islands as [west, south, east, north]; the camera can't leave it. */
-export const GREECE_BOUNDS: [number, number, number, number] = [19.0, 34.5, 30.0, 42.0];
-
 /** Bounding box [w, s, e, n] around a point with a radius in km. */
 export function bboxAround(lat: number, lng: number, radiusKm: number): [number, number, number, number] {
   const dLat = radiusKm / 111.32;

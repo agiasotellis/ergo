@@ -2,14 +2,9 @@ import * as Location from 'expo-location';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 /** Syntagma, Athens: used until (or unless) we get the device location. */
+/** Default map centre until the device location is known. */
 export const ATHENS = { lat: 37.9755, lng: 23.7348 };
 
-/** Greece bounding box (incl. islands), used to keep the map focused on the country. */
-export const GREECE = {
-  northEast: { latitude: 41.85, longitude: 29.75 },
-  southWest: { latitude: 34.7, longitude: 19.3 },
-  region: { latitude: 38.4, longitude: 24.2, latitudeDelta: 8.2, longitudeDelta: 8.2 },
-};
 
 type Loc = { lat: number; lng: number; area: string | null; granted: boolean; loading: boolean; refresh: () => Promise<void> };
 

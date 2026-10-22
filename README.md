@@ -4,7 +4,7 @@
 
 - **App:** Expo SDK 58 · React Native · Expo Router · TypeScript
 - **Backend:** Supabase (Postgres + RLS, Auth, Realtime, Storage) — project `taskmate`
-- **Map:** MapLibre with free OpenStreetMap tiles from [OpenFreeMap](https://openfreemap.org) (no API key, no billing), limited to Greece, with pinch / double-tap zoom and two-finger rotate; labels follow the app language
+- **Map:** MapLibre with free OpenStreetMap tiles from [OpenFreeMap](https://openfreemap.org) (no API key, no billing), worldwide, with pinch / double-tap zoom and two-finger rotate; labels follow the app language
 - **Sign-in:** Google (native) and email + password, via Supabase Auth
 - **Languages:** Greek (default) and English · light and dark mode
 

@@ -15,12 +15,13 @@ import { nearbyJobs, startConversation } from '@/lib/api';
 import { categoryColors } from '@/lib/categories';
 import { euro, km, when } from '@/lib/format';
 import { useLocation } from '@/lib/location';
-import { GREECE_BOUNDS, bboxAround, circlePolygon, useMapStyle } from '@/lib/mapStyle';
+import { bboxAround, circlePolygon, useMapStyle } from '@/lib/mapStyle';
 import type { NearbyJob } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 
 const RADII = [1, 3, 5, 10, 25];
-const MIN_ZOOM = 5.5;
+// The whole world is available (zoom 1 ≈ all continents); ergo isn't limited to Greece.
+const MIN_ZOOM = 1;
 const MAX_ZOOM = 19;
 
 /** Price pin drawn as a native view on the map. */
@@ -184,7 +185,6 @@ export default function MapScreen() {
           initialViewState={{ bounds: bboxAround(loc.lat, loc.lng, radius * 1.1), padding }}
           minZoom={MIN_ZOOM}
           maxZoom={MAX_ZOOM}
-          maxBounds={GREECE_BOUNDS}
         />
         <GeoJSONSource id="search-ring" data={ring}>
           <Layer id="search-ring-fill" type="fill" paint={{ 'fill-color': c.primary, 'fill-opacity': isDark ? 0.14 : 0.08 }} />
@@ -202,7 +202,7 @@ export default function MapScreen() {
           <View style={{ flex: 1, height: 52, borderRadius: 18, backgroundColor: c.card, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16 }}>
             <Icon name="pin" color={c.primaryText} size={18} strokeWidth={2.2} />
             <Txt size={15} weight="700" numberOfLines={1} style={{ flex: 1 }}>
-              {loc.area ?? 'Ελλάδα'}
+              {loc.area ?? t.map.unknownArea}
             </Txt>
             <View style={{ paddingHorizontal: 10, paddingVertical: 6, borderRadius: 12, backgroundColor: c.inv }}>
               <Txt size={12} weight="700" color={c.invInk}>

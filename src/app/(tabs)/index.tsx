@@ -75,7 +75,7 @@ export default function Home() {
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
             <Icon name="pin" size={16} color={c.primaryText} strokeWidth={2.2} />
             <Txt size={16} weight="700" numberOfLines={1} style={{ flexShrink: 1 }}>
-              {loc.area ?? (loc.granted ? '…' : 'Αθήνα')}
+              {loc.area ?? (loc.granted ? '…' : t.map.unknownArea)}
             </Txt>
           </View>
         </View>

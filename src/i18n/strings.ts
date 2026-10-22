@@ -73,6 +73,7 @@ const el = {
   },
   map: {
     radius: 'Ακτίνα',
+    unknownArea: 'Η περιοχή σου',
     nearby: (n: number) => `${n} κοντά`,
     searchHere: 'Αναζήτηση σε αυτή την περιοχή',
     myLocation: 'Η θέση μου',
@@ -308,6 +309,7 @@ const en: Strings = {
   },
   map: {
     radius: 'Radius',
+    unknownArea: 'Your area',
     nearby: (n: number) => `${n} nearby`,
     searchHere: 'Search this area',
     myLocation: 'My location',
