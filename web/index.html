@@ -302,6 +302,39 @@ section{position:relative}
 .final .lead{margin:0 auto}
 .final .cta{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:34px}
 .final .btn-dark{background:var(--ink);color:#fff}
+.wl{scroll-margin-top:96px;max-width:560px;margin:34px auto 0;background:#fff;border:1px solid var(--line);border-radius:var(--r-xl);padding:clamp(20px,4vw,30px);text-align:left;box-shadow:0 40px 80px -50px rgba(15,31,61,.45);position:relative;overflow:hidden}
+.wl h3{font-size:20px;margin-bottom:4px}
+.wl .sub{color:var(--muted);font-size:14.5px}
+.wl form{display:grid;gap:16px;margin-top:18px}
+.wl-row{display:flex;gap:10px}
+.wl input[type=email]{flex:1;min-width:0;height:56px;border-radius:18px;border:1.5px solid var(--line);background:var(--bg);padding:0 18px;font:600 16px Inter,system-ui,sans-serif;color:var(--ink);outline:none;transition:border-color .25s,box-shadow .25s}
+.wl input[type=email]:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(37,99,235,.15)}
+.wl input[aria-invalid=true]{border-color:#DC2626}
+.wl .btn{height:56px;flex:none}
+.wl fieldset{border:0;margin:0;padding:0;display:grid;gap:8px}
+.wl legend{font-size:13px;font-weight:800;color:var(--ink);margin-bottom:8px;padding:0}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{position:relative}
+.opt input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.opt span{display:inline-flex;align-items:center;height:40px;padding:0 14px;border-radius:12px;background:var(--bg);border:1.5px solid var(--line);font-size:14px;font-weight:700;transition:background .25s,border-color .25s,color .25s}
+.opt input:checked+span{background:var(--ink);border-color:var(--ink);color:#fff}
+.opt input:focus-visible+span{outline:3px solid var(--coral);outline-offset:2px}
+.wl .fine{font-size:12.5px;color:var(--muted)}
+.wl .err{color:#DC2626;font-size:13.5px;font-weight:600;min-height:1em}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.wl-done{display:none;text-align:center;padding:12px 0 6px;gap:10px;justify-items:center}
+.wl.sent form{display:none}
+.wl.sent .wl-done{display:grid;animation:pop .7s var(--ease)}
+.wl.sent .wl-head{display:none}
+.wl-done .big{width:76px;height:76px;border-radius:50%;background:var(--ok-soft);color:var(--ok);display:grid;place-items:center}
+.wl-done .big path{stroke-dasharray:30;stroke-dashoffset:30;animation:draw .7s var(--ease) .25s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+.btn .spin{width:18px;height:18px;border-radius:50%;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;animation:spin .8s linear infinite;display:none}
+.btn.loading .spin{display:inline-block}
+.btn.loading .lbl{opacity:.7}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (max-width:560px){.wl-row{flex-direction:column}.wl input[type=email]{flex:none;width:100%}.wl .btn{width:100%}}
 footer{background:var(--bg);border-top:1px solid var(--line);padding:30px 0 calc(30px + env(safe-area-inset-bottom));color:var(--muted);font-size:14px}
 footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center}
 footer .mark{font-size:24px;color:var(--ink)}
@@ -368,7 +401,7 @@ footer .mark{font-size:24px;color:var(--ink)}
         <button type="button" data-lang="el" aria-pressed="true">ΕΛ</button>
         <button type="button" data-lang="en" aria-pressed="false">EN</button>
       </div>
-      <a class="btn btn-primary" href="#download" data-i18n="nav.cta">Κατέβασέ το</a>
+      <a class="btn btn-primary" href="#waitlist" data-i18n="nav.cta">Ενημέρωσέ με</a>
     </div>
   </div>
 </header>
@@ -386,7 +419,7 @@ footer .mark{font-size:24px;color:var(--ink)}
       <h1 id="headline" data-i18n-split="hero.title">Μικρές δουλειές. <span class="accent">Μεγάλη κοινότητα.</span></h1>
       <p class="lead fade-up d1" data-i18n="hero.lead">Βρες κάποιον κοντά σου για να συναρμολογήσει μια βιβλιοθήκη, να βγάλει βόλτα τον σκύλο ή να σε βοηθήσει στη μετακόμιση. Ή κέρδισε χρήματα βοηθώντας εσύ τους γείτονές σου.</p>
       <div class="hero-cta fade-up d2">
-        <a class="btn btn-primary" href="#download"><span data-i18n="hero.cta">Έρχεται στο Google Play</span>
+        <a class="btn btn-primary" href="#waitlist"><span data-i18n="hero.cta">Θέλω πρόσβαση νωρίς</span>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         <a class="btn btn-ghost" href="#how" data-i18n="hero.how">Πώς λειτουργεί</a>
       </div>
@@ -624,6 +657,41 @@ footer .mark{font-size:24px;color:var(--ink)}
     <div class="mark big-mark rv s" aria-hidden="true">ergo<i>.</i></div>
     <h2 class="rv" data-i18n="end.title">Η γειτονιά σου, ένα πάτημα μακριά.</h2>
     <p class="lead rv" style="margin-top:18px" data-i18n="end.lead">Το ergo κυκλοφορεί σύντομα για Android στο Google Play. Μικρές δουλειές, πραγματικοί άνθρωποι, κοντά σου.</p>
+    <div class="wl rv" id="waitlist">
+      <div class="wl-head">
+        <h3 data-i18n="wl.title">Θέλω να το δοκιμάσω πρώτος</h3>
+        <p class="sub" data-i18n="wl.sub">Άφησε το email σου και θα σε ειδοποιήσουμε μόλις κυκλοφορήσει.</p>
+      </div>
+      <form id="wlForm" novalidate>
+        <div class="wl-row">
+          <label class="hp" aria-hidden="true">Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+          <input type="email" id="wlEmail" name="email" required autocomplete="email" inputmode="email" maxlength="254" data-i18n-ph="wl.ph" placeholder="το email σου" aria-label="Email" aria-describedby="wlErr">
+          <button class="btn btn-primary" type="submit" id="wlBtn"><span class="spin" aria-hidden="true"></span><span class="lbl" data-i18n="wl.btn">Ενημέρωσέ με</span></button>
+        </div>
+        <fieldset>
+          <legend data-i18n="wl.role">Θα το χρησιμοποιήσω για να… (προαιρετικό)</legend>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="role" value="need_help"><span data-i18n="wl.r1">βρω βοήθεια</span></label>
+            <label class="opt"><input type="radio" name="role" value="helper"><span data-i18n="wl.r2">βγάλω χρήματα βοηθώντας</span></label>
+            <label class="opt"><input type="radio" name="role" value="both"><span data-i18n="wl.r3">και τα δύο</span></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend data-i18n="wl.plat">Το κινητό μου είναι (προαιρετικό)</legend>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="platform" value="android"><span>Android</span></label>
+            <label class="opt"><input type="radio" name="platform" value="iphone"><span>iPhone</span></label>
+          </div>
+        </fieldset>
+        <p class="err" id="wlErr" role="alert"></p>
+        <p class="fine" data-i18n="wl.fine">Θα σου στείλουμε email μόνο για την κυκλοφορία του ergo. Χωρίς spam, και μπορείς να ζητήσεις διαγραφή όποτε θέλεις.</p>
+      </form>
+      <div class="wl-done" aria-live="polite">
+        <div class="big"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></div>
+        <h3 data-i18n="wl.done">Είσαι στη λίστα! 🎉</h3>
+        <p class="sub" data-i18n="wl.doneSub">Θα σου στείλουμε email μόλις το ergo είναι διαθέσιμο.</p>
+      </div>
+    </div>
     <div class="cta rv">
       <span class="play" role="img" aria-label="Google Play">
         <svg width="26" height="28" viewBox="0 0 26 28" aria-hidden="true"><path d="M1 1.5 14.5 14 1 26.5c-.6-.3-1-.9-1-1.7V3.2c0-.8.4-1.4 1-1.7Z" fill="#00D7FE"/><path d="M19 9.6 14.5 14 1 1.5c.4-.2.9-.2 1.4.1L19 9.6Z" fill="#00F076"/><path d="M19 18.4 2.4 26.4c-.5.3-1 .3-1.4.1L14.5 14 19 18.4Z" fill="#FF3A44"/><path d="M24.3 12.3c1.2.7 1.2 2.7 0 3.4L19 18.4 14.5 14 19 9.6l5.3 2.7Z" fill="#FFD400"/></svg>
@@ -648,11 +716,11 @@ footer .mark{font-size:24px;color:var(--ink)}
     el: {
       'meta.title':'ergo · Μικρές δουλειές. Μεγάλη κοινότητα.',
       'meta.desc':'Βρες βοήθεια για μικρές δουλειές κοντά σου, ή κέρδισε χρήματα βοηθώντας τη γειτονιά σου. Η εφαρμογή ergo έρχεται σύντομα στο Google Play.',
-      'nav.cta':'Κατέβασέ το',
+      'nav.cta':'Ενημέρωσέ με',
       'hero.eyebrow':'Η εφαρμογή της γειτονιάς σου',
       'hero.title':'Μικρές δουλειές. |Μεγάλη κοινότητα.',
       'hero.lead':'Βρες κάποιον κοντά σου για να συναρμολογήσει μια βιβλιοθήκη, να βγάλει βόλτα τον σκύλο ή να σε βοηθήσει στη μετακόμιση. Ή κέρδισε χρήματα βοηθώντας εσύ τους γείτονές σου.',
-      'hero.cta':'Έρχεται στο Google Play','hero.how':'Πώς λειτουργεί',
+      'hero.cta':'Θέλω πρόσβαση νωρίς','hero.how':'Πώς λειτουργεί',
       'hero.m1':'Δωρεάν','hero.m2':'Ελληνικά & English','hero.m3':'Ασφαλές εξ ορισμού',
       'ph.hello':'Καλημέρα 👋','ph.near':'Κοντά σου σήμερα','ph.search':'Τι χρειάζεσαι;',
       'cat.all':'Όλες','cat.home':'Σπίτι & Επισκευές','cat.pets':'Κατοικίδια',
@@ -695,16 +763,22 @@ footer .mark{font-size:24px;color:var(--ink)}
       'sf4.t':'Ο έλεγχος είναι δικός σου','sf4.d':'Επεξεργάσου ή διέγραψε τις εργασίες σου, και διέγραψε τον λογαριασμό σου οριστικά όποτε θέλεις.',
       'end.title':'Η γειτονιά σου, ένα πάτημα μακριά.','end.lead':'Το ergo κυκλοφορεί σύντομα για Android στο Google Play. Μικρές δουλειές, πραγματικοί άνθρωποι, κοντά σου.','end.get':'Σύντομα στο',
       'foot':'© 2026 ergo · Μικρές δουλειές. Μεγάλη κοινότητα.',
+      'wl.title':'Θέλω να το δοκιμάσω πρώτος','wl.sub':'Άφησε το email σου και θα σε ειδοποιήσουμε μόλις κυκλοφορήσει.','wl.ph':'το email σου','wl.btn':'Ενημέρωσέ με',
+      'wl.role':'Θα το χρησιμοποιήσω για να… (προαιρετικό)','wl.r1':'βρω βοήθεια','wl.r2':'βγάλω χρήματα βοηθώντας','wl.r3':'και τα δύο',
+      'wl.plat':'Το κινητό μου είναι (προαιρετικό)',
+      'wl.fine':'Θα σου στείλουμε email μόνο για την κυκλοφορία του ergo. Χωρίς spam, και μπορείς να ζητήσεις διαγραφή όποτε θέλεις.',
+      'wl.done':'Είσαι στη λίστα! 🎉','wl.doneSub':'Θα σου στείλουμε email μόλις το ergo είναι διαθέσιμο.',
+      'wl.bad':'Γράψε ένα έγκυρο email.','wl.slow':'Πολλές προσπάθειες. Δοκίμασε ξανά σε λίγο.','wl.fail':'Κάτι πήγε στραβά. Δοκίμασε ξανά.',
       'cats':['Σπίτι & Επισκευές','Κήπος','Καθαρισμός','Μετακόμιση','Θελήματα','Τεχνολογία','Κατοικίδια','Εκδηλώσεις','Μαθήματα']
     },
     en: {
       'meta.title':'ergo · Small tasks. Big community.',
       'meta.desc':'Get help with small jobs near you, or earn money helping your neighbourhood. The ergo app is coming soon to Google Play.',
-      'nav.cta':'Get the app',
+      'nav.cta':'Notify me',
       'hero.eyebrow':'The app for your neighbourhood',
       'hero.title':'Small tasks. |Big community.',
       'hero.lead':'Find someone nearby to put up a bookshelf, walk the dog or help you move. Or earn money by helping your neighbours yourself.',
-      'hero.cta':'Coming to Google Play','hero.how':'How it works',
+      'hero.cta':'Get early access','hero.how':'How it works',
       'hero.m1':'Free','hero.m2':'English & Ελληνικά','hero.m3':'Safe by design',
       'ph.hello':'Good morning 👋','ph.near':'Near you today','ph.search':'What do you need?',
       'cat.all':'All','cat.home':'Home & Repairs','cat.pets':'Pet care',
@@ -747,6 +821,12 @@ footer .mark{font-size:24px;color:var(--ink)}
       'sf4.t':'You’re in control','sf4.d':'Edit or delete your tasks, and permanently delete your account whenever you want.',
       'end.title':'Your neighbourhood, one tap away.','end.lead':'ergo is coming soon to Google Play for Android. Small tasks, real people, near you.','end.get':'Coming soon on',
       'foot':'© 2026 ergo · Small tasks. Big community.',
+      'wl.title':'I want to try it first','wl.sub':'Leave your email and we’ll let you know the moment it launches.','wl.ph':'your email','wl.btn':'Notify me',
+      'wl.role':'I’ll use it to… (optional)','wl.r1':'get help','wl.r2':'earn money helping','wl.r3':'both',
+      'wl.plat':'My phone is (optional)',
+      'wl.fine':'We’ll only email you about ergo’s launch. No spam, and you can ask us to delete your email any time.',
+      'wl.done':'You’re on the list! 🎉','wl.doneSub':'We’ll email you as soon as ergo is available.',
+      'wl.bad':'Please enter a valid email.','wl.slow':'Too many tries. Please try again shortly.','wl.fail':'Something went wrong. Please try again.',
       'cats':['Home & Repairs','Garden','Cleaning','Moving','Errands','Tech','Pet care','Events','Lessons']
     }
   };
@@ -797,6 +877,7 @@ footer .mark{font-size:24px;color:var(--ink)}
       var k = el.getAttribute('data-i18n');
       if (d[k] != null) el.textContent = d[k];
     });
+    document.querySelectorAll('[data-i18n-ph]').forEach(function(el){ var k = el.getAttribute('data-i18n-ph'); if (d[k] != null) el.setAttribute('placeholder', d[k]); });
     var h = document.getElementById('headline');
     h.innerHTML = splitTitle(d['hero.title']);
     h.setAttribute('aria-label', d['hero.title'].replace('|',''));
@@ -950,6 +1031,41 @@ footer .mark{font-size:24px;color:var(--ink)}
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
   frame();
+
+  /* ---------- waitlist ---------- */
+  var SB_URL = 'https://qczfeaibovqzgcnsedks.supabase.co';
+  var SB_KEY = 'sb_publishable_4Do6fCKPOF79cRvyB6H8mQ_fT955KOV'; // public key; the database only allows join_waitlist()
+  var form = document.getElementById('wlForm');
+  var email = document.getElementById('wlEmail');
+  var errEl = document.getElementById('wlErr');
+  var btn = document.getElementById('wlBtn');
+  var box = document.getElementById('waitlist');
+  function showErr(k){ errEl.textContent = k ? I18N[lang][k] : ''; email.setAttribute('aria-invalid', k === 'wl.bad' ? 'true' : 'false'); }
+  email.addEventListener('input', function(){ if (errEl.textContent) showErr(''); });
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    if (btn.classList.contains('loading')) return;
+    var v = email.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v) || v.length > 254){ showErr('wl.bad'); email.focus(); return; }
+    var fd = new FormData(form);
+    if (fd.get('website')) { box.classList.add('sent'); return; } // bots fill hidden fields
+    showErr('');
+    btn.classList.add('loading');
+    fetch(SB_URL + '/rest/v1/rpc/join_waitlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY },
+      body: JSON.stringify({ p_email: v, p_lang: lang, p_role: fd.get('role') || null, p_platform: fd.get('platform') || null })
+    }).then(function(r){ return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(function(res){
+        if (res === 'ok'){ box.classList.add('sent'); try { localStorage.setItem('ergo-waitlist', '1'); } catch(_) {} }
+        else if (res === 'invalid'){ showErr('wl.bad'); email.focus(); }
+        else if (res === 'rate_limited'){ showErr('wl.slow'); }
+        else showErr('wl.fail');
+      })
+      .catch(function(){ showErr('wl.fail'); })
+      .then(function(){ btn.classList.remove('loading'); });
+  });
+  try { if (localStorage.getItem('ergo-waitlist') === '1') box.classList.add('sent'); } catch(_) {}
 
   /* ---------- tilt on bento cards (pointer devices) ---------- */
   if (!reduce && window.matchMedia('(hover: hover)').matches){
