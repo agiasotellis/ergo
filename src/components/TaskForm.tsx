@@ -2,7 +2,8 @@ import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { memo, useEffect, useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, TextInput, View } from 'react-native';
+import { Alert, Pressable, TextInput, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import Animated, { FadeIn, ZoomIn, ZoomOut, interpolateColor, useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -24,6 +25,9 @@ import { DUR, EASE_OUT, smooth } from '@/theme/motion';
 type When = 'today' | 'tomorrow' | 'week' | 'flexible' | 'custom';
 const MAX_BUDGET = 100000;
 
+
+/** Space kept between the field being typed in and the keyboard. */
+const BOTTOM_OFFSET = 110;
 function scheduledFor(w: When, custom: Date | null): string | null {
   if (w === 'custom') return custom ? custom.toISOString() : null;
   const d = new Date();
@@ -183,13 +187,13 @@ export function TaskForm({ editId }: { editId?: string }) {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: c.bg }}>
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <View style={{ flex: 1 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 8 }}>
           <IconButton name="close" label={t.common.cancel} onPress={() => router.back()} />
           <Txt weight="800" numberOfLines={1} style={{ flexShrink: 1 }}>{edit ? t.post.editTitle : t.post.title}</Txt>
           <View style={{ width: 46 }} />
         </View>
-        <ScrollView contentContainerStyle={{ padding: 20, gap: 20, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
+        <KeyboardAwareScrollView contentContainerStyle={{ padding: 20, gap: 20, paddingBottom: 120 }} keyboardShouldPersistTaps="handled" bottomOffset={BOTTOM_OFFSET}>
           <H1>{t.post.h1}</H1>
 
           <View accessibilityRole="radiogroup" accessibilityLabel={t.post.category} style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
@@ -301,11 +305,11 @@ export function TaskForm({ editId }: { editId?: string }) {
               </Txt>
             </View>
           </Card>
-        </ScrollView>
+        </KeyboardAwareScrollView>
         <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: 16, paddingBottom: 24, backgroundColor: c.bg }}>
           <Button title={edit ? `${t.post.saveChanges} · ${euro(finalBudget, lang)}` : `${t.post.publish} · ${euro(finalBudget, lang)}`} loading={saving} onPress={publish} />
         </View>
-      </KeyboardAvoidingView>
+      </View>
       <DateTimeSheet
         visible={calendar}
         value={customDate}

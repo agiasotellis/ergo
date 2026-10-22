@@ -22,6 +22,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { Pressable, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 
 import { I18nProvider, useI18n } from "@/i18n/I18nProvider";
 import { AppLockProvider } from "@/lib/appLock";
@@ -150,6 +151,7 @@ function Navigator() {
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+      <KeyboardProvider>
       <ThemeProvider>
         <I18nProvider>
           <AuthProvider>
@@ -159,6 +161,7 @@ export default function RootLayout() {
           </AuthProvider>
         </I18nProvider>
       </ThemeProvider>
+      </KeyboardProvider>
     </GestureHandlerRootView>
   );
 }

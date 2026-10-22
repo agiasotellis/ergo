@@ -1,6 +1,7 @@
 import { Redirect, router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
+import { Alert, Pressable, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import Animated, { FadeIn, FadeInDown, LinearTransition } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
@@ -12,6 +13,9 @@ import { useI18n } from '@/i18n/I18nProvider';
 import { AuthError, useAuth } from '@/lib/auth';
 import { useTheme } from '@/theme/ThemeProvider';
 
+
+/** Space kept between the field being typed in and the keyboard. */
+const BOTTOM_OFFSET = 24;
 function GoogleG() {
   return (
     <Svg width={20} height={20} viewBox="0 0 48 48">
@@ -92,8 +96,8 @@ export default function Auth() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: c.bg }}>
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <ScrollView contentContainerStyle={{ padding: 20, gap: 16 }} keyboardShouldPersistTaps="handled">
+      <View style={{ flex: 1 }}>
+        <KeyboardAwareScrollView contentContainerStyle={{ padding: 20, gap: 16 }} keyboardShouldPersistTaps="handled" bottomOffset={BOTTOM_OFFSET}>
           <View style={{ alignItems: 'center', paddingVertical: 6 }}>
             <LogoInline color={c.ink} />
           </View>
@@ -212,8 +216,8 @@ export default function Auth() {
               </Txt>
             </Pressable>
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+        </KeyboardAwareScrollView>
+      </View>
     </SafeAreaView>
   );
 }

@@ -4,6 +4,7 @@ import { Redirect, router, useFocusEffect, useLocalSearchParams } from 'expo-rou
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, Modal, Pressable, ScrollView, Share, TextInput, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, SlideInDown, ZoomIn, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CategoryTile } from '@/components/CategoryTile';
@@ -494,7 +495,8 @@ export default function TaskDetail() {
         </>
       )}
 
-      <Modal visible={sheet && !isOwner && !mine} transparent animationType="fade" onRequestClose={() => setSheet(false)} statusBarTranslucent>
+      <Modal visible={sheet && !isOwner && !mine} transparent animationType="fade" onRequestClose={() => setSheet(false)} statusBarTranslucent navigationBarTranslucent>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
         <Pressable accessibilityRole="button" accessibilityLabel={t.common.cancel} onPress={() => setSheet(false)} style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' }} />
         <Animated.View entering={SlideInDown.duration(DUR.base).easing(EASE_OUT)} style={{ backgroundColor: c.card, borderTopLeftRadius: 32, borderTopRightRadius: 32, padding: 20, paddingBottom: Math.max(insets.bottom, 12) + 20, gap: 16 }}>
           <View style={{ width: 40, height: 5, borderRadius: 3, backgroundColor: c.line, alignSelf: 'center' }} />
@@ -537,6 +539,7 @@ export default function TaskDetail() {
             }
           />
         </Animated.View>
+        </KeyboardAvoidingView>
       </Modal>
     </View>
   );

@@ -1,6 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
+import { Alert, Pressable, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import Animated, { FadeInRight } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -14,6 +15,9 @@ type Step = 'email' | 'code' | 'password';
 const RESEND_SECONDS = 60;
 
 /** Forgot password: email → code from the email → new password. */
+
+/** Space kept between the field being typed in and the keyboard. */
+const BOTTOM_OFFSET = 24;
 export default function ResetPassword() {
   const { c } = useTheme();
   const { t } = useI18n();
@@ -83,11 +87,11 @@ export default function ResetPassword() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: c.bg }}>
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <View style={{ flex: 1 }}>
         <View style={{ paddingHorizontal: 20, paddingTop: 8 }}>
           <IconButton name="back" label={t.common.back} onPress={() => (step === 'code' ? setStep('email') : router.back())} />
         </View>
-        <ScrollView contentContainerStyle={{ padding: 20, gap: 16 }} keyboardShouldPersistTaps="handled">
+        <KeyboardAwareScrollView contentContainerStyle={{ padding: 20, gap: 16 }} keyboardShouldPersistTaps="handled" bottomOffset={BOTTOM_OFFSET}>
           <Animated.View key={step} entering={FadeInRight.duration(300)} style={{ gap: 16 }}>
             <View style={{ width: 64, height: 64, borderRadius: 22, backgroundColor: c.primarySoft, alignItems: 'center', justifyContent: 'center' }}>
               <Icon name={step === 'code' ? 'mail' : 'lock'} color={c.primaryText} size={28} />
@@ -172,8 +176,8 @@ export default function ResetPassword() {
             )}
             {step === 'password' && <Button title={t.reset.save} loading={busy} disabled={!pass || !pass2} onPress={save} />}
           </Animated.View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+        </KeyboardAwareScrollView>
+      </View>
     </SafeAreaView>
   );
 }

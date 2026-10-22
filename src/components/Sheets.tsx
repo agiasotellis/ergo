@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { Alert, KeyboardAvoidingView, Modal, Platform, Pressable, View } from 'react-native';
+import { Alert, Modal, Pressable, View, useWindowDimensions } from 'react-native';
+import { KeyboardAvoidingView, KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import Animated, { SlideInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -18,16 +19,26 @@ export function Sheet({ visible, onClose, children }: { visible: boolean; onClos
   const { c } = useTheme();
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
+  const { height } = useWindowDimensions();
   return (
-    <Modal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+    <Modal visible={visible} transparent animationType="fade" statusBarTranslucent navigationBarTranslucent onRequestClose={onClose}>
+      {/* The sheet rides up with the keyboard; tall content scrolls so the field being typed in stays visible. */}
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
         <Pressable accessibilityRole="button" accessibilityLabel={t.common.cancel} onPress={onClose} style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' }} />
         <Animated.View
           entering={SlideInDown.duration(DUR.base).easing(EASE_OUT)}
-          style={{ backgroundColor: c.card, borderTopLeftRadius: 32, borderTopRightRadius: 32, paddingTop: 12, paddingHorizontal: 20, paddingBottom: Math.max(insets.bottom, 12) + 12, gap: 12 }}
+          style={{ maxHeight: height - insets.top - 24, backgroundColor: c.card, borderTopLeftRadius: 32, borderTopRightRadius: 32, paddingTop: 12 }}
         >
-          <View style={{ width: 40, height: 5, borderRadius: 3, backgroundColor: c.line, alignSelf: 'center' }} />
-          {children}
+          <View style={{ width: 40, height: 5, borderRadius: 3, backgroundColor: c.line, alignSelf: 'center', marginBottom: 12 }} />
+          <KeyboardAwareScrollView
+            style={{ flexGrow: 0 }}
+            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: Math.max(insets.bottom, 12) + 12, gap: 12 }}
+            keyboardShouldPersistTaps="handled"
+            bottomOffset={16}
+            showsVerticalScrollIndicator={false}
+          >
+            {children}
+          </KeyboardAwareScrollView>
         </Animated.View>
       </KeyboardAvoidingView>
     </Modal>
