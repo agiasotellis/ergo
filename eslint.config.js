@@ -21,6 +21,11 @@ module.exports = defineConfig([
           message: 'Do not name things after JavaScript globals (React Compiler output calls e.g. Symbol.for).',
         },
         {
+          // Fixed channel names get reused by supabase-js and crash on re-subscribe.
+          selector: "CallExpression[callee.property.name='channel'][arguments.0.type=/^(Literal|TemplateLiteral)$/]",
+          message: 'Use supabase.channel(uniqueTopic(...)) from lib/realtime.ts, never a fixed channel name.',
+        },
+        {
           // Not implemented in Hermes on Android: `new Intl.RelativeTimeFormat(...)` crashes the screen.
           selector: "MemberExpression[object.name='Intl'][property.name=/^(RelativeTimeFormat|ListFormat|DisplayNames|Segmenter|DurationFormat)$/]",
           message: 'This Intl API is missing in Hermes (Android). Format the text by hand (see lib/format.ts).',

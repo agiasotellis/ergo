@@ -9,6 +9,7 @@ import { useAuth } from "@/lib/auth";
 import { FiltersProvider } from "@/lib/filters";
 import { usePushNotifications } from "@/lib/push";
 import { supabase } from "@/lib/supabase";
+import { uniqueTopic } from '@/lib/realtime';
 
 export default function TabsLayout() {
   const { session, userId } = useAuth();
@@ -24,7 +25,7 @@ export default function TabsLayout() {
     if (!userId) return;
     refresh();
     const ch = supabase
-      .channel("unread")
+      .channel(uniqueTopic("unread"))
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "messages" },

@@ -25,6 +25,7 @@ import {
 import { useAuth } from '@/lib/auth';
 import { euro } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
+import { uniqueTopic } from '@/lib/realtime';
 import type { Conversation, Message, ReportTarget } from '@/lib/types';
 import { openProfile } from '@/lib/nav';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -63,7 +64,7 @@ export default function Chat() {
     load().catch(() => {});
     if (!id) return;
     const ch = supabase
-      .channel(`chat:${id}`)
+      .channel(uniqueTopic(`chat:${id}`))
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${id}` }, (payload) => {
         const m = payload.new as Message;
         setMsgs((list) => (list.some((x) => x.id === m.id) ? list : [...list, m]));

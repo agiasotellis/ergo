@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { unreadNotifications } from './api';
 import { supabase } from './supabase';
+import { uniqueTopic } from './realtime';
 
 /** Live count of unread notifications for the bell badge. */
 export function useUnreadNotifications(userId: string | null | undefined) {
@@ -26,7 +27,7 @@ export function useUnreadNotifications(userId: string | null | undefined) {
   useEffect(() => {
     if (!userId) return;
     const ch = supabase
-      .channel(`notifications-${userId}`)
+      .channel(uniqueTopic(`notifications-${userId}`))
       .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${userId}` }, () => refresh())
       .subscribe();
     return () => {
