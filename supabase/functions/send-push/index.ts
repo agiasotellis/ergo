@@ -45,6 +45,20 @@ function compose(lang: 'el' | 'en', p: Payload): { title: string; body: string }
         title: el ? 'Πώς πήγε; ⭐' : 'How did it go? ⭐',
         body: el ? `Άφησε κριτική για ${who} · ${task}` : `Leave a review for ${who} · ${task}`,
       };
+    case 'not_selected':
+      return {
+        title: el ? 'Η εργασία ανατέθηκε' : 'Task assigned',
+        body: el ? `Επιλέχθηκε άλλη προσφορά · ${task}. Δες κι άλλες εργασίες κοντά σου.` : `Another offer was chosen · ${task}. Have a look at other tasks nearby.`,
+      };
+    case 'withdrawn':
+      return {
+        title: el ? 'Ο βοηθός αποχώρησε' : 'Your helper stepped back',
+        body: el ? `${who} δεν μπορεί τελικά · ${task}. Η εργασία άνοιξε ξανά και οι προσφορές ισχύουν.` : `${who} can't make it · ${task}. The task is open again and earlier offers still stand.`,
+      };
+    case 'nearby_task': {
+      const dist = d.km != null ? ` · ${Number(d.km).toLocaleString(el ? 'el-GR' : 'en-GB')} ${el ? 'χλμ.' : 'km'}` : '';
+      return { title: el ? 'Νέα εργασία κοντά σου 📍' : 'New task near you 📍', body: `${task}${amount ? ` · ${amount}` : ''}${dist}` };
+    }
     case 'review':
       return { title: `${el ? 'Νέα κριτική' : 'New review'} ${'★'.repeat(Math.max(1, Math.min(5, Number(d.rating ?? 5))))}`, body: `${who} · ${task}` };
     case 'message':

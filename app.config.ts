@@ -1,6 +1,9 @@
 import type { ExpoConfig } from 'expo/config';
 
 const PACKAGE = 'com.agiasotellis.ergo';
+// Share links (https://<LINK_HOST>/t/<task id>) open the app. Keep in sync with src/lib/env.ts;
+// the site in web/ serves /.well-known/assetlinks.json so Android trusts these links.
+const LINK_HOST = 'ergo-tasks.vercel.app';
 
 const config: ExpoConfig = {
   name: 'ergo',
@@ -31,6 +34,14 @@ const config: ExpoConfig = {
     permissions: ['ACCESS_COARSE_LOCATION', 'ACCESS_FINE_LOCATION'],
     blockedPermissions: ['android.permission.RECORD_AUDIO'],
     predictiveBackGestureEnabled: false,
+    intentFilters: [
+      {
+        action: 'VIEW',
+        autoVerify: true,
+        data: [{ scheme: 'https', host: LINK_HOST, pathPrefix: '/t/' }],
+        category: ['BROWSABLE', 'DEFAULT'],
+      },
+    ],
   },
   web: {
     favicon: './assets/images/favicon.png',

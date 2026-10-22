@@ -1,8 +1,8 @@
 import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
-import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { Redirect, router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Modal, Pressable, ScrollView, TextInput, View } from 'react-native';
+import { Alert, Modal, Pressable, ScrollView, Share, TextInput, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, SlideInDown, ZoomIn, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -28,9 +28,11 @@ import {
   myReviewForJob,
   sendOffer,
   startConversation,
+  withdrawFromJob,
 } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { setEditDraft } from '@/lib/editDraft';
+import { taskLink } from '@/lib/env';
 import { categoryColors } from '@/lib/categories';
 import { euro, rating, when } from '@/lib/format';
 import type { Application, Job, Profile, ProfileStats, ReportTarget } from '@/lib/types';
@@ -97,6 +99,8 @@ export default function TaskDetail() {
     }, [load])
   );
 
+  // Opened from a link while signed out: go through sign-in first.
+  if (!userId) return <Redirect href="/" />;
   if (!job) return <Loading />;
   const col = categoryColors(job.category, isDark);
 
@@ -138,13 +142,28 @@ export default function TaskDetail() {
           setBusy(true);
           try {
             await deleteJob(job);
-            router.back();
+            goBack();
           } catch {
             setBusy(false);
             Alert.alert('ergo', t.common.error);
           }
         },
       },
+    ]);
+
+  // Opened from a link or a notification there may be nothing to go back to.
+  const goBack = () => (router.canGoBack() ? router.back() : router.replace('/(tabs)'));
+
+  const share = () => {
+    Haptics.selectionAsync().catch(() => {});
+    const url = taskLink(job.id);
+    Share.share({ message: t.task.shareText(job.title, euro(job.budget, lang), url), url, title: job.title }).catch(() => {});
+  };
+
+  const confirmWithdraw = () =>
+    Alert.alert(t.task.withdrawTitle, t.task.withdrawConfirm, [
+      { text: t.common.back, style: 'cancel' },
+      { text: t.task.withdrawYes, style: 'destructive', onPress: () => run(() => withdrawFromJob(job.id)) },
     ]);
 
   const openChat = async (other: string) => {
@@ -170,8 +189,11 @@ export default function TaskDetail() {
           <SafeAreaView edges={['top']} style={{ position: 'absolute', top: 0, left: 16, right: 16 }}>
             <View style={{ paddingTop: 8 }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <IconButton name="back" label={t.common.back} onPress={() => router.back()} />
-                {!isOwner && <IconButton name="more" label={t.safety.more} onPress={() => setMenu(true)} />}
+                <IconButton name="back" label={t.common.back} onPress={goBack} />
+                <View style={{ flexDirection: 'row', gap: 10 }}>
+                  {job.status !== 'cancelled' && <IconButton name="share" label={t.task.share} onPress={share} />}
+                  {!isOwner && <IconButton name="more" label={t.safety.more} onPress={() => setMenu(true)} />}
+                </View>
               </View>
             </View>
           </SafeAreaView>
@@ -295,6 +317,21 @@ export default function TaskDetail() {
             </Animated.View>
           )}
 
+          {job.status === 'assigned' && isWorker && (
+            <Card style={{ paddingVertical: 4, borderWidth: 1.5, borderColor: c.line }}>
+              <ManageRow icon="exit" label={t.task.withdraw} danger onPress={confirmWithdraw} disabled={busy} />
+            </Card>
+          )}
+
+          {!isOwner && mine?.status === 'withdrawn' && (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: c.warnSoft, borderRadius: 16, padding: 12 }}>
+              <Icon name="exit" color={c.warn} size={20} />
+              <Txt size={13} color={c.body} style={{ flex: 1 }}>
+                {t.task.withdrawnNote}
+              </Txt>
+            </View>
+          )}
+
           {poster && (
             <Card
               onPress={() => openProfile(poster.id, userId)}
@@ -358,6 +395,11 @@ export default function TaskDetail() {
                     <Button title={t.task.message} variant="secondary" size="md" style={{ flex: 1 }} onPress={() => openChat(a.applicant_id)} />
                     {job.status === 'open' && a.status === 'pending' && (
                       <Button title={t.task.accept} size="md" style={{ flex: 1 }} loading={busy} onPress={() => run(() => acceptOffer(a.id))} />
+                    )}
+                    {a.status === 'withdrawn' && (
+                      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                        <Badge label={t.chat.withdrawn} bg={c.warnSoft} fg={c.warn} style={{ alignSelf: 'center' }} />
+                      </View>
                     )}
                     {a.status === 'accepted' && (
                       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -444,11 +486,11 @@ export default function TaskDetail() {
                 icon: 'block',
                 label: t.safety.block,
                 danger: true,
-                onPress: () => confirmBlock({ me: userId, other: job.poster_id, name: poster?.full_name ?? '', t, onDone: () => router.back() }),
+                onPress: () => confirmBlock({ me: userId, other: job.poster_id, name: poster?.full_name ?? '', t, onDone: goBack }),
               },
             ]}
           />
-          <ReportSheet target={report} onClose={() => setReport(null)} onBlocked={() => router.back()} />
+          <ReportSheet target={report} onClose={() => setReport(null)} onBlocked={goBack} />
         </>
       )}
 

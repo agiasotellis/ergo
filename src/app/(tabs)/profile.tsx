@@ -10,11 +10,11 @@ import type { IconName } from '@/components/icons';
 import { Sheet } from '@/components/Sheets';
 import { Avatar, Badge, Button, Card, Empty, Field, H1, H2, Segmented, Stars, Txt } from '@/components/ui';
 import { useI18n } from '@/i18n/I18nProvider';
-import { deleteMyAccount, getStats, myJobs, pickAndUploadPhoto, reviewsFor, updateProfile } from '@/lib/api';
+import { deleteMyAccount, getStats, getTaskAlert, myJobs, pickAndUploadPhoto, reviewsFor, updateProfile } from '@/lib/api';
 import { useAppLock } from '@/lib/appLock';
 import { useAuth } from '@/lib/auth';
-import { ago, euro, rating } from '@/lib/format';
-import type { Job, ProfileStats, Review } from '@/lib/types';
+import { ago, euro, km, rating } from '@/lib/format';
+import type { Job, ProfileStats, Review, TaskAlert } from '@/lib/types';
 import { openProfile } from '@/lib/nav';
 import { useTheme, type ThemePref } from '@/theme/ThemeProvider';
 
@@ -46,6 +46,12 @@ export default function Profile() {
   const [name, setName] = useState('');
   const [bio, setBio] = useState('');
   const [savingProfile, setSavingProfile] = useState(false);
+  const [taskAlert, setTaskAlert] = useState<TaskAlert | null>(null);
+  useFocusEffect(
+    useCallback(() => {
+      if (userId) getTaskAlert(userId).then(setTaskAlert).catch(() => {});
+    }, [userId])
+  );
 
   const openEditor = () => {
     setName(profile?.full_name ?? '');
@@ -277,6 +283,12 @@ export default function Profile() {
             <Txt size={12} muted style={{ marginTop: -6, marginBottom: 6, marginLeft: 52 }}>
               {lock.available || lock.enabled ? t.lock.settingHint : t.lock.unavailable}
             </Txt>
+            <Row icon="bell" label={t.alerts.title} onPress={() => router.push('/alerts')}>
+              <Txt size={13} weight="600" color={taskAlert?.enabled ? c.primaryText : c.muted}>
+                {taskAlert?.enabled ? t.alerts.rowOn(km(taskAlert.radius_km, lang)) : t.alerts.rowOff}
+              </Txt>
+              <Icon name="chevron" color={c.muted} size={18} />
+            </Row>
             <Row icon="block" label={t.safety.blockedList} onPress={() => router.push('/blocked')}>
               <Icon name="chevron" color={c.muted} size={18} />
             </Row>

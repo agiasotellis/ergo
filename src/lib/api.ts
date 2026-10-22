@@ -2,7 +2,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 import { shrinkPhoto } from './photos';
 import { supabase } from './supabase';
-import type { AppNotification, Application, ReportReason, ReportTarget, CategoryKey, Conversation, Job, Message, NearbyJob, Profile, ProfileStats, Review } from './types';
+import type { AppNotification, Application, ReportReason, ReportTarget, CategoryKey, TaskAlert, Conversation, Job, Message, NearbyJob, Profile, ProfileStats, Review } from './types';
 
 const PERSON = 'id, full_name, avatar_url';
 /** Profile columns other users may read (push token / locale are private). */
@@ -151,6 +151,11 @@ export async function sendOffer(jobId: string, userId: string, amount: number | 
 
 export async function acceptOffer(applicationId: string) {
   must(await supabase.rpc('accept_application', { p_application_id: applicationId }));
+}
+
+/** The chosen helper steps back: the task reopens and the other offers count again. */
+export async function withdrawFromJob(jobId: string) {
+  must(await supabase.rpc('withdraw_from_job', { p_job_id: jobId }));
 }
 
 // ---------- conversations & messages ----------
@@ -327,4 +332,14 @@ export async function sendReport(me: string, target: ReportTarget, reason: Repor
 /** True when the database refused because of the anti-spam limits. */
 export function isRateLimited(e: unknown) {
   return e instanceof Error ? e.message.includes('rate_limited') : typeof e === 'object' && !!e && String((e as { message?: string }).message).includes('rate_limited');
+}
+
+// ---------- nearby task alerts ----------
+export async function getTaskAlert(userId: string) {
+  const res = await supabase.from('task_alerts').select('*').eq('user_id', userId).maybeSingle();
+  return must<TaskAlert | null>(res);
+}
+
+export async function saveTaskAlert(alert: TaskAlert) {
+  must(await supabase.from('task_alerts').upsert({ ...alert, updated_at: new Date().toISOString() }));
 }

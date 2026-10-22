@@ -344,7 +344,9 @@ function TaskNote({ message, jobId, jobStatus }: { message: Message; jobId: stri
       ? { icon: 'check' as const, bg: c.okSoft, fg: c.ok, title: t.chat.completed, body: t.chat.completedBody }
       : event === 'cancelled'
         ? { icon: 'close' as const, bg: c.dangerSoft, fg: c.danger, title: t.chat.cancelled, body: '' }
-        : {
+        : event === 'withdrawn'
+          ? { icon: 'refresh' as const, bg: c.warnSoft, fg: c.warn, title: t.chat.withdrawn, body: t.chat.withdrawnBody }
+          : {
             icon: 'check' as const,
             bg: c.primarySoft,
             fg: c.primaryText,

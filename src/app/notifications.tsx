@@ -10,7 +10,7 @@ import { Avatar, Card, Empty, H1, IconButton, Loading, Txt } from '@/components/
 import { useI18n } from '@/i18n/I18nProvider';
 import { markNotificationsRead, myNotifications } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
-import { ago, euro } from '@/lib/format';
+import { ago, euro, km } from '@/lib/format';
 import type { AppNotification, NotificationType } from '@/lib/types';
 import { openProfile } from '@/lib/nav';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -47,6 +47,9 @@ export default function Notifications() {
     cancelled: { icon: 'close', bg: c.dangerSoft, fg: c.danger },
     review: { icon: 'star', bg: c.warnSoft, fg: c.warn },
     review_request: { icon: 'star', bg: c.warnSoft, fg: c.warn },
+    not_selected: { icon: 'close', bg: c.soft, fg: c.muted },
+    withdrawn: { icon: 'exit', bg: c.warnSoft, fg: c.warn },
+    nearby_task: { icon: 'pin', bg: c.primarySoft, fg: c.primaryText },
   };
 
   const text = (n: AppNotification) => {
@@ -64,6 +67,17 @@ export default function Notifications() {
         return t.notifications.review(name, n.data.rating ?? 5);
       case 'review_request':
         return t.notifications.reviewRequest(name);
+      case 'not_selected':
+        return t.notifications.notSelected;
+      case 'withdrawn':
+        return t.notifications.withdrawn(name);
+      case 'nearby_task':
+        return t.notifications.nearbyTask(
+          n.data.amount != null ? euro(n.data.amount, lang) : '',
+          n.data.km != null ? `${km(n.data.km, lang)} ${t.common.away}` : ''
+        );
+      default:
+        return '';
     }
   };
 
@@ -102,7 +116,7 @@ export default function Notifications() {
           )
         }
         renderItem={({ item, index }) => {
-          const l = look[item.type];
+          const l = look[item.type] ?? look.offer;
           const unread = !item.read_at;
           return (
             <Animated.View entering={FadeInDown.delay(Math.min(index, 8) * 40)}>

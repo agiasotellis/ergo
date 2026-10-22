@@ -48,7 +48,7 @@ export type Application = {
   applicant_id: string;
   message: string | null;
   amount: number | null;
-  status: 'pending' | 'accepted' | 'rejected';
+  status: 'pending' | 'accepted' | 'rejected' | 'withdrawn';
   created_at: string;
   applicant?: Pick<Profile, 'id' | 'full_name' | 'avatar_url'> | null;
 };
@@ -74,7 +74,7 @@ export type Message = {
   image_path?: string | null;
   /** 'system' = automatic note about the shared task (assigned / completed / cancelled). */
   kind?: 'text' | 'system';
-  meta?: { event?: 'assigned' | 'completed' | 'cancelled'; amount?: number; title?: string } | null;
+  meta?: { event?: 'assigned' | 'completed' | 'cancelled' | 'withdrawn'; amount?: number; title?: string } | null;
   read_at: string | null;
   created_at: string;
   /** Local-only: preview shown while a photo uploads. */
@@ -94,7 +94,7 @@ export type Review = {
   job?: Pick<Job, 'id' | 'title'> | null;
 };
 
-export type NotificationType = 'offer' | 'accepted' | 'completed' | 'cancelled' | 'review' | 'review_request';
+export type NotificationType = 'offer' | 'accepted' | 'completed' | 'cancelled' | 'review' | 'review_request' | 'not_selected' | 'withdrawn' | 'nearby_task';
 
 export type AppNotification = {
   id: string;
@@ -102,7 +102,7 @@ export type AppNotification = {
   type: NotificationType;
   job_id: string | null;
   actor_id: string | null;
-  data: { title?: string; amount?: number; rating?: number };
+  data: { title?: string; amount?: number | null; rating?: number; km?: number };
   read_at: string | null;
   created_at: string;
   actor?: Pick<Profile, 'id' | 'full_name' | 'avatar_url'> | null;
@@ -110,3 +110,16 @@ export type AppNotification = {
 
 export type ReportReason = 'spam' | 'scam' | 'inappropriate' | 'harassment' | 'other';
 export type ReportTarget = { type: 'job' | 'user' | 'message'; id: string; userId: string | null };
+
+/** Push alerts for new tasks nearby (one row per user). */
+export type TaskAlert = {
+  user_id: string;
+  enabled: boolean;
+  lat: number;
+  lng: number;
+  radius_km: number;
+  /** Empty = every category. */
+  categories: CategoryKey[];
+  min_budget: number;
+  updated_at?: string;
+};

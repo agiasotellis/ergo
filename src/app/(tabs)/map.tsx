@@ -1,4 +1,4 @@
-import { Camera, GeoJSONSource, Layer, Map as MapLibreMap, Marker, NativeUserLocation, type CameraRef, type MapRef } from '@maplibre/maplibre-react-native';
+import { Camera, GeoJSONSource, Layer, Map as MapLibreMap, Marker, NativeUserLocation, type CameraRef, type GeoJSONSourceRef, type MapRef } from '@maplibre/maplibre-react-native';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
@@ -27,6 +27,9 @@ import { DUR, EASE_OUT } from '@/theme/motion';
 const MIN_ZOOM = 1;
 const MAX_PINS = 100;
 const MAX_ZOOM = 19;
+// Below this zoom pins are grouped into numbered circles (drawn by the map engine, so
+// hundreds of tasks stay smooth); from here on each task gets its own price pin.
+const PIN_ZOOM = 12;
 
 /** Price pin drawn as a native view on the map. */
 const PricePin = memo(function PricePin({ job, selected, onPress }: { job: NearbyJob; selected: boolean; onPress: () => void }) {
@@ -89,6 +92,8 @@ export default function MapScreen() {
   const [jobs, setJobs] = useState<NearbyJob[]>([]);
   const [selected, setSelected] = useState<NearbyJob | null>(null);
   const [moved, setMoved] = useState<{ lat: number; lng: number } | null>(null);
+  const [zoomLevel, setZoomLevel] = useState(PIN_ZOOM);
+  const clusterRef = useRef<GeoJSONSourceRef>(null);
   // A pin tap also reaches the map's own onPress; remember it so the card isn't closed again.
   const pinTapped = useRef(false);
   const openPin = (j: NearbyJob) => {
@@ -97,7 +102,9 @@ export default function MapScreen() {
       pinTapped.current = false;
     }, 400);
     setSelected(j);
-    cameraRef.current?.easeTo({ center: [j.lng, j.lat], duration: 350, easing: 'ease', padding: { ...padding, bottom: 330 } });
+    // From the grouped view, zoom in far enough for the price pins to appear.
+    const zoomIn = zoomLevel < PIN_ZOOM ? { zoom: PIN_ZOOM + 1 } : {};
+    cameraRef.current?.easeTo({ center: [j.lng, j.lat], duration: 350, easing: 'ease', padding: { ...padding, bottom: 330 }, ...zoomIn });
   };
 
   useEffect(() => {
@@ -141,6 +148,44 @@ export default function MapScreen() {
     fit(center.lat, center.lng, radius);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [radius]);
+
+  const grouped = zoomLevel < PIN_ZOOM;
+  // Every filtered task as GeoJSON for the clustered layer (cheap even for hundreds of points).
+  const points = useMemo<GeoJSON.FeatureCollection>(
+    () => ({
+      type: 'FeatureCollection',
+      features: pins.map((j) => ({
+        type: 'Feature',
+        id: j.id,
+        geometry: { type: 'Point', coordinates: [j.lng, j.lat] },
+        properties: { id: j.id, price: euro(j.budget, lang) },
+      })),
+    }),
+    [pins, lang]
+  );
+
+  const pressGroup = async (e: { nativeEvent: { features: GeoJSON.Feature[] } }) => {
+    const f = e.nativeEvent.features[0];
+    if (!f || f.geometry.type !== 'Point') return;
+    pinTapped.current = true;
+    setTimeout(() => {
+      pinTapped.current = false;
+    }, 400);
+    const [lng, lat] = f.geometry.coordinates;
+    const props = (f.properties ?? {}) as { cluster?: boolean; cluster_id?: number; id?: string };
+    if (props.cluster && props.cluster_id != null) {
+      let z = zoomLevel + 2;
+      try {
+        z = (await clusterRef.current?.getClusterExpansionZoom(props.cluster_id)) ?? z;
+      } catch {
+        // fall back to two levels closer
+      }
+      cameraRef.current?.easeTo({ center: [lng, lat], zoom: Math.min(MAX_ZOOM, Math.max(z, zoomLevel + 1)), duration: 400, easing: 'ease' });
+      return;
+    }
+    const job = pins.find((j) => j.id === props.id);
+    if (job) openPin(job);
+  };
 
   const ring = useMemo(() => circlePolygon(center.lat, center.lng, radius), [center.lat, center.lng, radius]);
 
@@ -196,8 +241,9 @@ export default function MapScreen() {
           if (!pinTapped.current) setSelected(null);
         }}
         onRegionDidChange={(e) => {
-          const { center: cc, userInteraction } = e.nativeEvent;
+          const { center: cc, userInteraction, zoom: z } = e.nativeEvent;
           if (userInteraction) setMoved({ lat: cc[1], lng: cc[0] });
+          if (typeof z === 'number') setZoomLevel(z);
         }}
       >
         <Camera
@@ -211,9 +257,57 @@ export default function MapScreen() {
           <Layer id="search-ring-line" type="line" paint={{ 'line-color': c.primary, 'line-width': 1.5, 'line-opacity': 0.8 }} />
         </GeoJSONSource>
         {loc.granted && <NativeUserLocation />}
-        {drawn.map((j) => (
-          <PricePin key={j.id} job={j} selected={selected?.id === j.id} onPress={() => openPin(j)} />
-        ))}
+        <GeoJSONSource
+          id="tasks"
+          ref={clusterRef}
+          data={points}
+          cluster
+          clusterRadius={48}
+          clusterMaxZoom={PIN_ZOOM - 1}
+          hitbox={{ top: 8, right: 8, bottom: 8, left: 8 }}
+          onPress={pressGroup}
+        >
+          {/* Groups: a circle that grows with the number of tasks, and the count. */}
+          <Layer
+            id="task-groups"
+            type="circle"
+            filter={['has', 'point_count']}
+            maxzoom={PIN_ZOOM}
+            paint={{
+              'circle-color': c.primary,
+              'circle-radius': ['step', ['get', 'point_count'], 18, 10, 23, 50, 29],
+              'circle-stroke-width': 4,
+              'circle-stroke-color': c.card,
+              'circle-stroke-opacity': 0.9,
+            }}
+          />
+          <Layer
+            id="task-group-count"
+            type="symbol"
+            filter={['has', 'point_count']}
+            maxzoom={PIN_ZOOM}
+            layout={{ 'text-field': ['get', 'point_count_abbreviated'], 'text-font': ['Noto Sans Bold'], 'text-size': 14, 'text-allow-overlap': true, 'text-ignore-placement': true }}
+            paint={{ 'text-color': '#FFFFFF' }}
+          />
+          {/* Single tasks while zoomed out: a small price bubble. */}
+          <Layer
+            id="task-single"
+            type="circle"
+            filter={['!', ['has', 'point_count']]}
+            maxzoom={PIN_ZOOM}
+            paint={{ 'circle-color': c.card, 'circle-radius': 7, 'circle-stroke-width': 3, 'circle-stroke-color': c.primary }}
+          />
+          <Layer
+            id="task-single-price"
+            type="symbol"
+            filter={['!', ['has', 'point_count']]}
+            maxzoom={PIN_ZOOM}
+            layout={{ 'text-field': ['get', 'price'], 'text-font': ['Noto Sans Bold'], 'text-size': 12, 'text-offset': [0, -1.5], 'text-anchor': 'bottom', 'text-allow-overlap': false }}
+            paint={{ 'text-color': c.ink, 'text-halo-color': c.card, 'text-halo-width': 2 }}
+          />
+        </GeoJSONSource>
+        {!grouped &&
+          drawn.map((j) => <PricePin key={j.id} job={j} selected={selected?.id === j.id} onPress={() => openPin(j)} />)}
       </MapLibreMap>
 
       {/* Top controls */}

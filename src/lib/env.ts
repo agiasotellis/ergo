@@ -9,3 +9,9 @@ export const env = {
   // OAuth *Web* client ID (public; Google sign-in returns an ID token for this audience).
   googleWebClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || '578697033878-cq6mf0m20f9ksq2hg92e6t1tpsdh0iop.apps.googleusercontent.com',
 };
+
+/** Host of the share-link site (web/ in this repo, on Vercel). Also set in app.config.ts. */
+export const LINK_HOST = 'ergo-tasks.vercel.app';
+
+/** https link that opens a task in the app (or a small web page if it isn't installed). */
+export const taskLink = (id: string) => `https://${LINK_HOST}/t/${id}`;
