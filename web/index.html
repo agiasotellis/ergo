@@ -1,18 +1,968 @@
-<!doctype html><html lang="el"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>ergo</title><meta name="description" content="Μικρές δουλειές. Μεγάλη κοινότητα."><style>
-:root{--bg:#F5F7FB;--card:#FFFFFF;--ink:#0F1F3D;--muted:#55627A;--blue:#2563EB;--coral:#FF6A3D;--line:#E2E7F0}
-@media (prefers-color-scheme:dark){:root{--bg:#0A1428;--card:#14213D;--ink:#F2F5FA;--muted:#A7B2C7;--line:#263757}}
-*{box-sizing:border-box}html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:grid;place-items:center;padding:24px max(16px,env(safe-area-inset-left)) 24px max(16px,env(safe-area-inset-right))}
-main{width:100%;max-width:420px;background:var(--card);border:1px solid var(--line);border-radius:28px;padding:32px 24px;text-align:center;display:flex;flex-direction:column;gap:14px;align-items:center}
-.mark{font:900 44px/1 Nunito,Inter,system-ui,sans-serif;letter-spacing:-1.5px}.mark span{color:var(--coral)}
-.tag{font-size:11px;font-weight:800;letter-spacing:.24em;color:var(--muted);margin:0}
-h1{font-size:22px;line-height:1.25;margin:8px 0 0;text-wrap:balance}p{margin:0;color:var(--muted)}
-a.btn{display:block;width:100%;padding:16px;border-radius:999px;background:var(--blue);color:#fff;font-weight:800;text-decoration:none}
-a.btn:focus-visible{outline:3px solid var(--coral);outline-offset:3px}.small{font-size:13px}
+<!doctype html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ergo · Μικρές δουλειές. Μεγάλη κοινότητα.</title>
+<meta name="description" content="Βρες βοήθεια για μικρές δουλειές κοντά σου, ή κέρδισε χρήματα βοηθώντας τη γειτονιά σου. Η εφαρμογή ergo έρχεται σύντομα στο Google Play.">
+<meta name="theme-color" content="#0A1428">
+<meta property="og:title" content="ergo · Μικρές δουλειές. Μεγάλη κοινότητα.">
+<meta property="og:description" content="Βρες βοήθεια για μικρές δουλειές κοντά σου, ή κέρδισε χρήματα βοηθώντας τη γειτονιά σου.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -6 200 150'%3E%3Cg stroke-linecap='round'%3E%3Ccircle cx='40' cy='60' r='20' fill='%23FF6A3D'/%3E%3Cpath d='M4 138V117c0-17 14-30 31-30h7c14 0 24 10 24 24v27Z' fill='%23FF6A3D'/%3E%3Cpath d='M54 113c25-8 37-30 42-58' stroke='%23FF6A3D' stroke-width='21' fill='none'/%3E%3Ccircle cx='160' cy='60' r='20' fill='%233B82F6'/%3E%3Cpath d='M196 138V117c0-17-14-30-31-30h-7c-14 0-24 10-24 24v27Z' fill='%233B82F6'/%3E%3Cpath d='M146 113c-25-8-37-30-42-58' stroke='%233B82F6' stroke-width='21' fill='none'/%3E%3Cpath d='M100 2v22M73 15l11 14M127 15l-11 14' stroke='%23FFA726' stroke-width='10' fill='none'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Nunito:wght@800;900&display=swap">
+<style>
+:root{
+  --navy:#0A1428; --navy-2:#0F1F3D; --navy-3:#14213D; --line-d:#263757;
+  --bg:#F5F7FB; --card:#FFFFFF; --ink:#0F1F3D; --body:#334155; --muted:#55627A; --line:#E2E7F0;
+  --blue:#2563EB; --blue-2:#3B82F6; --blue-soft:#E3EEFF; --coral:#FF6A3D; --amber:#FFA726; --ok:#16A34A; --ok-soft:#DCFCE7;
+  --r-xl:32px; --r-lg:24px; --r-md:18px;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --gutter:clamp(16px,4vw,40px);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img,svg{display:block}
+a{color:inherit}
+button{font:inherit;color:inherit}
+.wrap{width:100%;max-width:1180px;margin:0 auto;padding:0 var(--gutter)}
+.mark{font-family:Nunito,Inter,sans-serif;font-weight:900;letter-spacing:-.04em}
+.mark i{font-style:normal;color:var(--coral)}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--blue)}
+.eyebrow::before{content:"";width:22px;height:2px;border-radius:2px;background:currentColor}
+h1,h2,h3{margin:0;letter-spacing:-.035em;line-height:1.04;text-wrap:balance}
+h2{font-size:clamp(34px,5.4vw,64px);font-weight:900}
+h3{font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+p{margin:0}
+.lead{font-size:clamp(17px,1.6vw,20px);color:var(--body);max-width:56ch;text-wrap:pretty}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:56px;padding:0 26px;border-radius:999px;font-weight:800;font-size:16px;text-decoration:none;border:0;cursor:pointer;transition:transform .3s var(--ease),box-shadow .3s var(--ease),background .3s}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--blue);color:#fff;box-shadow:0 10px 30px -10px rgba(37,99,235,.7)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 40px -12px rgba(37,99,235,.8)}
+.btn-ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.16)}
+.btn-ghost:hover{background:rgba(255,255,255,.14)}
+.btn:focus-visible,.lang button:focus-visible,a:focus-visible{outline:3px solid var(--coral);outline-offset:3px}
+.play{display:inline-flex;align-items:center;gap:12px;height:60px;padding:0 22px 0 18px;border-radius:16px;background:#000;color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.2)}
+.play small{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;opacity:.75;line-height:1.1}
+.play b{display:block;font-size:19px;line-height:1.1;font-weight:700}
+.soon{display:inline-block;margin-left:6px;padding:3px 8px;border-radius:999px;background:var(--coral);color:#fff;font-size:10px;font-weight:800;letter-spacing:.06em;vertical-align:middle}
+
+/* ---------- nav ---------- */
+.nav{position:fixed;inset:0 0 auto 0;z-index:50;transition:background .4s,backdrop-filter .4s,box-shadow .4s}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:72px;gap:12px}
+.nav .mark{font-size:30px;color:#fff;text-decoration:none;transition:color .4s}
+.nav.solid{background:rgba(245,247,251,.82);backdrop-filter:saturate(1.6) blur(16px);-webkit-backdrop-filter:saturate(1.6) blur(16px);box-shadow:0 1px 0 var(--line)}
+.nav.solid .mark{color:var(--ink)}
+.nav-right{display:flex;align-items:center;gap:10px}
+.lang{display:flex;padding:4px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);transition:background .4s,border-color .4s}
+.nav.solid .lang{background:#fff;border-color:var(--line)}
+.lang button{border:0;background:transparent;height:34px;min-width:44px;padding:0 10px;border-radius:999px;font-size:13px;font-weight:800;color:rgba(255,255,255,.75);cursor:pointer;transition:background .3s,color .3s}
+.nav.solid .lang button{color:var(--muted)}
+.lang button[aria-pressed="true"]{background:#fff;color:var(--ink)}
+.nav.solid .lang button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.nav .btn{height:44px;padding:0 18px;font-size:14px}
+@media (max-width:560px){.nav .btn{display:none}}
+
+/* ---------- hero ---------- */
+.hero{position:relative;min-height:100svh;background:var(--navy);color:#fff;overflow:hidden;isolation:isolate;padding:120px 0 80px}
+.glow{position:absolute;border-radius:50%;filter:blur(80px);opacity:.55;z-index:-1;will-change:transform}
+.glow.g1{width:560px;height:560px;background:#2563EB;top:-160px;left:-120px}
+.glow.g2{width:460px;height:460px;background:#FF6A3D;bottom:-180px;right:-80px;opacity:.38}
+.glow.g3{width:300px;height:300px;background:#FFA726;top:40%;left:45%;opacity:.18}
+.grain{position:absolute;inset:0;z-index:-1;opacity:.5;background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1px);background-size:22px 22px;mask-image:radial-gradient(ellipse at 50% 40%,#000 30%,transparent 75%);-webkit-mask-image:radial-gradient(ellipse at 50% 40%,#000 30%,transparent 75%)}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+.hero .eyebrow{color:#93C5FD}
+.hero h1{font-family:Nunito,Inter,sans-serif;font-weight:900;font-size:clamp(46px,8vw,104px);line-height:.95;letter-spacing:-.045em;margin:18px 0 22px}
+.hero h1 .accent{background:linear-gradient(90deg,#FF6A3D,#FFA726);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .lead{color:#B9C4D8}
+.hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+.hero-meta{display:flex;flex-wrap:wrap;gap:18px;margin-top:30px;color:#93A3BF;font-size:14px;font-weight:600}
+.hero-meta span{display:inline-flex;align-items:center;gap:8px}
+.hero-meta svg{color:#4ADE80}
+.word{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.08em;margin-bottom:-.08em}
+.word>span{display:inline-block;transform:translateY(105%);transition:transform 1s var(--ease)}
+.ready .word>span{transform:none}
+.fade-up{opacity:0;transform:translateY(24px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.ready .fade-up{opacity:1;transform:none}
+.ready .d1{transition-delay:.35s}.ready .d2{transition-delay:.5s}.ready .d3{transition-delay:.65s}.ready .d4{transition-delay:.8s}
+
+.hero-stage{position:relative;height:640px;display:grid;place-items:center;perspective:1400px}
+.hero-phone{transform-style:preserve-3d;will-change:transform}
+.float{position:absolute;will-change:transform;z-index:2}
+.tile{width:64px;height:64px;border-radius:20px;display:grid;place-items:center;box-shadow:0 20px 40px -18px rgba(0,0,0,.6)}
+.tile svg{width:30px;height:30px}
+.bubble{background:#fff;color:var(--ink);border-radius:20px;padding:12px 14px;display:flex;gap:10px;align-items:center;box-shadow:0 24px 50px -20px rgba(0,0,0,.6);font-size:13px;font-weight:700;white-space:nowrap}
+.bubble .dot{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;flex:none}
+.bubble small{display:block;color:var(--muted);font-weight:600;font-size:11.5px}
+.bob{animation:bob 6s ease-in-out infinite}
+.bob.s2{animation-duration:7.5s;animation-delay:-2s}.bob.s3{animation-duration:8.5s;animation-delay:-4s}
+@keyframes bob{0%,100%{translate:0 0}50%{translate:0 -12px}}
+.scroll-hint{position:absolute;left:50%;bottom:24px;translate:-50% 0;width:26px;height:42px;border:2px solid rgba(255,255,255,.3);border-radius:14px}
+.scroll-hint::after{content:"";position:absolute;left:50%;top:8px;width:4px;height:8px;margin-left:-2px;border-radius:2px;background:#fff;animation:wheel 1.8s var(--ease) infinite}
+@keyframes wheel{0%{opacity:0;transform:translateY(-4px)}30%{opacity:1}100%{opacity:0;transform:translateY(12px)}}
+
+/* ---------- phone mockup ---------- */
+.phone{--w:290px;width:var(--w);height:calc(var(--w)*2.07);border-radius:46px;background:#060C18;padding:10px;box-shadow:0 0 0 1.5px #2A3A5C inset,0 50px 100px -30px rgba(0,0,0,.65),0 30px 60px -30px rgba(37,99,235,.45);position:relative;flex:none}
+.phone::before{content:"";position:absolute;top:20px;left:50%;width:84px;height:22px;margin-left:-42px;border-radius:12px;background:#060C18;z-index:5}
+.screen{position:relative;width:100%;height:100%;border-radius:37px;overflow:hidden;background:var(--bg);color:var(--ink);font-size:12px}
+.sb{height:46px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 24px 6px;font-size:11px;font-weight:700}
+.sb i{display:inline-flex;gap:4px;font-style:normal}
+.sb i b{display:inline-block;width:14px;height:8px;border-radius:2px;background:var(--ink)}
+.scr{position:absolute;inset:46px 0 0 0;padding:6px 14px 14px;display:flex;flex-direction:column;gap:10px}
+.s-title{font-size:20px;font-weight:900;letter-spacing:-.03em}
+.s-sub{color:var(--muted);font-size:11px;font-weight:600}
+.s-search{height:38px;border-radius:14px;background:#fff;border:1px solid var(--line);display:flex;align-items:center;gap:8px;padding:0 12px;color:var(--muted);font-weight:600}
+.chips{display:flex;gap:6px;overflow:hidden}
+.chip{flex:none;height:28px;padding:0 11px;border-radius:10px;background:#fff;border:1px solid var(--line);display:flex;align-items:center;font-weight:700;font-size:11px}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.tcard{background:#fff;border-radius:18px;padding:10px;display:flex;gap:10px;align-items:center;box-shadow:0 1px 0 var(--line)}
+.ttile{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;flex:none}
+.ttile svg{width:22px;height:22px}
+.tbody{flex:1;min-width:0}
+.tname{font-weight:800;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tmeta{color:var(--muted);font-size:10.5px;font-weight:600}
+.tprice{font-weight:900;font-size:15px;letter-spacing:-.02em}
+.tabbar{position:absolute;left:10px;right:10px;bottom:10px;height:58px;border-radius:22px;background:#fff;box-shadow:0 10px 30px -12px rgba(15,31,61,.25);display:flex;align-items:center;justify-content:space-around}
+.tabbar span{width:22px;height:22px;border-radius:7px;background:var(--line)}
+.tabbar span.on{background:var(--blue)}
+.tabbar span.plus{width:42px;height:42px;border-radius:15px;background:var(--coral)}
+
+/* app screens for the story */
+.screens{position:absolute;inset:46px 0 0 0}
+.screens .scr{inset:0;opacity:0;transform:translateY(16px) scale(.98);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.screens .scr.on{opacity:1;transform:none}
+.field{background:#fff;border-radius:14px;border:1.5px solid var(--line);padding:9px 11px}
+.field label{display:block;font-size:9.5px;font-weight:800;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.field div{font-weight:700;font-size:12.5px}
+.cgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.cg{border-radius:14px;padding:8px 4px;display:grid;justify-items:center;gap:4px;font-size:9px;font-weight:800;text-align:center;border:1.5px solid transparent}
+.cg svg{width:18px;height:18px}
+.cg.on{border-color:var(--ink)}
+.row{display:flex;gap:6px}
+.budget{display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:16px;padding:6px}
+.budget b{font-size:24px;font-weight:900;letter-spacing:-.03em}
+.round{width:36px;height:36px;border-radius:12px;background:var(--bg);display:grid;place-items:center;font-weight:900;font-size:16px}
+.pbtn{height:44px;border-radius:999px;background:var(--blue);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px;margin-top:auto}
+.offer{background:#fff;border-radius:16px;padding:10px;display:grid;gap:8px;border:1.5px solid var(--line)}
+.offer.win{border-color:var(--ok)}
+.offer .top{display:flex;align-items:center;gap:8px}
+.av{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:12px;flex:none}
+.offer .top b{flex:1;font-size:12.5px}
+.offer .amt{font-weight:900;font-size:15px}
+.offer p{color:var(--body);font-size:11px}
+.obtns{display:flex;gap:6px}
+.obtns span{flex:1;height:32px;border-radius:999px;display:grid;place-items:center;font-weight:800;font-size:11px;background:var(--bg)}
+.obtns span.go{background:var(--blue);color:#fff}
+.obtns span.okb{background:var(--ok-soft);color:var(--ok)}
+.note{align-self:center;width:94%;background:var(--blue-soft);border-radius:16px;padding:10px;text-align:center;display:grid;gap:3px;justify-items:center}
+.note .ic{width:26px;height:26px;border-radius:50%;background:#fff;display:grid;place-items:center;color:var(--blue)}
+.note b{font-size:12px}
+.note span{font-size:10.5px;color:var(--body)}
+.msg{max-width:78%;padding:8px 11px;border-radius:16px;font-size:11.5px;font-weight:500;line-height:1.35}
+.msg.in{background:#fff;align-self:flex-start;border-bottom-left-radius:6px}
+.msg.out{background:var(--blue);color:#fff;align-self:flex-end;border-bottom-right-radius:6px}
+.msg.photo{padding:4px;background:var(--blue)}
+.msg.photo div{width:130px;height:92px;border-radius:12px;background:linear-gradient(135deg,#FFE9DC,#FFB089 55%,#FF6A3D);position:relative;overflow:hidden}
+.msg.photo div::after{content:"";position:absolute;left:18px;bottom:14px;width:60px;height:46px;border-radius:6px;background:#B4461A;box-shadow:44px -18px 0 -10px #fff8}
+.compose{margin-top:auto;height:40px;border-radius:999px;background:#fff;display:flex;align-items:center;padding:0 6px 0 14px;color:var(--muted);font-weight:600;gap:8px}
+.compose i{margin-left:auto;width:30px;height:30px;border-radius:50%;background:var(--blue)}
+.done{display:grid;justify-items:center;gap:8px;text-align:center;padding-top:16px}
+.done .big{width:72px;height:72px;border-radius:50%;background:var(--ok-soft);display:grid;place-items:center;color:var(--ok)}
+.stars{display:flex;gap:4px;justify-content:center;font-size:28px;color:var(--line)}
+.stars span{transition:color .3s,transform .5s var(--ease);transform:scale(.6)}
+.scr.on .stars span{color:#F5A524;transform:none}
+.scr.on .stars span:nth-child(2){transition-delay:.12s}.scr.on .stars span:nth-child(3){transition-delay:.24s}.scr.on .stars span:nth-child(4){transition-delay:.36s}.scr.on .stars span:nth-child(5){transition-delay:.48s}
+.review{background:#fff;border-radius:16px;padding:12px;font-size:11.5px;color:var(--body);text-align:left;width:100%}
+
+/* ---------- marquee ---------- */
+.marquee{background:var(--navy);padding:0 0 70px;overflow:hidden;position:relative}
+.marquee::before,.marquee::after{content:"";position:absolute;top:0;bottom:70px;width:12%;z-index:2;pointer-events:none}
+.marquee::before{left:0;background:linear-gradient(90deg,var(--navy),transparent)}
+.marquee::after{right:0;background:linear-gradient(-90deg,var(--navy),transparent)}
+.track{display:flex;gap:14px;width:max-content;animation:marq 40s linear infinite}
+.track.rev{animation-direction:reverse;animation-duration:46s;margin-top:14px}
+.pill{display:flex;align-items:center;gap:10px;height:58px;padding:0 22px 0 10px;border-radius:999px;background:var(--navy-3);border:1px solid var(--line-d);color:#E2E8F0;font-weight:700;white-space:nowrap}
+.pill .ttile{width:40px;height:40px;border-radius:50%}
+@keyframes marq{to{transform:translateX(-50%)}}
+
+/* ---------- reveal ---------- */
+.rv{opacity:0;transform:translateY(40px);transition:opacity 1s var(--ease),transform 1s var(--ease)}
+.rv.in{opacity:1;transform:none}
+.rv.l{transform:translateX(-40px)}.rv.r{transform:translateX(40px)}.rv.s{transform:scale(.94)}
+.rv.l.in,.rv.r.in,.rv.s.in{transform:none}
+
+section{position:relative}
+.sec{padding:clamp(80px,12vw,150px) 0}
+.sec-head{display:grid;gap:18px;max-width:760px;margin-bottom:56px}
+
+/* ---------- story (sticky) ---------- */
+.story{height:430vh;background:var(--bg)}
+.story-pin{position:sticky;top:0;height:100svh;display:flex;align-items:center;overflow:hidden}
+.story-grid{display:grid;grid-template-columns:1fr auto;gap:60px;align-items:center;width:100%}
+.steps{display:grid;gap:8px;margin-top:34px;counter-reset:s}
+.step{display:grid;grid-template-columns:44px 1fr;gap:16px;padding:18px 18px;border-radius:var(--r-lg);transition:background .5s var(--ease),opacity .5s;opacity:.4;cursor:pointer}
+.step .n{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-weight:900;background:#fff;border:1px solid var(--line);transition:background .5s,color .5s,border-color .5s}
+.step h3{font-size:20px}
+.step p{color:var(--body);margin-top:4px;font-size:15.5px;max-height:0;overflow:hidden;opacity:0;transition:max-height .6s var(--ease),opacity .5s}
+.step.on{opacity:1;background:#fff;box-shadow:0 20px 50px -30px rgba(15,31,61,.35)}
+.step.on .n{background:var(--blue);border-color:var(--blue);color:#fff}
+.step.on p{max-height:120px;opacity:1}
+.progress{height:4px;border-radius:4px;background:var(--line);margin-top:26px;overflow:hidden}
+.progress i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--blue),var(--coral));transform-origin:left;transform:scaleX(0)}
+.story-phone{position:relative;display:grid;place-items:center}
+.story-phone .ring{position:absolute;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(37,99,235,.18),transparent 65%);z-index:0}
+.story-phone .phone{z-index:1}
+
+/* ---------- map ---------- */
+.map-sec{background:var(--navy);color:#fff;overflow-x:clip}
+.map-sec .lead{color:#B9C4D8}
+.map-sec .eyebrow{color:#93C5FD}
+.map-scroll{height:260vh}
+.map-pin{position:sticky;top:0;height:100svh;display:flex;align-items:center}
+.map-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:56px;align-items:center;width:100%}
+.mapbox{position:relative;border-radius:36px;overflow:hidden;background:#0F1B33;aspect-ratio:1.15/1;border:1px solid var(--line-d);box-shadow:0 60px 120px -40px rgba(0,0,0,.7)}
+.mapbox svg{width:100%;height:100%}
+.zoom-ui{position:absolute;right:16px;top:16px;display:grid;gap:8px}
+.zoom-ui span{width:40px;height:40px;border-radius:14px;background:#14213D;border:1px solid var(--line-d);display:grid;place-items:center;font-weight:800;color:#CBD5E1}
+.zlabel{position:absolute;left:16px;top:16px;height:40px;padding:0 14px;border-radius:14px;background:#14213D;border:1px solid var(--line-d);display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px}
+.zlabel b{color:#93C5FD}
+.legend{display:grid;gap:14px;margin-top:30px}
+.legend div{display:flex;gap:14px;align-items:flex-start;color:#CBD5E1}
+.legend .ic{width:40px;height:40px;border-radius:14px;background:#14213D;border:1px solid var(--line-d);display:grid;place-items:center;flex:none;color:#93C5FD}
+.legend b{color:#fff;display:block}
+
+/* ---------- bento ---------- */
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:18px}
+.box{position:relative;background:#fff;border-radius:var(--r-xl);padding:28px;overflow:hidden;border:1px solid var(--line);display:flex;flex-direction:column;gap:10px;min-height:300px;transition:transform .6s var(--ease),box-shadow .6s var(--ease)}
+.box:hover{box-shadow:0 30px 60px -30px rgba(15,31,61,.25)}
+.box p{color:var(--body)}
+.box .vis{margin-top:auto;padding-top:20px}
+.b-alerts{grid-column:span 3;background:linear-gradient(160deg,#fff 40%,#EEF4FF)}
+.b-chat{grid-column:span 3}
+.b-rev{grid-column:span 2}
+.b-share{grid-column:span 2}
+.b-filter{grid-column:span 2}
+.notif-stack{position:relative;height:190px}
+.notif{position:absolute;left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:20px;padding:12px 14px;display:flex;gap:12px;align-items:center;box-shadow:0 16px 40px -24px rgba(15,31,61,.4);transition:transform 1s var(--ease),opacity 1s var(--ease)}
+.notif .ic{width:40px;height:40px;border-radius:12px;background:var(--blue);display:grid;place-items:center;flex:none}
+.notif b{display:block;font-size:14px}
+.notif span{font-size:13px;color:var(--muted)}
+.notif em{margin-left:auto;font-style:normal;font-size:12px;color:var(--muted);align-self:flex-start}
+.notif:nth-child(1){top:0;transform:translateY(40px) scale(.9);opacity:0}
+.notif:nth-child(2){top:62px;transform:translateY(40px) scale(.9);opacity:0}
+.notif:nth-child(3){top:124px;transform:translateY(40px) scale(.9);opacity:0}
+.in .notif{transform:none;opacity:1}
+.in .notif:nth-child(2){transition-delay:.25s}.in .notif:nth-child(3){transition-delay:.5s}
+.chat-mini{display:flex;flex-direction:column;gap:8px;background:var(--bg);border-radius:24px;padding:14px}
+.chat-mini .msg{font-size:13.5px;opacity:0;transform:translateY(12px) scale(.96);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.in .chat-mini .msg{opacity:1;transform:none}
+.in .chat-mini .msg:nth-child(2){transition-delay:.3s}.in .chat-mini .msg:nth-child(3){transition-delay:.6s}.in .chat-mini .msg:nth-child(4){transition-delay:.9s}
+.chat-mini .note{width:100%}
+.rev-card{background:var(--bg);border-radius:22px;padding:16px;display:grid;gap:8px}
+.rev-card .who{display:flex;align-items:center;gap:10px;font-weight:800}
+.rev-card .stars{justify-content:flex-start;font-size:22px}
+.in .rev-card .stars span{color:#F5A524;transform:none}
+.in .rev-card .stars span:nth-child(2){transition-delay:.12s}.in .rev-card .stars span:nth-child(3){transition-delay:.24s}.in .rev-card .stars span:nth-child(4){transition-delay:.36s}.in .rev-card .stars span:nth-child(5){transition-delay:.48s}
+.badges{display:flex;gap:6px;flex-wrap:wrap}
+.badges span{font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px;background:#fff;border:1px solid var(--line)}
+.link-box{background:var(--navy-2);color:#fff;border-radius:22px;padding:16px;display:grid;gap:12px}
+.url{display:flex;align-items:center;gap:10px;height:44px;padding:0 14px;border-radius:14px;background:#14213D;border:1px solid var(--line-d);font-size:13px;font-weight:600;color:#CBD5E1;overflow:hidden;white-space:nowrap}
+.url b{color:#fff}
+.caret{width:2px;height:16px;background:var(--coral);animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.open-app{height:44px;border-radius:999px;background:var(--blue);display:grid;place-items:center;font-weight:800;font-size:14px;transform:scale(.9);opacity:0;transition:transform .7s var(--ease) .5s,opacity .7s .5s}
+.in .open-app{transform:none;opacity:1}
+.sliders{display:grid;gap:14px}
+.sl{display:grid;gap:8px}
+.sl div{display:flex;justify-content:space-between;font-size:13px;font-weight:700}
+.sl .bar{height:8px;border-radius:8px;background:var(--line);position:relative}
+.sl .bar i{position:absolute;inset:0 auto 0 0;border-radius:8px;background:var(--blue);width:0;transition:width 1.4s var(--ease)}
+.sl .bar i::after{content:"";position:absolute;right:-10px;top:50%;width:20px;height:20px;margin-top:-10px;border-radius:50%;background:#fff;border:3px solid var(--blue);box-shadow:0 4px 10px -4px rgba(0,0,0,.4)}
+.in .sl:nth-child(1) .bar i{width:38%}.in .sl:nth-child(2) .bar i{width:64%;transition-delay:.2s}.in .sl:nth-child(3) .bar i{width:22%;transition-delay:.4s}
+
+/* ---------- safety ---------- */
+.safety{background:var(--navy);color:#fff;overflow:hidden}
+.safety .lead{color:#B9C4D8}
+.safety .eyebrow{color:#86EFAC}
+.sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.sitem{background:var(--navy-3);border:1px solid var(--line-d);border-radius:var(--r-lg);padding:26px;display:grid;gap:12px;align-content:start;transition:transform .6s var(--ease),border-color .6s}
+.sitem:hover{transform:translateY(-6px);border-color:#3B5280}
+.sitem .ic{width:52px;height:52px;border-radius:16px;background:rgba(74,222,128,.1);display:grid;place-items:center;color:#4ADE80}
+.sitem .ic path{stroke-dasharray:80;stroke-dashoffset:80;transition:stroke-dashoffset 1.6s var(--ease) .2s}
+.sitem.in .ic path{stroke-dashoffset:0}
+.sitem p{color:#AEBBD1;font-size:15px}
+.shield-big{position:absolute;right:-120px;top:50%;width:520px;height:520px;translate:0 -50%;opacity:.05;color:#fff;pointer-events:none}
+
+/* ---------- final ---------- */
+.final{background:var(--bg);text-align:center;overflow:hidden}
+.final .big-mark{font-size:clamp(110px,26vw,340px);line-height:1;color:var(--ink);margin:0 auto 18px;display:inline-block;padding-bottom:.06em}
+.final .lead{margin:0 auto}
+.final .cta{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:34px}
+.final .btn-dark{background:var(--ink);color:#fff}
+footer{background:var(--bg);border-top:1px solid var(--line);padding:30px 0 calc(30px + env(safe-area-inset-bottom));color:var(--muted);font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center}
+footer .mark{font-size:24px;color:var(--ink)}
+
+/* ---------- responsive ---------- */
+@media (max-width:960px){
+  .hero{padding:110px 0 70px}
+  .hero-grid{grid-template-columns:1fr}
+  .hero-stage{height:560px;margin-top:10px}
+  .story{height:auto}
+  .story-pin{position:relative;height:auto;padding:90px 0;overflow:visible}
+  .story-grid{grid-template-columns:1fr;gap:30px}
+  .story-phone{order:-1;position:sticky;top:64px;z-index:3;margin:0 calc(-1*var(--gutter));padding:8px 0 22px;background:linear-gradient(var(--bg) 82%,rgba(245,247,251,0))}
+  .story-phone .phone{zoom:.56}
+  .story-phone .ring{width:300px;height:300px}
+  .steps{margin-top:24px}
+  .step{opacity:1;background:#fff;margin-bottom:34vh}
+  .step:last-child{margin-bottom:10vh}
+  .step p{max-height:none;opacity:1}
+  .progress{display:none}
+  .map-scroll{height:220vh}
+  .map-grid{grid-template-columns:1fr;gap:26px}
+  .map-pin .lead,.legend{display:none}
+  .bento{grid-template-columns:1fr}
+  .b-alerts,.b-chat,.b-rev,.b-share,.b-filter{grid-column:auto}
+  .sgrid{grid-template-columns:1fr 1fr}
+}
+@media (max-width:560px){
+  .hero-stage{height:500px}
+  .hero-phone .phone{zoom:.82}
+  .float.f-tile{display:none}
+  .sgrid{grid-template-columns:1fr}
+  .map-pin h2{font-size:30px}
+  .box{padding:22px;min-height:0}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition-duration:.01ms!important}
+  .rv,.fade-up,.word>span{opacity:1!important;transform:none!important}
+}
 </style>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;800;900&family=Nunito:wght@900&display=swap"></head>
-<body><main><svg width="120" viewBox="0 -6 200 150" aria-hidden="true"><g stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="60" r="20" fill="#FF6A3D"/><path d="M4 138V117c0-17 14-30 31-30h7c14 0 24 10 24 24v27Z" fill="#FF6A3D"/><path d="M54 113c25-8 37-30 42-58" stroke="#FF6A3D" stroke-width="21" fill="none"/><circle cx="160" cy="60" r="20" fill="#3B82F6"/><path d="M196 138V117c0-17-14-30-31-30h-7c-14 0-24 10-24 24v27Z" fill="#3B82F6"/><path d="M146 113c-25-8-37-30-42-58" stroke="#3B82F6" stroke-width="21" fill="none"/><path d="M100 2v22M73 15l11 14M127 15l-11 14" stroke="#FFA726" stroke-width="10" fill="none"/></g></svg><div class="mark">ergo<span>.</span></div><p class="tag">ΜΙΚΡΕΣ ΔΟΥΛΕΙΕΣ. ΜΕΓΑΛΗ ΚΟΙΝΟΤΗΤΑ.</p>
-<h1 id="h">Βρες βοήθεια για μικρές δουλειές, κοντά σου.</h1><p id="s">Η εφαρμογή ergo έρχεται σύντομα στο Google Play.</p></main>
-<script>if(!/^el/i.test(navigator.language||'')){document.documentElement.lang='en';document.getElementById('h').textContent='Get help with small jobs, close to you.';document.getElementById('s').textContent='The ergo app is coming soon to Google Play.';}</script>
-</body></html>
+</head>
+<body>
+
+<!-- ICON SPRITES (category paths from the app) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <path id="c-home" d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3.5 17.5a2 2 0 0 0 3 3l5.8-5.8a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.8-.4-.4-2.8z"/>
+    <path id="c-cleaning" d="M7 3h5v3H7zM12 4h3M6.5 6h6l1.5 4v10a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V10zM8 14h4M18 3.5v.01M19.5 6.5v.01M18 9.5v.01"/>
+    <path id="c-moving" d="M2 5h12v10H2zM14 8h4l3 4v3h-7M6 17.5a1.5 1.5 0 1 0 0-.01M17 17.5a1.5 1.5 0 1 0 0-.01"/>
+    <path id="c-pets" d="M12 12.5c-3 0-6 3.5-6 6a2.4 2.4 0 0 0 3 2.3c1-.3 2-.6 3-.6s2 .3 3 .6a2.4 2.4 0 0 0 3-2.3c0-2.5-3-6-6-6zM3.6 10a1.7 1.7 0 1 0 3.4 0a1.7 1.7 0 1 0-3.4 0M7.6 5.6a1.7 1.7 0 1 0 3.4 0a1.7 1.7 0 1 0-3.4 0M13 5.6a1.7 1.7 0 1 0 3.4 0a1.7 1.7 0 1 0-3.4 0M17 10a1.7 1.7 0 1 0 3.4 0a1.7 1.7 0 1 0-3.4 0"/>
+    <path id="c-garden" d="M12 21v-9M12 12C12 8 9 5.5 4.5 5.5 4.5 10 7.5 12 12 12zM12 10.5c0-3.5 2.5-6 7-6 0 4-2.7 6-7 6zM7 21h10"/>
+    <path id="c-errands" d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"/>
+    <path id="c-tech" d="M4 5h16v11H4zM2 20h20"/>
+    <path id="c-events" d="M12 3a5.5 5.5 0 0 1 5.5 5.5c0 3.6-3 6.5-5.5 6.5s-5.5-2.9-5.5-6.5A5.5 5.5 0 0 1 12 3zM11 15h2l-1 1.5zM12 16.5c0 1.5 1.5 2 1.5 3s-1 1.5-1.5 1.5"/>
+    <path id="c-lessons" d="M4 5h6a2 2 0 0 1 2 2v12a2 2 0 0 0-2-2H4zM20 5h-6a2 2 0 0 0-2 2v12a2 2 0 0 1 2-2h6z"/>
+  </defs>
+</svg>
+
+<header class="nav" id="nav">
+  <div class="wrap">
+    <a class="mark" href="#top" aria-label="ergo">ergo<i>.</i></a>
+    <div class="nav-right">
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" data-lang="el" aria-pressed="true">ΕΛ</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <a class="btn btn-primary" href="#download" data-i18n="nav.cta">Κατέβασέ το</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+<!-- ================= HERO ================= -->
+<section class="hero" id="hero">
+  <div class="glow g1" data-par="0.25"></div>
+  <div class="glow g2" data-par="-0.2"></div>
+  <div class="glow g3" data-par="0.4"></div>
+  <div class="grain"></div>
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow fade-up" data-i18n="hero.eyebrow">Η εφαρμογή της γειτονιάς σου</span>
+      <h1 id="headline" data-i18n-split="hero.title">Μικρές δουλειές. <span class="accent">Μεγάλη κοινότητα.</span></h1>
+      <p class="lead fade-up d1" data-i18n="hero.lead">Βρες κάποιον κοντά σου για να συναρμολογήσει μια βιβλιοθήκη, να βγάλει βόλτα τον σκύλο ή να σε βοηθήσει στη μετακόμιση. Ή κέρδισε χρήματα βοηθώντας εσύ τους γείτονές σου.</p>
+      <div class="hero-cta fade-up d2">
+        <a class="btn btn-primary" href="#download"><span data-i18n="hero.cta">Έρχεται στο Google Play</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn btn-ghost" href="#how" data-i18n="hero.how">Πώς λειτουργεί</a>
+      </div>
+      <div class="hero-meta fade-up d3">
+        <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span data-i18n="hero.m1">Δωρεάν</span></span>
+        <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span data-i18n="hero.m2">Ελληνικά & English</span></span>
+        <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span data-i18n="hero.m3">Ασφαλές εξ ορισμού</span></span>
+      </div>
+    </div>
+
+    <div class="hero-stage fade-up d2" aria-hidden="true">
+      <div class="hero-phone" id="heroPhone">
+        <div class="phone">
+          <div class="screen">
+            <div class="sb"><span>9:41</span><i><b></b><b></b></i></div>
+            <div class="scr">
+              <div><div class="s-sub" data-i18n="ph.hello">Καλημέρα 👋</div><div class="s-title" data-i18n="ph.near">Κοντά σου σήμερα</div></div>
+              <div class="s-search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-3.5-3.5"/></svg><span data-i18n="ph.search">Τι χρειάζεσαι;</span></div>
+              <div class="chips"><span class="chip on" data-i18n="cat.all">Όλες</span><span class="chip" data-i18n="cat.home">Σπίτι & Επισκευές</span><span class="chip" data-i18n="cat.pets">Κατοικίδια</span></div>
+              <div class="tcard"><div class="ttile" style="background:#FFE9DC;color:#B4461A"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#c-home"/></svg></div><div class="tbody"><div class="tname" data-i18n="job.shelf">Συναρμολόγηση βιβλιοθήκης</div><div class="tmeta" data-i18n="job.shelfm">1,2 χλμ. · Σήμερα</div></div><div class="tprice" data-i18n="p35">35 €</div></div>
+              <div class="tcard"><div class="ttile" style="background:#FDE7F0;color:#B0306A"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#c-pets"/></svg></div><div class="tbody"><div class="tname" data-i18n="job.dog">Βόλτα σκύλου το απόγευμα</div><div class="tmeta" data-i18n="job.dogm">0,6 χλμ. · Αύριο</div></div><div class="tprice" data-i18n="p12">12 €</div></div>
+              <div class="tcard"><div class="ttile" style="background:#E3EEFF;color:#1D4ED8"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#c-moving"/></svg></div><div class="tbody"><div class="tname" data-i18n="job.sofa">Μεταφορά καναπέ</div><div class="tmeta" data-i18n="job.sofam">2,4 χλμ. · Σάββατο</div></div><div class="tprice" data-i18n="p60">60 €</div></div>
+              <div class="tcard"><div class="ttile" style="background:#FFF3CC;color:#8A6100"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#c-lessons"/></svg></div><div class="tbody"><div class="tname" data-i18n="job.excel">Μάθημα Excel για αρχάριους</div><div class="tmeta" data-i18n="job.excelm">3,1 χλμ. · Ευέλικτα</div></div><div class="tprice" data-i18n="p25">25 €</div></div>
+              <div class="tabbar"><span class="on"></span><span></span><span class="plus"></span><span></span><span></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="float f-tile" data-par="-0.35" style="left:2%;top:12%"><div class="tile bob" style="background:#E2F4DF;color:#2F7A2A"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#c-garden"/></svg></div></div>
+      <div class="float f-tile" data-par="-0.55" style="right:4%;top:6%"><div class="tile bob s2" style="background:#F1E8FF;color:#6B35C9"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#c-errands"/></svg></div></div>
+      <div class="float f-tile" data-par="-0.25" style="right:0;bottom:16%"><div class="tile bob s3" style="background:#DDF3F6;color:#0E7383"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#c-cleaning"/></svg></div></div>
+      <div class="float" data-par="-0.45" style="left:-4%;bottom:22%"><div class="bubble bob s2"><span class="dot" style="background:#2563EB"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/></svg></span><span><span data-i18n="hb.new">Νέα εργασία κοντά σου</span><small data-i18n="hb.newm">Κούρεμα γκαζόν · 30 € · 0,8 χλμ.</small></span></div></div>
+      <div class="float" data-par="-0.3" style="right:-2%;top:40%"><div class="bubble bob s3"><span class="dot" style="background:#DCFCE7"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span><span><span data-i18n="hb.acc">Σε επέλεξαν! 🎉</span><small data-i18n="hb.accm">Η προσφορά σου έγινε δεκτή</small></span></div></div>
+    </div>
+  </div>
+  <div class="scroll-hint" aria-hidden="true"></div>
+</section>
+
+<!-- ================= CATEGORIES ================= -->
+<div class="marquee" aria-label="Categories">
+  <div class="track" id="trackA"></div>
+  <div class="track rev" id="trackB"></div>
+</div>
+
+<!-- ================= STORY ================= -->
+<section class="story" id="how">
+  <div class="story-pin">
+    <div class="wrap story-grid">
+      <div>
+        <span class="eyebrow" data-i18n="how.eyebrow">Πώς λειτουργεί</span>
+        <h2 style="margin-top:16px" data-i18n="how.title">Από την ιδέα στο «έγινε» σε τέσσερα βήματα.</h2>
+        <div class="steps" id="steps">
+          <div class="step on" data-step="0"><div class="n">1</div><div><h3 data-i18n="s1.t">Δημοσίευσε μια εργασία</h3><p data-i18n="s1.d">Γράψε τι χρειάζεσαι, διάλεξε κατηγορία, πότε και πόσα θέλεις να δώσεις. Σε λιγότερο από ένα λεπτό.</p></div></div>
+          <div class="step" data-step="1"><div class="n">2</div><div><h3 data-i18n="s2.t">Λάβε προσφορές</h3><p data-i18n="s2.d">Οι γείτονες κάνουν προσφορές με τη δική τους τιμή. Δες το προφίλ και τις κριτικές τους και διάλεξε.</p></div></div>
+          <div class="step" data-step="2"><div class="n">3</div><div><h3 data-i18n="s3.t">Συνεννοηθείτε στο chat</h3><p data-i18n="s3.d">Μόλις επιλέξεις βοηθό ανοίγει αυτόματα μια κοινή συνομιλία. Στείλτε μηνύματα και φωτογραφίες.</p></div></div>
+          <div class="step" data-step="3"><div class="n">4</div><div><h3 data-i18n="s4.t">Ολοκλήρωσε & αξιολόγησε</h3><p data-i18n="s4.d">Όταν τελειώσει η δουλειά, αφήστε κριτική ο ένας για τον άλλον. Έτσι χτίζεται εμπιστοσύνη στη γειτονιά.</p></div></div>
+        </div>
+        <div class="progress"><i id="storyBar"></i></div>
+      </div>
+
+      <div class="story-phone" aria-hidden="true">
+        <div class="ring"></div>
+        <div class="phone">
+          <div class="screen">
+            <div class="sb"><span>9:41</span><i><b></b><b></b></i></div>
+            <div class="screens" id="screens">
+              <!-- 1: post -->
+              <div class="scr on">
+                <div class="s-title" data-i18n="post.title">Νέα εργασία</div>
+                <div class="field"><label data-i18n="post.what">Τι χρειάζεσαι;</label><div data-i18n="job.shelf">Συναρμολόγηση βιβλιοθήκης</div></div>
+                <div class="cgrid">
+                  <div class="cg on" style="background:#FFE9DC;color:#B4461A"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#c-home"/></svg><span data-i18n="cats.home">Σπίτι</span></div>
+                  <div class="cg" style="background:#E2F4DF;color:#2F7A2A"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#c-garden"/></svg><span data-i18n="cats.garden">Κήπος</span></div>
+                  <div class="cg" style="background:#DDF3F6;color:#0E7383"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#c-cleaning"/></svg><span data-i18n="cats.cleaning">Καθαρισμός</span></div>
+                  <div class="cg" style="background:#E3EEFF;color:#1D4ED8"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#c-moving"/></svg><span data-i18n="cats.moving">Μετακόμιση</span></div>
+                  <div class="cg" style="background:#FDE7F0;color:#B0306A"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#c-pets"/></svg><span data-i18n="cats.pets">Κατοικίδια</span></div>
+                  <div class="cg" style="background:#E6F0FF;color:#1F5FBF"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#c-tech"/></svg><span data-i18n="cats.tech">Τεχνολογία</span></div>
+                </div>
+                <div class="row"><span class="chip" data-i18n="when.today">Σήμερα</span><span class="chip on" data-i18n="when.tomorrow">Αύριο</span><span class="chip" data-i18n="when.flex">Ευέλικτα</span></div>
+                <div class="budget"><span class="round">−</span><b data-i18n="p35">35 €</b><span class="round">+</span></div>
+                <div class="pbtn" style="margin-top:0" data-i18n="post.publish">Δημοσίευση</div>
+              </div>
+              <!-- 2: offers -->
+              <div class="scr">
+                <div><div class="s-sub" data-i18n="off.sub">Συναρμολόγηση βιβλιοθήκης · 35 €</div><div class="s-title" data-i18n="off.title">Προσφορές (3)</div></div>
+                <div class="offer"><div class="top"><span class="av" style="background:#FF6A3D" data-i18n="av1">ΝΚ</span><b data-i18n="off.n1">Νίκος Κ.</b><span class="amt" data-i18n="p30">30 €</span></div><p data-i18n="off.m1">Έχω όλα τα εργαλεία, μπορώ αύριο το πρωί.</p><div class="obtns"><span data-i18n="off.msg">Μήνυμα</span><span class="go" data-i18n="off.acc">Αποδοχή</span></div></div>
+                <div class="offer win"><div class="top"><span class="av" style="background:#2563EB" data-i18n="av2">ΕΠ</span><b data-i18n="off.n2">Ελένη Π.</b><span class="amt" data-i18n="p35">35 €</span></div><p data-i18n="off.m2">Έχω στήσει πολλές τέτοιες, ★ 4,9.</p><div class="obtns"><span data-i18n="off.msg">Μήνυμα</span><span class="okb" data-i18n="off.chosen">Επιλέχθηκε</span></div></div>
+                <div class="offer"><div class="top"><span class="av" style="background:#16A34A" data-i18n="av3">ΓΜ</span><b data-i18n="off.n3">Γιώργος Μ.</b><span class="amt" data-i18n="p40">40 €</span></div><div class="obtns"><span data-i18n="off.msg">Μήνυμα</span><span class="go" data-i18n="off.acc">Αποδοχή</span></div></div>
+              </div>
+              <!-- 3: chat -->
+              <div class="scr" style="background:var(--bg)">
+                <div style="display:flex;align-items:center;gap:8px"><span class="av" style="background:#2563EB" data-i18n="av2">ΕΠ</span><div><b data-i18n="off.n2">Ελένη Π.</b><div class="s-sub" data-i18n="chat.task">Συναρμολόγηση βιβλιοθήκης</div></div></div>
+                <div class="note"><span class="ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span><b data-i18n="chat.assigned">Η εργασία ανατέθηκε</b><span data-i18n="chat.assignedb">Συμφωνημένη τιμή 35 €. Κανονίστε εδώ ώρα και λεπτομέρειες.</span></div>
+                <div class="msg in" data-i18n="chat.m1">Γεια! Αύριο στις 10:00 σε βολεύει;</div>
+                <div class="msg out" data-i18n="chat.m2">Τέλεια! Σου στέλνω φωτογραφία με τα κομμάτια.</div>
+                <div class="msg photo out"><div></div></div>
+                <div class="msg in" data-i18n="chat.m3">Ωραία, θα φέρω κατσαβίδι 👍</div>
+                <div class="compose"><span data-i18n="chat.ph">Γράψε ένα μήνυμα…</span><i></i></div>
+              </div>
+              <!-- 4: done -->
+              <div class="scr">
+                <div class="done">
+                  <div class="big"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></div>
+                  <div class="s-title" data-i18n="done.title">Ολοκληρώθηκε!</div>
+                  <div class="s-sub" data-i18n="done.sub">Πώς πήγε με την Ελένη;</div>
+                  <div class="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+                  <div class="review" data-i18n="done.rev">Πολύ προσεκτική και γρήγορη. Η βιβλιοθήκη είναι τέλεια!</div>
+                  <div class="pbtn" style="width:100%;margin-top:6px" data-i18n="done.save">Αποστολή κριτικής</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MAP ================= -->
+<section class="map-sec">
+  <div class="map-scroll" id="mapScroll">
+    <div class="map-pin">
+      <div class="wrap map-grid">
+        <div>
+          <span class="eyebrow" data-i18n="map.eyebrow">Ζωντανός χάρτης</span>
+          <h2 style="margin:16px 0 18px" data-i18n="map.title">Δες τι χρειάζεται η γειτονιά σου.</h2>
+          <p class="lead" data-i18n="map.lead">Κάθε εργασία με την τιμή της πάνω στον χάρτη. Απομακρύνσου και ομαδοποιούνται, πλησίασε και ξεχωρίζουν. Η ακριβής διεύθυνση μένει κρυφή μέχρι να επιλεγείς.</p>
+          <div class="legend">
+            <div><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21zM12 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg></span><span><b data-i18n="map.l1">Ακτίνα 1 έως 50 χλμ.</b><span data-i18n="map.l1d">Διάλεξε πόσο μακριά θέλεις να πας.</span></span></div>
+            <div><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg></span><span><b data-i18n="map.l2">Φίλτρα τιμής και ημερομηνίας</b><span data-i18n="map.l2d">Μόνο ό,τι σε ενδιαφέρει, όπως στη λίστα.</span></span></div>
+          </div>
+        </div>
+        <div class="mapbox" aria-hidden="true">
+          <svg viewBox="0 0 600 520" id="mapSvg" preserveAspectRatio="xMidYMid slice">
+            <rect width="600" height="520" fill="#0F1B33"/>
+            <path d="M0 90 C150 60 300 140 600 100" stroke="#1B2B4D" stroke-width="18" fill="none"/>
+            <path d="M-20 300 C160 260 340 360 620 300" stroke="#1B2B4D" stroke-width="26" fill="none"/>
+            <path d="M120 -20 C140 160 90 330 150 540" stroke="#1B2B4D" stroke-width="16" fill="none"/>
+            <path d="M420 -20 C380 180 470 330 430 540" stroke="#1B2B4D" stroke-width="20" fill="none"/>
+            <path d="M0 440 L600 400" stroke="#162545" stroke-width="10" fill="none"/>
+            <path d="M260 0 L300 520" stroke="#162545" stroke-width="8" fill="none"/>
+            <path d="M0 190 L600 220" stroke="#162545" stroke-width="8" fill="none"/>
+            <path d="M520 0 C540 200 580 260 600 300 L600 0Z" fill="#12304A"/>
+            <circle cx="300" cy="260" r="180" fill="#2563EB" fill-opacity=".09" stroke="#2563EB" stroke-opacity=".55" stroke-width="1.5"/>
+            <g id="clusters"></g>
+            <g id="pins"></g>
+            <circle cx="300" cy="260" r="9" fill="#3B82F6" stroke="#fff" stroke-width="3"/>
+          </svg>
+          <div class="zlabel"><span data-i18n="map.zoom">Ζουμ</span> <b id="zoomVal">14</b></div>
+          <div class="zoom-ui"><span>+</span><span>−</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BENTO ================= -->
+<section class="sec" id="features">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow" data-i18n="f.eyebrow">Όλα όσα χρειάζεσαι</span>
+      <h2 data-i18n="f.title">Φτιαγμένο για να γίνεται η δουλειά.</h2>
+    </div>
+    <div class="bento">
+      <article class="box b-alerts rv">
+        <h3 data-i18n="f1.t">Ειδοποιήσεις για εργασίες κοντά σου</h3>
+        <p data-i18n="f1.d">Διάλεξε απόσταση, κατηγορίες και ελάχιστη τιμή. Μόλις δημοσιευτεί κάτι που σου ταιριάζει, το μαθαίνεις πρώτος.</p>
+        <div class="vis notif-stack">
+          <div class="notif"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/></svg></span><span><b data-i18n="hb.new">Νέα εργασία κοντά σου</b><span data-i18n="n1">Κούρεμα γκαζόν · 30 € · 0,8 χλμ.</span></span><em data-i18n="now">τώρα</em></div>
+          <div class="notif"><span class="ic" style="background:#FF6A3D"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9-9 9z"/></svg></span><span><b data-i18n="n2t">Νέα προσφορά</b><span data-i18n="n2">Ο Νίκος πρόσφερε 30 €</span></span><em data-i18n="m2">2 λεπ.</em></div>
+          <div class="notif"><span class="ic" style="background:#16A34A"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span><span><b data-i18n="hb.acc">Σε επέλεξαν! 🎉</b><span data-i18n="n3">Βόλτα σκύλου · 12 €</span></span><em data-i18n="m5">5 λεπ.</em></div>
+        </div>
+      </article>
+      <article class="box b-chat rv">
+        <h3 data-i18n="f2.t">Chat με φωτογραφίες</h3>
+        <p data-i18n="f2.d">Μια κοινή συνομιλία ανοίγει αυτόματα για κάθε ανάθεση, με ενημερώσεις για κάθε βήμα της εργασίας.</p>
+        <div class="vis chat-mini">
+          <div class="note"><span class="ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span><b data-i18n="chat.assigned">Η εργασία ανατέθηκε</b></div>
+          <div class="msg in" data-i18n="chat.m1">Γεια! Αύριο στις 10:00 σε βολεύει;</div>
+          <div class="msg out" data-i18n="chat.m4">Ναι, τέλεια! Τα λέμε 👋</div>
+          <div class="msg photo out"><div></div></div>
+        </div>
+      </article>
+      <article class="box b-rev rv">
+        <h3 data-i18n="f3.t">Προφίλ & κριτικές</h3>
+        <p data-i18n="f3.d">Κάθε ολοκληρωμένη εργασία αφήνει αμοιβαία αξιολόγηση. Ξέρεις με ποιον μιλάς.</p>
+        <div class="vis rev-card">
+          <div class="who"><span class="av" style="background:#2563EB" data-i18n="av2">ΕΠ</span><span data-i18n="off.n2">Ελένη Π.</span></div>
+          <div class="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+          <div class="badges"><span data-i18n="b1">Ως βοηθός</span><span data-i18n="b2">Ως ιδιοκτήτης</span></div>
+        </div>
+      </article>
+      <article class="box b-share rv">
+        <h3 data-i18n="f4.t">Μοιράσου μια εργασία</h3>
+        <p data-i18n="f4.d">Στείλε τον σύνδεσμο σε έναν φίλο. Ανοίγει κατευθείαν στην εφαρμογή.</p>
+        <div class="vis link-box">
+          <div class="url"><span>ergo-tasks.vercel.app/t/<b>4f2a…</b></span><span class="caret"></span></div>
+          <div class="open-app" data-i18n="f4.open">Άνοιγμα στο ergo</div>
+        </div>
+      </article>
+      <article class="box b-filter rv">
+        <h3 data-i18n="f5.t">Έξυπνα φίλτρα</h3>
+        <p data-i18n="f5.d">Απόσταση, τιμή, πότε και ταξινόμηση, κοινά σε λίστα και χάρτη.</p>
+        <div class="vis sliders">
+          <div class="sl"><div><span data-i18n="f5.a">Απόσταση</span><span data-i18n="f5.av">10 χλμ.</span></div><div class="bar"><i></i></div></div>
+          <div class="sl"><div><span data-i18n="f5.b">Τιμή</span><span data-i18n="f5.bv">έως 50 €</span></div><div class="bar"><i></i></div></div>
+          <div class="sl"><div><span data-i18n="f5.c">Πότε</span><span data-i18n="f5.cv">Αυτή την εβδομάδα</span></div><div class="bar"><i></i></div></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SAFETY ================= -->
+<section class="sec safety">
+  <svg class="shield-big" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=".6" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/></svg>
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow" data-i18n="sf.eyebrow">Ασφάλεια</span>
+      <h2 data-i18n="sf.title">Η ηρεμία σου, πρώτα.</h2>
+      <p class="lead" data-i18n="sf.lead">Το ergo είναι φτιαγμένο ώστε να μοιράζεσαι μόνο όσα χρειάζονται, με όποιον χρειάζεται.</p>
+    </div>
+    <div class="sgrid">
+      <div class="sitem rv"><span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21zM9 9.5h6"/></svg></span><h3 data-i18n="sf1.t">Κρυφή διεύθυνση</h3><p data-i18n="sf1.d">Οι άλλοι βλέπουν μόνο την κατά προσέγγιση περιοχή. Η ακριβής διεύθυνση δίνεται όταν επιλέξεις βοηθό.</p></div>
+      <div class="sitem rv"><span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM5.6 5.6l12.8 12.8"/></svg></span><h3 data-i18n="sf2.t">Αναφορά & αποκλεισμός</h3><p data-i18n="sf2.d">Ανέφερε μια εργασία, ένα μήνυμα ή έναν χρήστη με δύο πατήματα και σταμάτα κάθε επαφή.</p></div>
+      <div class="sitem rv"><span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 11V8a6 6 0 0 1 12 0v3M5 11h14v10H5zM12 15v2"/></svg></span><h3 data-i18n="sf3.t">Κλείδωμα με δακτυλικό</h3><p data-i18n="sf3.d">Κλείδωσε την εφαρμογή με δακτυλικό αποτύπωμα ή πρόσωπο. Η σύνδεσή σου αποθηκεύεται κρυπτογραφημένη.</p></div>
+      <div class="sitem rv"><span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6zM9 12l2 2 4-4"/></svg></span><h3 data-i18n="sf4.t">Ο έλεγχος είναι δικός σου</h3><p data-i18n="sf4.d">Επεξεργάσου ή διέγραψε τις εργασίες σου, και διέγραψε τον λογαριασμό σου οριστικά όποτε θέλεις.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FINAL ================= -->
+<section class="sec final" id="download">
+  <div class="wrap">
+    <div class="mark big-mark rv s" aria-hidden="true">ergo<i>.</i></div>
+    <h2 class="rv" data-i18n="end.title">Η γειτονιά σου, ένα πάτημα μακριά.</h2>
+    <p class="lead rv" style="margin-top:18px" data-i18n="end.lead">Το ergo κυκλοφορεί σύντομα για Android στο Google Play. Μικρές δουλειές, πραγματικοί άνθρωποι, κοντά σου.</p>
+    <div class="cta rv">
+      <span class="play" role="img" aria-label="Google Play">
+        <svg width="26" height="28" viewBox="0 0 26 28" aria-hidden="true"><path d="M1 1.5 14.5 14 1 26.5c-.6-.3-1-.9-1-1.7V3.2c0-.8.4-1.4 1-1.7Z" fill="#00D7FE"/><path d="M19 9.6 14.5 14 1 1.5c.4-.2.9-.2 1.4.1L19 9.6Z" fill="#00F076"/><path d="M19 18.4 2.4 26.4c-.5.3-1 .3-1.4.1L14.5 14 19 18.4Z" fill="#FF3A44"/><path d="M24.3 12.3c1.2.7 1.2 2.7 0 3.4L19 18.4 14.5 14 19 9.6l5.3 2.7Z" fill="#FFD400"/></svg>
+        <span><small data-i18n="end.get">Σύντομα στο</small><b>Google Play</b></span>
+      </span>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="mark">ergo<i>.</i></span>
+    <span data-i18n="foot">© 2026 ergo · Μικρές δουλειές. Μεγάλη κοινότητα.</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+  var I18N = {
+    el: {
+      'meta.title':'ergo · Μικρές δουλειές. Μεγάλη κοινότητα.',
+      'meta.desc':'Βρες βοήθεια για μικρές δουλειές κοντά σου, ή κέρδισε χρήματα βοηθώντας τη γειτονιά σου. Η εφαρμογή ergo έρχεται σύντομα στο Google Play.',
+      'nav.cta':'Κατέβασέ το',
+      'hero.eyebrow':'Η εφαρμογή της γειτονιάς σου',
+      'hero.title':'Μικρές δουλειές. |Μεγάλη κοινότητα.',
+      'hero.lead':'Βρες κάποιον κοντά σου για να συναρμολογήσει μια βιβλιοθήκη, να βγάλει βόλτα τον σκύλο ή να σε βοηθήσει στη μετακόμιση. Ή κέρδισε χρήματα βοηθώντας εσύ τους γείτονές σου.',
+      'hero.cta':'Έρχεται στο Google Play','hero.how':'Πώς λειτουργεί',
+      'hero.m1':'Δωρεάν','hero.m2':'Ελληνικά & English','hero.m3':'Ασφαλές εξ ορισμού',
+      'ph.hello':'Καλημέρα 👋','ph.near':'Κοντά σου σήμερα','ph.search':'Τι χρειάζεσαι;',
+      'cat.all':'Όλες','cat.home':'Σπίτι & Επισκευές','cat.pets':'Κατοικίδια',
+      'job.shelf':'Συναρμολόγηση βιβλιοθήκης','job.shelfm':'1,2 χλμ. · Σήμερα',
+      'job.dog':'Βόλτα σκύλου το απόγευμα','job.dogm':'0,6 χλμ. · Αύριο',
+      'job.sofa':'Μεταφορά καναπέ','job.sofam':'2,4 χλμ. · Σάββατο',
+      'job.excel':'Μάθημα Excel για αρχάριους','job.excelm':'3,1 χλμ. · Ευέλικτα',
+      'p12':'12 €','p25':'25 €','p30':'30 €','p35':'35 €','p40':'40 €','p60':'60 €',
+      'hb.new':'Νέα εργασία κοντά σου','hb.newm':'Κούρεμα γκαζόν · 30 € · 0,8 χλμ.',
+      'hb.acc':'Σε επέλεξαν! 🎉','hb.accm':'Η προσφορά σου έγινε δεκτή',
+      'how.eyebrow':'Πώς λειτουργεί','how.title':'Από την ιδέα στο «έγινε» σε τέσσερα βήματα.',
+      's1.t':'Δημοσίευσε μια εργασία','s1.d':'Γράψε τι χρειάζεσαι, διάλεξε κατηγορία, πότε και πόσα θέλεις να δώσεις. Σε λιγότερο από ένα λεπτό.',
+      's2.t':'Λάβε προσφορές','s2.d':'Οι γείτονες κάνουν προσφορές με τη δική τους τιμή. Δες το προφίλ και τις κριτικές τους και διάλεξε.',
+      's3.t':'Συνεννοηθείτε στο chat','s3.d':'Μόλις επιλέξεις βοηθό ανοίγει αυτόματα μια κοινή συνομιλία. Στείλτε μηνύματα και φωτογραφίες.',
+      's4.t':'Ολοκλήρωσε & αξιολόγησε','s4.d':'Όταν τελειώσει η δουλειά, αφήστε κριτική ο ένας για τον άλλον. Έτσι χτίζεται εμπιστοσύνη στη γειτονιά.',
+      'post.title':'Νέα εργασία','post.what':'Τι χρειάζεσαι;','post.publish':'Δημοσίευση',
+      'cats.home':'Σπίτι','cats.garden':'Κήπος','cats.cleaning':'Καθαρισμός','cats.moving':'Μετακόμιση','cats.pets':'Κατοικίδια','cats.tech':'Τεχνολογία',
+      'when.today':'Σήμερα','when.tomorrow':'Αύριο','when.flex':'Ευέλικτα',
+      'off.sub':'Συναρμολόγηση βιβλιοθήκης · 35 €','off.title':'Προσφορές (3)',
+      'av1':'ΝΚ','av2':'ΕΠ','av3':'ΓΜ','off.n1':'Νίκος Κ.','off.n2':'Ελένη Π.','off.n3':'Γιώργος Μ.',
+      'off.m1':'Έχω όλα τα εργαλεία, μπορώ αύριο το πρωί.','off.m2':'Έχω στήσει πολλές τέτοιες, ★ 4,9.',
+      'off.msg':'Μήνυμα','off.acc':'Αποδοχή','off.chosen':'Επιλέχθηκε',
+      'chat.task':'Συναρμολόγηση βιβλιοθήκης','chat.assigned':'Η εργασία ανατέθηκε','chat.assignedb':'Συμφωνημένη τιμή 35 €. Κανονίστε εδώ ώρα και λεπτομέρειες.',
+      'chat.m1':'Γεια! Αύριο στις 10:00 σε βολεύει;','chat.m2':'Τέλεια! Σου στέλνω φωτογραφία με τα κομμάτια.','chat.m3':'Ωραία, θα φέρω κατσαβίδι 👍','chat.m4':'Ναι, τέλεια! Τα λέμε 👋','chat.ph':'Γράψε ένα μήνυμα…',
+      'done.title':'Ολοκληρώθηκε!','done.sub':'Πώς πήγε με την Ελένη;','done.rev':'Πολύ προσεκτική και γρήγορη. Η βιβλιοθήκη είναι τέλεια!','done.save':'Αποστολή κριτικής',
+      'map.eyebrow':'Ζωντανός χάρτης','map.title':'Δες τι χρειάζεται η γειτονιά σου.',
+      'map.lead':'Κάθε εργασία με την τιμή της πάνω στον χάρτη. Απομακρύνσου και ομαδοποιούνται, πλησίασε και ξεχωρίζουν. Η ακριβής διεύθυνση μένει κρυφή μέχρι να επιλεγείς.',
+      'map.l1':'Ακτίνα 1 έως 50 χλμ.','map.l1d':'Διάλεξε πόσο μακριά θέλεις να πας.','map.l2':'Φίλτρα τιμής και ημερομηνίας','map.l2d':'Μόνο ό,τι σε ενδιαφέρει, όπως στη λίστα.','map.zoom':'Ζουμ',
+      'f.eyebrow':'Όλα όσα χρειάζεσαι','f.title':'Φτιαγμένο για να γίνεται η δουλειά.',
+      'f1.t':'Ειδοποιήσεις για εργασίες κοντά σου','f1.d':'Διάλεξε απόσταση, κατηγορίες και ελάχιστη τιμή. Μόλις δημοσιευτεί κάτι που σου ταιριάζει, το μαθαίνεις πρώτος.',
+      'n1':'Κούρεμα γκαζόν · 30 € · 0,8 χλμ.','n2t':'Νέα προσφορά','n2':'Ο Νίκος πρόσφερε 30 €','n3':'Βόλτα σκύλου · 12 €','now':'τώρα','m2':'2 λεπ.','m5':'5 λεπ.',
+      'f2.t':'Chat με φωτογραφίες','f2.d':'Μια κοινή συνομιλία ανοίγει αυτόματα για κάθε ανάθεση, με ενημερώσεις για κάθε βήμα της εργασίας.',
+      'f3.t':'Προφίλ & κριτικές','f3.d':'Κάθε ολοκληρωμένη εργασία αφήνει αμοιβαία αξιολόγηση. Ξέρεις με ποιον μιλάς.','b1':'Ως βοηθός','b2':'Ως ιδιοκτήτης',
+      'f4.t':'Μοιράσου μια εργασία','f4.d':'Στείλε τον σύνδεσμο σε έναν φίλο. Ανοίγει κατευθείαν στην εφαρμογή.','f4.open':'Άνοιγμα στο ergo',
+      'f5.t':'Έξυπνα φίλτρα','f5.d':'Απόσταση, τιμή, πότε και ταξινόμηση, κοινά σε λίστα και χάρτη.','f5.a':'Απόσταση','f5.av':'10 χλμ.','f5.b':'Τιμή','f5.bv':'έως 50 €','f5.c':'Πότε','f5.cv':'Αυτή την εβδομάδα',
+      'sf.eyebrow':'Ασφάλεια','sf.title':'Η ηρεμία σου, πρώτα.','sf.lead':'Το ergo είναι φτιαγμένο ώστε να μοιράζεσαι μόνο όσα χρειάζονται, με όποιον χρειάζεται.',
+      'sf1.t':'Κρυφή διεύθυνση','sf1.d':'Οι άλλοι βλέπουν μόνο την κατά προσέγγιση περιοχή. Η ακριβής διεύθυνση δίνεται όταν επιλέξεις βοηθό.',
+      'sf2.t':'Αναφορά & αποκλεισμός','sf2.d':'Ανέφερε μια εργασία, ένα μήνυμα ή έναν χρήστη με δύο πατήματα και σταμάτα κάθε επαφή.',
+      'sf3.t':'Κλείδωμα με δακτυλικό','sf3.d':'Κλείδωσε την εφαρμογή με δακτυλικό αποτύπωμα ή πρόσωπο. Η σύνδεσή σου αποθηκεύεται κρυπτογραφημένη.',
+      'sf4.t':'Ο έλεγχος είναι δικός σου','sf4.d':'Επεξεργάσου ή διέγραψε τις εργασίες σου, και διέγραψε τον λογαριασμό σου οριστικά όποτε θέλεις.',
+      'end.title':'Η γειτονιά σου, ένα πάτημα μακριά.','end.lead':'Το ergo κυκλοφορεί σύντομα για Android στο Google Play. Μικρές δουλειές, πραγματικοί άνθρωποι, κοντά σου.','end.get':'Σύντομα στο',
+      'foot':'© 2026 ergo · Μικρές δουλειές. Μεγάλη κοινότητα.',
+      'cats':['Σπίτι & Επισκευές','Κήπος','Καθαρισμός','Μετακόμιση','Θελήματα','Τεχνολογία','Κατοικίδια','Εκδηλώσεις','Μαθήματα']
+    },
+    en: {
+      'meta.title':'ergo · Small tasks. Big community.',
+      'meta.desc':'Get help with small jobs near you, or earn money helping your neighbourhood. The ergo app is coming soon to Google Play.',
+      'nav.cta':'Get the app',
+      'hero.eyebrow':'The app for your neighbourhood',
+      'hero.title':'Small tasks. |Big community.',
+      'hero.lead':'Find someone nearby to put up a bookshelf, walk the dog or help you move. Or earn money by helping your neighbours yourself.',
+      'hero.cta':'Coming to Google Play','hero.how':'How it works',
+      'hero.m1':'Free','hero.m2':'English & Ελληνικά','hero.m3':'Safe by design',
+      'ph.hello':'Good morning 👋','ph.near':'Near you today','ph.search':'What do you need?',
+      'cat.all':'All','cat.home':'Home & Repairs','cat.pets':'Pet care',
+      'job.shelf':'Assemble a bookshelf','job.shelfm':'1.2 km · Today',
+      'job.dog':'Evening dog walk','job.dogm':'0.6 km · Tomorrow',
+      'job.sofa':'Move a sofa','job.sofam':'2.4 km · Saturday',
+      'job.excel':'Excel lesson for beginners','job.excelm':'3.1 km · Flexible',
+      'p12':'€12','p25':'€25','p30':'€30','p35':'€35','p40':'€40','p60':'€60',
+      'hb.new':'New task near you','hb.newm':'Mow the lawn · €30 · 0.8 km',
+      'hb.acc':'You got the job! 🎉','hb.accm':'Your offer was accepted',
+      'how.eyebrow':'How it works','how.title':'From “I need a hand” to “done” in four steps.',
+      's1.t':'Post a task','s1.d':'Say what you need, pick a category, when, and how much you’d like to pay. It takes less than a minute.',
+      's2.t':'Get offers','s2.d':'Neighbours send offers at their own price. Check their profile and reviews, then pick one.',
+      's3.t':'Sort it out in chat','s3.d':'As soon as you choose a helper, a shared chat opens automatically. Send messages and photos.',
+      's4.t':'Finish & review','s4.d':'When the job is done, you review each other. That’s how trust grows in the neighbourhood.',
+      'post.title':'New task','post.what':'What do you need?','post.publish':'Post task',
+      'cats.home':'Home','cats.garden':'Garden','cats.cleaning':'Cleaning','cats.moving':'Moving','cats.pets':'Pets','cats.tech':'Tech',
+      'when.today':'Today','when.tomorrow':'Tomorrow','when.flex':'Flexible',
+      'off.sub':'Assemble a bookshelf · €35','off.title':'Offers (3)',
+      'av1':'NK','av2':'HP','av3':'GM','off.n1':'Nick K.','off.n2':'Helen P.','off.n3':'George M.',
+      'off.m1':'I have all the tools, I can do tomorrow morning.','off.m2':'I’ve built lots of these, ★ 4.9.',
+      'off.msg':'Message','off.acc':'Accept','off.chosen':'Chosen',
+      'chat.task':'Assemble a bookshelf','chat.assigned':'Task assigned','chat.assignedb':'Agreed price €35. Sort out the time and details here.',
+      'chat.m1':'Hi! Does tomorrow at 10:00 work?','chat.m2':'Perfect! Sending you a photo of the parts.','chat.m3':'Great, I’ll bring a screwdriver 👍','chat.m4':'Yes, perfect! See you 👋','chat.ph':'Write a message…',
+      'done.title':'Completed!','done.sub':'How did it go with Helen?','done.rev':'Careful and quick. The bookshelf looks perfect!','done.save':'Send review',
+      'map.eyebrow':'Live map','map.title':'See what your neighbourhood needs.',
+      'map.lead':'Every task on the map with its price. Zoom out and they group together, zoom in and they spread out. The exact address stays hidden until you’re chosen.',
+      'map.l1':'1 to 50 km radius','map.l1d':'Choose how far you’re happy to go.','map.l2':'Price and date filters','map.l2d':'Only what matters to you, same as the list.','map.zoom':'Zoom',
+      'f.eyebrow':'Everything you need','f.title':'Built to get things done.',
+      'f1.t':'Alerts for tasks near you','f1.d':'Pick a distance, categories and a minimum price. When something that suits you is posted, you hear first.',
+      'n1':'Mow the lawn · €30 · 0.8 km','n2t':'New offer','n2':'Nick offered €30','n3':'Dog walk · €12','now':'now','m2':'2 min','m5':'5 min',
+      'f2.t':'Chat with photos','f2.d':'A shared chat opens automatically for every assignment, with updates at each step of the task.',
+      'f3.t':'Profiles & reviews','f3.d':'Every finished task leaves a two-way review. You know who you’re dealing with.','b1':'As helper','b2':'As poster',
+      'f4.t':'Share a task','f4.d':'Send the link to a friend. It opens straight in the app.','f4.open':'Open in ergo',
+      'f5.t':'Smart filters','f5.d':'Distance, price, when and sorting, shared by the list and the map.','f5.a':'Distance','f5.av':'10 km','f5.b':'Price','f5.bv':'up to €50','f5.c':'When','f5.cv':'This week',
+      'sf.eyebrow':'Safety','sf.title':'Your peace of mind comes first.','sf.lead':'ergo is built so you share only what’s needed, only with who needs it.',
+      'sf1.t':'Hidden address','sf1.d':'Others only see the approximate area. The exact address is shared once you choose a helper.',
+      'sf2.t':'Report & block','sf2.d':'Report a task, a message or a person in two taps and stop all contact.',
+      'sf3.t':'Fingerprint lock','sf3.d':'Lock the app with your fingerprint or face. Your sign-in is stored encrypted.',
+      'sf4.t':'You’re in control','sf4.d':'Edit or delete your tasks, and permanently delete your account whenever you want.',
+      'end.title':'Your neighbourhood, one tap away.','end.lead':'ergo is coming soon to Google Play for Android. Small tasks, real people, near you.','end.get':'Coming soon on',
+      'foot':'© 2026 ergo · Small tasks. Big community.',
+      'cats':['Home & Repairs','Garden','Cleaning','Moving','Errands','Tech','Pet care','Events','Lessons']
+    }
+  };
+
+  var CAT = [
+    ['home','#FFE9DC','#B4461A'],['garden','#E2F4DF','#2F7A2A'],['cleaning','#DDF3F6','#0E7383'],
+    ['moving','#E3EEFF','#1D4ED8'],['errands','#F1E8FF','#6B35C9'],['tech','#E6F0FF','#1F5FBF'],
+    ['pets','#FDE7F0','#B0306A'],['events','#FFEFD6','#9A5A00'],['lessons','#FFF3CC','#8A6100']
+  ];
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var lang = 'el';
+  try { lang = localStorage.getItem('ergo-lang') || ''; } catch(e) { lang = ''; }
+  if (lang !== 'el' && lang !== 'en') lang = /^el/i.test(navigator.language || '') ? 'el' : 'en';
+
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+  function splitTitle(text){
+    var parts = text.split('|');
+    var html = parts.map(function(part, i){
+      var words = part.trim().split(/\s+/).map(function(w, j){
+        return '<span class="word"><span style="transition-delay:' + ((i*3 + j) * 0.08 + 0.1).toFixed(2) + 's">' + esc(w) + '</span></span>';
+      }).join(' ');
+      return i === 1 ? '<span class="accent">' + words + '</span>' : words;
+    });
+    return html.join('<br>');
+  }
+
+  function buildMarquee(d){
+    function pills(order){
+      return order.map(function(i){
+        var c = CAT[i];
+        return '<span class="pill"><span class="ttile" style="background:' + c[1] + ';color:' + c[2] + '"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#c-' + c[0] + '"/></svg></span>' + esc(d.cats[i]) + '</span>';
+      }).join('');
+    }
+    var a = pills([0,1,2,3,4,5,6,7,8]), b = pills([6,3,8,0,5,2,7,1,4]);
+    document.getElementById('trackA').innerHTML = a + a;
+    document.getElementById('trackB').innerHTML = b + b;
+  }
+
+  function setLang(l){
+    lang = l;
+    var d = I18N[l];
+    try { localStorage.setItem('ergo-lang', l); } catch(e) {}
+    document.documentElement.lang = l;
+    document.title = d['meta.title'];
+    var md = document.querySelector('meta[name="description"]'); if (md) md.setAttribute('content', d['meta.desc']);
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      var k = el.getAttribute('data-i18n');
+      if (d[k] != null) el.textContent = d[k];
+    });
+    var h = document.getElementById('headline');
+    h.innerHTML = splitTitle(d['hero.title']);
+    h.setAttribute('aria-label', d['hero.title'].replace('|',''));
+    buildMarquee(d);
+    document.querySelectorAll('.lang button').forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.lang === l)); });
+  }
+
+  document.querySelectorAll('.lang button').forEach(function(b){
+    b.addEventListener('click', function(){ if (b.dataset.lang !== lang) setLang(b.dataset.lang); });
+  });
+  setLang(lang);
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ document.getElementById('hero').classList.add('ready'); }); });
+
+  /* ---------- reveal on scroll ---------- */
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (!e.isIntersecting) return;
+      var el = e.target; el.classList.add('in'); io.unobserve(el);
+      // drop the stagger once revealed so hover effects respond instantly
+      setTimeout(function(){ el.style.transitionDelay = ''; }, 1600);
+    });
+  }, { threshold: 0.18, rootMargin: '0px 0px -6% 0px' });
+  document.querySelectorAll('.rv').forEach(function(el){
+    // gentle stagger for siblings in grids
+    var sib = Array.prototype.indexOf.call(el.parentNode.children, el);
+    if (el.parentNode.classList.contains('bento') || el.parentNode.classList.contains('sgrid')) el.style.transitionDelay = (sib % 3) * 0.12 + 's';
+    io.observe(el);
+  });
+
+  /* ---------- map pins ---------- */
+  var PINS = [
+    [210,170,'25'],[250,205,'12'],[185,225,'40'],[230,250,'18'],
+    [380,170,'60'],[410,205,'35'],[355,215,'20'],
+    [270,360,'30'],[320,390,'15'],[240,400,'50'],[300,330,'22'],
+    [470,330,'45'],[150,320,'28']
+  ];
+  var GROUPS = [[0,1,2,3],[4,5,6],[7,8,9,10],[11],[12]];
+  var NS = 'http://www.w3.org/2000/svg';
+  var pinG = document.getElementById('pins'), clG = document.getElementById('clusters');
+  var pinEls = [], clEls = [], centers = [];
+  GROUPS.forEach(function(g){
+    var cx = 0, cy = 0; g.forEach(function(i){ cx += PINS[i][0]; cy += PINS[i][1]; });
+    cx /= g.length; cy /= g.length; centers.push([cx, cy]);
+    g.forEach(function(i){ PINS[i].c = [cx, cy]; });
+    if (g.length > 1){
+      var cg = document.createElementNS(NS, 'g');
+      var r = 20 + g.length * 2.5;
+      cg.innerHTML = '<circle r="' + (r + 8) + '" fill="#2563EB" fill-opacity=".25"/><circle r="' + r + '" fill="#2563EB" stroke="#fff" stroke-width="4"/><text text-anchor="middle" dy="6" font-family="Inter,sans-serif" font-weight="800" font-size="17" fill="#fff">' + g.length + '</text>';
+      clG.appendChild(cg); clEls.push([cg, cx, cy]);
+    }
+  });
+  PINS.forEach(function(p, i){
+    var cat = CAT[i % CAT.length];
+    var g = document.createElementNS(NS, 'g');
+    var label = (lang === 'el' ? p[2] + ' €' : '€' + p[2]);
+    g.innerHTML = '<g class="pinbody"><rect x="-34" y="-42" width="68" height="32" rx="16" fill="#fff"/><circle cx="-18" cy="-26" r="10" fill="' + cat[1] + '"/><circle cx="-18" cy="-26" r="3.5" fill="' + cat[2] + '"/><text x="8" y="-21" text-anchor="middle" font-family="Inter,sans-serif" font-weight="800" font-size="14" fill="#0F1F3D" class="pl">' + label + '</text><path d="M-6 -11 L0 -4 L6 -11Z" fill="#fff"/></g>';
+    pinG.appendChild(g); pinEls.push(g);
+  });
+  function relabelPins(){
+    pinEls.forEach(function(g, i){ var t = g.querySelector('.pl'); t.textContent = lang === 'el' ? PINS[i][2] + ' €' : '€' + PINS[i][2]; });
+  }
+  document.querySelectorAll('.lang button').forEach(function(b){ b.addEventListener('click', relabelPins); });
+
+  function ease(t){ return t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2; }
+  function clamp(v){ return v < 0 ? 0 : v > 1 ? 1 : v; }
+
+  function drawMap(p){
+    // p: 0 = zoomed in (separate pins), 1 = zoomed out (grouped)
+    var k = ease(clamp((p - .15) / .6));
+    var zoom = 1 - k * .35; // the whole map scales out a little
+    pinEls.forEach(function(g, i){
+      var P = PINS[i], cx = P.c[0], cy = P.c[1];
+      var x = 300 + (P[0] - 300) * zoom, y = 260 + (P[1] - 260) * zoom;
+      var gx = 300 + (cx - 300) * zoom, gy = 260 + (cy - 260) * zoom;
+      var single = GROUPS.some(function(gr){ return gr.length === 1 && gr[0] === i; });
+      var tx = single ? x : x + (gx - x) * k, ty = single ? y : y + (gy - y) * k;
+      var s = single ? 1 - k * .15 : 1 - k * .7;
+      g.setAttribute('transform', 'translate(' + tx.toFixed(1) + ' ' + ty.toFixed(1) + ') scale(' + s.toFixed(3) + ')');
+      g.setAttribute('opacity', single ? 1 : (1 - clamp((k - .55) / .35)).toFixed(3));
+    });
+    clEls.forEach(function(c){
+      var x = 300 + (c[1] - 300) * zoom, y = 260 + (c[2] - 260) * zoom;
+      var a = clamp((k - .5) / .4);
+      var s = .4 + .6 * ease(a);
+      c[0].setAttribute('transform', 'translate(' + x.toFixed(1) + ' ' + y.toFixed(1) + ') scale(' + s.toFixed(3) + ')');
+      c[0].setAttribute('opacity', a.toFixed(3));
+    });
+    document.getElementById('zoomVal').textContent = (14 - k * 4).toFixed(0);
+  }
+  drawMap(0);
+
+  /* ---------- scroll-linked effects ---------- */
+  var nav = document.getElementById('nav');
+  var heroPhone = document.getElementById('heroPhone');
+  var pars = Array.prototype.slice.call(document.querySelectorAll('[data-par]'));
+  var story = document.getElementById('how');
+  var steps = Array.prototype.slice.call(document.querySelectorAll('.step'));
+  var screens = Array.prototype.slice.call(document.querySelectorAll('#screens .scr'));
+  var bar = document.getElementById('storyBar');
+  var mapScroll = document.getElementById('mapScroll');
+  var desktop = window.matchMedia('(min-width: 961px)');
+  var current = 0, ticking = false;
+
+  function setStep(i){
+    if (i === current) return;
+    current = i;
+    steps.forEach(function(s, j){ s.classList.toggle('on', j === i); });
+    screens.forEach(function(s, j){ s.classList.toggle('on', j === i); });
+  }
+  steps.forEach(function(s, i){
+    s.addEventListener('click', function(){
+      if (!desktop.matches) return;
+      var r = story.getBoundingClientRect();
+      var total = story.offsetHeight - window.innerHeight;
+      window.scrollTo({ top: window.scrollY + r.top + total * (i + .5) / steps.length, behavior: 'smooth' });
+    });
+  });
+
+  function frame(){
+    ticking = false;
+    var y = window.scrollY, vh = window.innerHeight;
+    nav.classList.toggle('solid', y > vh * .85);
+    if (!reduce){
+      if (y < vh * 1.4){
+        pars.forEach(function(el){ el.style.transform = 'translate3d(0,' + (y * parseFloat(el.dataset.par)).toFixed(1) + 'px,0)'; });
+        var h = Math.min(1, y / vh);
+        heroPhone.style.transform = 'translateY(' + (h * 60).toFixed(1) + 'px) rotateX(' + (h * 14).toFixed(2) + 'deg) rotateY(' + (-8 + h * 8).toFixed(2) + 'deg) rotateZ(' + (2 - h * 2).toFixed(2) + 'deg) scale(' + (1 - h * .08).toFixed(3) + ')';
+      }
+    }
+    // story
+    var r = story.getBoundingClientRect();
+    if (desktop.matches){
+      var total = story.offsetHeight - vh;
+      var p = clamp(-r.top / total);
+      bar.style.transform = 'scaleX(' + p.toFixed(3) + ')';
+      setStep(Math.min(steps.length - 1, Math.floor(p * steps.length * .999)));
+    } else if (r.top < vh && r.bottom > 0){
+      // mobile: the step nearest to the middle of the screen drives the phone
+      var best = 0, bd = 1e9;
+      steps.forEach(function(s, j){ var b = s.getBoundingClientRect(); var d = Math.abs(b.top + b.height / 2 - vh * .62); if (d < bd){ bd = d; best = j; } });
+      setStep(best);
+    }
+    // map
+    var m = mapScroll.getBoundingClientRect();
+    if (m.top < vh && m.bottom > 0){
+      var mp = clamp(-m.top / (mapScroll.offsetHeight - vh));
+      drawMap(reduce ? 1 : mp);
+    }
+  }
+  function onScroll(){ if (!ticking){ ticking = true; requestAnimationFrame(frame); } }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  frame();
+
+  /* ---------- tilt on bento cards (pointer devices) ---------- */
+  if (!reduce && window.matchMedia('(hover: hover)').matches){
+    document.querySelectorAll('.box').forEach(function(b){
+      b.addEventListener('pointermove', function(e){
+        var r = b.getBoundingClientRect();
+        var x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+        b.style.transform = 'perspective(900px) rotateX(' + (-y * 4).toFixed(2) + 'deg) rotateY(' + (x * 5).toFixed(2) + 'deg) translateY(-4px)';
+      });
+      b.addEventListener('pointerleave', function(){ b.style.transform = ''; });
+    });
+  }
+})();
+</script>
+</body>
+</html>
