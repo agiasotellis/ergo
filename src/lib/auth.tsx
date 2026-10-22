@@ -13,7 +13,7 @@ import { supabase } from './supabase';
 import type { Profile } from './types';
 
 export class AuthError extends Error {
-  constructor(public code: 'google-not-configured' | 'google-no-play' | 'cancelled' | 'invalid' | 'code' | 'rate' | 'other', message?: string) {
+  constructor(public code: 'google-not-configured' | 'google-no-play' | 'cancelled' | 'invalid' | 'unconfirmed' | 'code' | 'rate' | 'other', message?: string) {
     super(message ?? code);
   }
 }
@@ -27,6 +27,8 @@ type AuthCtx = {
   signInWithGoogle: () => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<void>;
   signUpWithEmail: (name: string, email: string, password: string) => Promise<{ needsConfirmation: boolean }>;
+  verifySignupCode: (email: string, code: string) => Promise<void>;
+  resendSignupCode: (email: string) => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   verifyResetCode: (email: string, code: string) => Promise<void>;
   setNewPassword: (password: string) => Promise<void>;
@@ -100,7 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithEmail = useCallback(async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
-    if (error) throw new AuthError(error.status === 400 ? 'invalid' : 'other', error.message);
+    if (error) throw new AuthError(error.code === 'email_not_confirmed' ? 'unconfirmed' : error.status === 400 ? 'invalid' : 'other', error.message);
   }, []);
 
   const signUpWithEmail = useCallback(async (name: string, email: string, password: string) => {
@@ -111,6 +113,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     if (error) throw new AuthError('other', error.message);
     return { needsConfirmation: !data.session };
+  }, []);
+
+  /** Confirms a new account with the 6-digit code from the sign-up email (signs the user in). */
+  const verifySignupCode = useCallback(async (email: string, code: string) => {
+    const { error } = await supabase.auth.verifyOtp({ email: email.trim(), token: code.trim(), type: 'email' });
+    if (error) throw new AuthError(error.status === 429 ? 'rate' : 'code', error.message);
+  }, []);
+
+  const resendSignupCode = useCallback(async (email: string) => {
+    const { error } = await supabase.auth.resend({ type: 'signup', email: email.trim() });
+    if (error) throw new AuthError(error.status === 429 ? 'rate' : 'other', error.message);
   }, []);
 
   const resetPassword = useCallback(async (email: string) => {
@@ -144,8 +157,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<AuthCtx>(
-    () => ({ session, userId, profile, initializing, refreshProfile, signInWithGoogle, signInWithEmail, signUpWithEmail, resetPassword, verifyResetCode, setNewPassword, recovering, signOut }),
-    [session, userId, profile, initializing, refreshProfile, signInWithGoogle, signInWithEmail, signUpWithEmail, resetPassword, verifyResetCode, setNewPassword, recovering, signOut]
+    () => ({ session, userId, profile, initializing, refreshProfile, signInWithGoogle, signInWithEmail, signUpWithEmail, verifySignupCode, resendSignupCode, resetPassword, verifyResetCode, setNewPassword, recovering, signOut }),
+    [session, userId, profile, initializing, refreshProfile, signInWithGoogle, signInWithEmail, signUpWithEmail, verifySignupCode, resendSignupCode, resetPassword, verifyResetCode, setNewPassword, recovering, signOut]
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

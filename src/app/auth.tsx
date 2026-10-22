@@ -41,6 +41,11 @@ export default function Auth() {
   const fail = (e: unknown) => {
     if (e instanceof AuthError) {
       if (e.code === 'cancelled') return;
+      // Signed up earlier but never typed the code: send a fresh one and ask for it.
+      if (e.code === 'unconfirmed') {
+        router.push({ pathname: '/verify-email', params: { email: email.trim(), resend: '1' } });
+        return;
+      }
       const msg =
         e.code === 'google-not-configured' ? t.auth.googleNotConfigured : e.code === 'google-no-play' ? t.auth.googleNoPlay : e.code === 'invalid' ? t.auth.invalid : e.message;
       Alert.alert('ergo', msg);
@@ -71,10 +76,8 @@ export default function Auth() {
         router.replace('/(tabs)');
       } else {
         const { needsConfirmation } = await signUpWithEmail(name, email, password);
-        if (needsConfirmation) {
-          setNotice(t.auth.checkEmail);
-          setMode('login');
-        } else router.replace('/(tabs)');
+        if (needsConfirmation) router.push({ pathname: '/verify-email', params: { email: email.trim() } });
+        else router.replace('/(tabs)');
       }
     } catch (e) {
       fail(e);

@@ -151,6 +151,12 @@ const el = {
     titleTooShort: 'Ο τίτλος χρειάζεται τουλάχιστον 3 χαρακτήρες.',
     needLocation: 'Χρειαζόμαστε την τοποθεσία σου για να εμφανιστεί η εργασία στον χάρτη.',
   },
+  verify: {
+    title: 'Επιβεβαίωσε το email σου',
+    sub: (email: string) => `Σου στείλαμε έναν κωδικό στο ${email}. Γράψε τον για να ενεργοποιήσεις τον λογαριασμό σου.`,
+    verify: 'Επιβεβαίωση',
+    welcome: 'Καλώς ήρθες στο ergo!',
+  },
   reset: {
     title: 'Επαναφορά κωδικού',
     emailSub: 'Γράψε το email του λογαριασμού σου και θα σου στείλουμε έναν κωδικό επαλήθευσης.',
@@ -386,6 +392,12 @@ const en: Strings = {
     seeIt: 'View task',
     titleTooShort: 'The title needs at least 3 characters.',
     needLocation: 'We need your location so the task appears on the map.',
+  },
+  verify: {
+    title: 'Confirm your email',
+    sub: (email: string) => `We sent a code to ${email}. Enter it to activate your account.`,
+    verify: 'Confirm',
+    welcome: 'Welcome to ergo!',
   },
   reset: {
     title: 'Reset password',

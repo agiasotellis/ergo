@@ -83,19 +83,15 @@ The debug key's SHA-1 is `5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:
 
 In-app account deletion (required by Google Play) is the `delete-account` Edge Function in `supabase/functions/`. It verifies the caller, re-opens tasks they were helping with, deletes their photos and then their auth user; the database cascades the rest.
 
-### 5. Email (password reset & sign-up)
+### 5. Email (sign-up & password reset)
 
-Supabase's built-in email only delivers to members of your Supabase team, max 2 emails per hour, so real users won't receive codes. Before launch:
+Emails are sent as **ergo** from a Gmail account through Supabase custom SMTP (Supabase's built-in sender only reaches your own team, max 2/hour).
 
-1. **Custom SMTP:** Supabase → Authentication → Emails → SMTP Settings. Any provider works (e.g. Resend, Brevo, Mailgun; most have a free tier).
-2. **Reset-password template:** Authentication → Emails → *Reset Password*. The app asks for a code, so the email must contain `{{ .Token }}`:
+1. Gmail: turn on 2-Step Verification, then create an app password at https://myaccount.google.com/apppasswords.
+2. Supabase → Authentication → Emails → SMTP Settings: sender name `ergo`, host `smtp.gmail.com`, port `465`, username = sender email = the Gmail address, password = the app password.
+3. Supabase → Authentication → Emails → Templates: paste `supabase/templates/confirm_signup.html` into **Confirm sign up** (subject `{{ .Token }} · Ο κωδικός σου για το ergo`) and `supabase/templates/reset_password.html` into **Reset password** (subject `{{ .Token }} · Επαναφορά κωδικού ergo`).
 
-   ```html
-   <h2>ergo — Επαναφορά κωδικού / Reset password</h2>
-   <p>Ο κωδικός σου είναι / Your code is:</p>
-   <p style="font-size:28px;font-weight:800;letter-spacing:6px">{{ .Token }}</p>
-   <p>Αν δεν το ζήτησες εσύ, αγνόησε αυτό το email. / If you didn't ask for this, ignore this email.</p>
-   ```
+Both emails carry a 6-digit code (`{{ .Token }}`) that the app asks for; there are no links to open.
 
 ## Security & privacy
 
