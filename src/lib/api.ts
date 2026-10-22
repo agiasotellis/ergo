@@ -102,8 +102,10 @@ export async function updateProfile(id: string, patch: Partial<Pick<Profile, 'fu
   must(await supabase.from('profiles').update(patch).eq('id', id));
 }
 
+/** Permanently deletes the signed-in user's account and data (server function `delete-account`). */
 export async function deleteMyAccount() {
-  must(await supabase.rpc('delete_my_account'));
+  const { error } = await supabase.functions.invoke('delete-account', { method: 'POST' });
+  if (error) throw error;
 }
 
 // ---------- applications (offers) ----------

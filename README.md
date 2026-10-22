@@ -81,7 +81,7 @@ The debug key's SHA-1 is `5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:
 
 ### 4. Database
 
-`supabase/migrations/20261021000200_delete_my_account.sql` adds in-app account deletion, which Google Play requires. Run it in the Supabase SQL editor if it hasn't been applied yet.
+In-app account deletion (required by Google Play) is the `delete-account` Edge Function in `supabase/functions/`. It verifies the caller, re-opens tasks they were helping with, deletes their photos and then their auth user; the database cascades the rest.
 
 ### 5. Email (password reset & sign-up)
 
