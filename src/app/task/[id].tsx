@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, Modal, Pressable, ScrollView, TextInput, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, SlideInDown, ZoomIn, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
@@ -8,6 +8,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { CategoryTile } from '@/components/CategoryTile';
 import { Icon } from '@/components/Icon';
 import type { IconName } from '@/components/icons';
+import { ActionSheet, ReportSheet, confirmBlock } from '@/components/Sheets';
 import { TaskProgress } from '@/components/TaskProgress';
 import { Avatar, Badge, Button, Card, Field, H2, IconButton, Loading, MAX_FONT_SCALE, Txt, font } from '@/components/ui';
 import { useI18n } from '@/i18n/I18nProvider';
@@ -29,7 +30,7 @@ import {
 import { useAuth } from '@/lib/auth';
 import { categoryColors } from '@/lib/categories';
 import { euro, rating, when } from '@/lib/format';
-import type { Application, Job, Profile, ProfileStats } from '@/lib/types';
+import type { Application, Job, Profile, ProfileStats, ReportTarget } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 
 export default function TaskDetail() {
@@ -51,6 +52,8 @@ export default function TaskDetail() {
   const [busy, setBusy] = useState(false);
   const [stars, setStars] = useState(5);
   const [comment, setComment] = useState('');
+  const [menu, setMenu] = useState(false);
+  const [report, setReport] = useState<ReportTarget | null>(null);
 
   const isOwner = !!job && job.poster_id === userId;
   const isWorker = !!job && job.assigned_to === userId;
@@ -73,9 +76,12 @@ export default function TaskDetail() {
     }
   }, [id, userId, t.common.error]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  // Reload when coming back (e.g. after editing the task).
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, [load])
+  );
 
   if (!job) return <Loading />;
   const col = categoryColors(job.category, isDark);
@@ -149,7 +155,10 @@ export default function TaskDetail() {
           )}
           <SafeAreaView edges={['top']} style={{ position: 'absolute', top: 0, left: 16, right: 16 }}>
             <View style={{ paddingTop: 8 }}>
-              <IconButton name="back" label={t.common.back} onPress={() => router.back()} />
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <IconButton name="back" label={t.common.back} onPress={() => router.back()} />
+                {!isOwner && <IconButton name="more" label={t.safety.more} onPress={() => setMenu(true)} />}
+              </View>
             </View>
           </SafeAreaView>
         </View>
@@ -305,6 +314,9 @@ export default function TaskDetail() {
             <View style={{ gap: 10 }}>
               <H2>{t.task.manage}</H2>
               <Card style={{ paddingVertical: 4, borderWidth: 1.5, borderColor: c.line }}>
+                {job.status === 'open' && (
+                  <ManageRow icon="pencil" label={t.task.editTask} onPress={() => router.push({ pathname: '/post', params: { edit: job.id } })} disabled={busy} />
+                )}
                 {active && (
                   <ManageRow icon="close" label={t.task.cancelTask} onPress={confirmCancel} disabled={busy} />
                 )}
@@ -398,6 +410,26 @@ export default function TaskDetail() {
           </>
         )}
       </View>
+
+      {!isOwner && userId && (
+        <>
+          <ActionSheet
+            visible={menu}
+            onClose={() => setMenu(false)}
+            actions={[
+              { icon: 'flag', label: t.safety.reportTask, onPress: () => setReport({ type: 'job', id: job.id, userId: job.poster_id }) },
+              { icon: 'flag', label: t.safety.reportUser, onPress: () => setReport({ type: 'user', id: job.poster_id, userId: job.poster_id }) },
+              {
+                icon: 'block',
+                label: t.safety.block,
+                danger: true,
+                onPress: () => confirmBlock({ me: userId, other: job.poster_id, name: poster?.full_name ?? '', t, onDone: () => router.back() }),
+              },
+            ]}
+          />
+          <ReportSheet target={report} onClose={() => setReport(null)} onBlocked={() => router.back()} />
+        </>
+      )}
 
       <Modal visible={sheet && !isOwner && !mine} transparent animationType="fade" onRequestClose={() => setSheet(false)} statusBarTranslucent>
         <Pressable accessibilityRole="button" accessibilityLabel={t.common.cancel} onPress={() => setSheet(false)} style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' }} />

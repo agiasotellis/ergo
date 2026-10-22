@@ -9,6 +9,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 
 import { getProfile } from './api';
 import { env } from './env';
+import { unregisterPush } from './push';
 import { supabase } from './supabase';
 import type { Profile } from './types';
 
@@ -148,6 +149,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signOut = useCallback(async () => {
+    await unregisterPush();
     try {
       if (googleConfigured) await GoogleSignin.signOut();
     } catch {

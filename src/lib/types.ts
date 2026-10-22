@@ -70,8 +70,12 @@ export type Message = {
   conversation_id: string;
   sender_id: string;
   body: string;
+  /** Private storage path in the chat-photos bucket, when the message is a photo. */
+  image_path?: string | null;
   read_at: string | null;
   created_at: string;
+  /** Local-only: preview shown while a photo uploads. */
+  local_uri?: string;
 };
 
 export type Review = {
@@ -100,3 +104,6 @@ export type AppNotification = {
   created_at: string;
   actor?: Pick<Profile, 'id' | 'full_name' | 'avatar_url'> | null;
 };
+
+export type ReportReason = 'spam' | 'scam' | 'inappropriate' | 'harassment' | 'other';
+export type ReportTarget = { type: 'job' | 'user' | 'message'; id: string; userId: string | null };

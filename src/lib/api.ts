@@ -1,7 +1,7 @@
 import * as ImagePicker from 'expo-image-picker';
 
 import { supabase } from './supabase';
-import type { AppNotification, Application, CategoryKey, Conversation, Job, Message, NearbyJob, Profile, ProfileStats, Review } from './types';
+import type { AppNotification, Application, ReportReason, ReportTarget, CategoryKey, Conversation, Job, Message, NearbyJob, Profile, ProfileStats, Review } from './types';
 
 const PERSON = 'id, full_name, avatar_url';
 /** Profile columns other users may read (push token / locale are private). */
@@ -56,6 +56,13 @@ export async function createJob(posterId: string, job: NewJob) {
   let res = await supabase.from('jobs').insert({ ...job, poster_id: posterId }).select(JOB).single();
   // A failed RETURNING (missing column) aborts the insert, so retrying is safe.
   if (missingColumn(res.error)) res = await supabase.from('jobs').insert({ ...job, poster_id: posterId }).select(JOB_LEGACY).single();
+  return must<Job>(res);
+}
+
+/** Poster edits an open task (only these columns are writable; see security migration). */
+export async function updateJob(id: string, patch: Partial<Pick<Job, 'title' | 'description' | 'category' | 'budget' | 'photos' | 'scheduled_at'>>) {
+  let res = await supabase.from('jobs').update(patch).eq('id', id).select(JOB).single();
+  if (missingColumn(res.error)) res = await supabase.from('jobs').update(patch).eq('id', id).select(JOB_LEGACY).single();
   return must<Job>(res);
 }
 
@@ -226,4 +233,76 @@ export async function unreadNotifications(userId: string) {
 
 export async function markNotificationsRead(userId: string) {
   must(await supabase.from('notifications').update({ read_at: new Date().toISOString() }).eq('user_id', userId).is('read_at', null));
+}
+
+// ---------- chat photos ----------
+export type PickedPhoto = { uri: string; mimeType: string };
+
+/** Opens the camera or gallery. Throws Error('camera-permission') if the camera is refused. */
+export async function pickPhoto(source: 'camera' | 'library'): Promise<PickedPhoto | null> {
+  const opts: ImagePicker.ImagePickerOptions = { mediaTypes: ['images'], quality: 0.6 };
+  let picked: ImagePicker.ImagePickerResult;
+  if (source === 'camera') {
+    const perm = await ImagePicker.requestCameraPermissionsAsync();
+    if (!perm.granted) throw new Error('camera-permission');
+    picked = await ImagePicker.launchCameraAsync(opts);
+  } else picked = await ImagePicker.launchImageLibraryAsync(opts);
+  if (picked.canceled || !picked.assets[0]) return null;
+  return { uri: picked.assets[0].uri, mimeType: picked.assets[0].mimeType ?? 'image/jpeg' };
+}
+
+/** Uploads to the private chat-photos bucket (folder = conversation) and posts the message. */
+export async function sendPhotoMessage(conversationId: string, senderId: string, photo: PickedPhoto) {
+  const ext = (photo.mimeType.split('/')[1] ?? 'jpg').replace('jpeg', 'jpg');
+  const path = `${conversationId}/${senderId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  const body = await (await fetch(photo.uri)).arrayBuffer();
+  const up = await supabase.storage.from('chat-photos').upload(path, body, { contentType: photo.mimeType });
+  if (up.error) throw new Error(up.error.message);
+  const res = await supabase.from('messages').insert({ conversation_id: conversationId, sender_id: senderId, body: '📷', image_path: path }).select('*').single();
+  return must<Message>(res);
+}
+
+/** Short-lived links for chat photos (the bucket is private to the two participants). */
+export async function chatPhotoUrls(paths: string[]): Promise<Record<string, string>> {
+  if (!paths.length) return {};
+  const { data, error } = await supabase.storage.from('chat-photos').createSignedUrls(paths, 60 * 60);
+  if (error) throw error;
+  const out: Record<string, string> = {};
+  for (const d of data ?? []) if (d.path && d.signedUrl) out[d.path] = d.signedUrl;
+  return out;
+}
+
+// ---------- blocking & reports ----------
+export async function myBlockedIds(): Promise<string[]> {
+  const res = await supabase.from('blocks').select('blocked_id');
+  return (must<{ blocked_id: string }[]>(res) ?? []).map((b) => b.blocked_id);
+}
+
+export async function blockedProfiles() {
+  const res = await supabase.from('blocks').select(`blocked_id, created_at, profile:profiles!blocks_blocked_id_fkey(${PERSON})`).order('created_at', { ascending: false });
+  type Row = { blocked_id: string; created_at: string; profile: Pick<Profile, 'id' | 'full_name' | 'avatar_url'> | null };
+  if (res.error) throw new Error(res.error.message);
+  return (res.data ?? []) as unknown as Row[];
+}
+
+export async function blockUser(me: string, other: string) {
+  const { error } = await supabase.from('blocks').insert({ blocker_id: me, blocked_id: other });
+  if (error && error.code !== '23505') throw error;
+}
+
+export async function unblockUser(me: string, other: string) {
+  must(await supabase.from('blocks').delete().eq('blocker_id', me).eq('blocked_id', other));
+}
+
+/** Files a report; reporting the same thing twice counts as done. */
+export async function sendReport(me: string, target: ReportTarget, reason: ReportReason, details: string) {
+  const { error } = await supabase.from('reports').insert({
+    reporter_id: me,
+    target_type: target.type,
+    target_id: target.id,
+    reported_user_id: target.userId,
+    reason,
+    details: details.trim() || null,
+  });
+  if (error && error.code !== '23505') throw error;
 }

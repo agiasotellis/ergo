@@ -81,7 +81,7 @@ export default function Messages() {
                   </Txt>
                   {!!item.last_message && (
                     <Txt size={14} numberOfLines={1} color={c.body}>
-                      {item.last_message}
+                      {item.last_message === '📷' ? `📷 ${t.chat.photo}` : item.last_message}
                     </Txt>
                   )}
                 </View>

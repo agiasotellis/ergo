@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { memo, useEffect, useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, TextInput, View } from 'react-native';
@@ -9,9 +9,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { CategoryTile } from '@/components/CategoryTile';
 import { DateTimeSheet } from '@/components/DateTimeSheet';
 import { Icon } from '@/components/Icon';
-import { Button, Card, Field, H1, IconButton, MAX_FONT_SCALE, Txt, font } from '@/components/ui';
+import { Button, Card, Field, H1, IconButton, Loading, MAX_FONT_SCALE, Txt, font } from '@/components/ui';
 import { useI18n } from '@/i18n/I18nProvider';
-import { createJob, pickAndUploadPhoto } from '@/lib/api';
+import { createJob, getJob, pickAndUploadPhoto, updateJob } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { CATEGORIES } from '@/lib/categories';
 import { euro, when as formatWhen } from '@/lib/format';
@@ -58,6 +58,34 @@ export default function Post() {
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [created, setCreated] = useState<Job | null>(null);
+  // Edit mode: /post?edit=<task id> loads the task and saves changes instead of publishing.
+  const { edit } = useLocalSearchParams<{ edit?: string }>();
+  const [loadingEdit, setLoadingEdit] = useState(!!edit);
+
+  useEffect(() => {
+    if (!edit) return;
+    getJob(edit)
+      .then((j) => {
+        if (j.poster_id !== userId || j.status !== 'open') {
+          router.back();
+          return;
+        }
+        setCat(j.category);
+        setTitle(j.title);
+        setDesc(j.description ?? '');
+        setBudget(Number(j.budget ?? 30));
+        setPhotos(j.photos ?? []);
+        if (j.scheduled_at) {
+          setCustomDate(new Date(j.scheduled_at));
+          setWhen('custom');
+        } else setWhen('flexible');
+      })
+      .catch(() => {
+        Alert.alert('ergo', t.common.error);
+        router.back();
+      })
+      .finally(() => setLoadingEdit(false));
+  }, [edit, userId, t.common.error]);
 
   const addPhoto = async () => {
     if (!userId) return;
@@ -72,8 +100,30 @@ export default function Post() {
     }
   };
 
+  const saveEdit = async () => {
+    if (!edit) return;
+    if (title.trim().length < 3) return Alert.alert('ergo', t.post.titleTooShort);
+    setSaving(true);
+    try {
+      await updateJob(edit, {
+        title: title.trim(),
+        description: desc.trim(),
+        category: cat,
+        budget: finalBudget,
+        photos,
+        scheduled_at: scheduledFor(whenSel, customDate),
+      });
+      router.back();
+    } catch {
+      Alert.alert('ergo', t.common.error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const publish = async () => {
     if (!userId) return;
+    if (edit) return saveEdit();
     if (title.trim().length < 3) return Alert.alert('ergo', t.post.titleTooShort);
     if (!loc.granted) {
       await loc.refresh();
@@ -99,6 +149,8 @@ export default function Post() {
       setSaving(false);
     }
   };
+
+  if (loadingEdit) return <Loading />;
 
   if (created) {
     return (
@@ -132,7 +184,7 @@ export default function Post() {
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 8 }}>
           <IconButton name="close" label={t.common.cancel} onPress={() => router.back()} />
-          <Txt weight="800" numberOfLines={1} style={{ flexShrink: 1 }}>{t.post.title}</Txt>
+          <Txt weight="800" numberOfLines={1} style={{ flexShrink: 1 }}>{edit ? t.post.editTitle : t.post.title}</Txt>
           <View style={{ width: 46 }} />
         </View>
         <ScrollView contentContainerStyle={{ padding: 20, gap: 20, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
@@ -149,7 +201,18 @@ export default function Post() {
             <Field label={t.post.details} value={desc} onChangeText={setDesc} placeholder={t.post.detailsPh} multiline maxLength={2000} />
             <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap' }}>
               {photos.map((p) => (
-                <Image key={p} source={{ uri: p }} style={{ width: 72, height: 72, borderRadius: 18 }} contentFit="cover" />
+                <Animated.View key={p} entering={ZoomIn.springify().damping(14)} exiting={ZoomOut.duration(150)}>
+                  <Image source={{ uri: p }} style={{ width: 72, height: 72, borderRadius: 18 }} contentFit="cover" />
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={t.post.removePhoto}
+                    hitSlop={8}
+                    onPress={() => setPhotos((all) => all.filter((x) => x !== p))}
+                    style={{ position: 'absolute', top: -6, right: -6, width: 24, height: 24, borderRadius: 12, backgroundColor: c.inv, borderWidth: 2, borderColor: c.card, alignItems: 'center', justifyContent: 'center' }}
+                  >
+                    <Icon name="close" color={c.invInk} size={12} strokeWidth={3} />
+                  </Pressable>
+                </Animated.View>
               ))}
               <Pressable
                 accessibilityRole="button"
@@ -238,7 +301,7 @@ export default function Post() {
           </Card>
         </ScrollView>
         <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: 16, paddingBottom: 24, backgroundColor: c.bg }}>
-          <Button title={`${t.post.publish} · ${euro(finalBudget, lang)}`} loading={saving} onPress={publish} />
+          <Button title={edit ? `${t.post.saveChanges} · ${euro(finalBudget, lang)}` : `${t.post.publish} · ${euro(finalBudget, lang)}`} loading={saving} onPress={publish} />
         </View>
       </KeyboardAvoidingView>
       <DateTimeSheet

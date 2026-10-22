@@ -245,6 +245,9 @@ export default function Profile() {
             <Txt size={12} muted style={{ marginTop: -6, marginBottom: 6, marginLeft: 52 }}>
               {lock.available || lock.enabled ? t.lock.settingHint : t.lock.unavailable}
             </Txt>
+            <Row icon="block" label={t.safety.blockedList} onPress={() => router.push('/blocked')}>
+              <Icon name="chevron" color={c.muted} size={18} />
+            </Row>
             <Row
               icon="logout"
               label={t.profile.logout}

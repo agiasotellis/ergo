@@ -4,12 +4,16 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { TabBar } from '@/components/TabBar';
 import { unreadCount } from '@/lib/api';
+import { useI18n } from '@/i18n/I18nProvider';
 import { useAuth } from '@/lib/auth';
+import { usePushNotifications } from '@/lib/push';
 import { supabase } from '@/lib/supabase';
 
 export default function TabsLayout() {
   const { session, userId } = useAuth();
+  const { lang } = useI18n();
   const [unread, setUnread] = useState(0);
+  usePushNotifications(userId, lang);
 
   const refresh = useCallback(async () => {
     if (userId) setUnread(await unreadCount(userId));

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "578697033878",
+    "project_id": "ergo-512318",
+    "storage_bucket": "ergo-512318.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:578697033878:android:726f393846ee0a288c6ab7",
+        "android_client_info": {
+          "package_name": "com.agiasotellis.ergo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "578697033878-cq6mf0m20f9ksq2hg92e6t1tpsdh0iop.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBj9f34VMr9DxG3wJ6pm5-EBC-iSB7yaRA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "578697033878-cq6mf0m20f9ksq2hg92e6t1tpsdh0iop.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

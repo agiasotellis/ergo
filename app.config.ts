@@ -19,6 +19,8 @@ const config: ExpoConfig = {
   },
   android: {
     package: PACKAGE,
+    // Firebase (push notifications). Not secret: identifies the app to Firebase.
+    googleServicesFile: './google-services.json',
     // CI passes the GitHub run number so every APK can be installed over the previous one.
     versionCode: Number(process.env.ERGO_VERSION_CODE ?? 1),
     adaptiveIcon: {
@@ -46,6 +48,7 @@ const config: ExpoConfig = {
     ],
     // Free OpenStreetMap maps via MapLibre + OpenFreeMap: no API key needed.
     '@maplibre/maplibre-react-native',
+    ['expo-notifications', { icon: './assets/images/notification-icon.png', color: '#2563EB', defaultChannel: 'default' }],
     ['expo-local-authentication', { faceIDPermission: 'Το ergo χρησιμοποιεί το Face ID για να ξεκλειδώνει την εφαρμογή.' }],
     // Keystore-backed storage for the session encryption key; excluded from Android backups.
     ['expo-secure-store', { configureAndroidBackup: true }],
@@ -55,7 +58,10 @@ const config: ExpoConfig = {
     ],
     [
       'expo-image-picker',
-      { photosPermission: 'Το ergo χρειάζεται πρόσβαση στις φωτογραφίες σου για να προσθέσεις εικόνες σε εργασίες.' },
+      {
+        photosPermission: 'Το ergo χρειάζεται πρόσβαση στις φωτογραφίες σου για να προσθέσεις εικόνες σε εργασίες και μηνύματα.',
+        cameraPermission: 'Το ergo χρειάζεται την κάμερα για να στείλεις φωτογραφίες σε μηνύματα.',
+      },
     ],
     [
       '@react-native-google-signin/google-signin',
