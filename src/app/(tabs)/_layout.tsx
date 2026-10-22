@@ -1,13 +1,14 @@
-import { Redirect } from 'expo-router';
-import { Tabs } from 'expo-router/tabs';
-import { useCallback, useEffect, useState } from 'react';
+import { Redirect } from "expo-router";
+import { Tabs } from "expo-router/tabs";
+import { useCallback, useEffect, useState } from "react";
 
-import { TabBar } from '@/components/TabBar';
-import { unreadCount } from '@/lib/api';
-import { useI18n } from '@/i18n/I18nProvider';
-import { useAuth } from '@/lib/auth';
-import { usePushNotifications } from '@/lib/push';
-import { supabase } from '@/lib/supabase';
+import { TabBar } from "@/components/TabBar";
+import { unreadCount } from "@/lib/api";
+import { useI18n } from "@/i18n/I18nProvider";
+import { useAuth } from "@/lib/auth";
+import { FiltersProvider } from "@/lib/filters";
+import { usePushNotifications } from "@/lib/push";
+import { supabase } from "@/lib/supabase";
 
 export default function TabsLayout() {
   const { session, userId } = useAuth();
@@ -23,8 +24,12 @@ export default function TabsLayout() {
     if (!userId) return;
     refresh();
     const ch = supabase
-      .channel('unread')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, () => refresh())
+      .channel("unread")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "messages" },
+        () => refresh(),
+      )
       .subscribe();
     return () => {
       supabase.removeChannel(ch);
@@ -34,11 +39,16 @@ export default function TabsLayout() {
   if (!session) return <Redirect href="/auth" />;
 
   return (
-    <Tabs screenOptions={{ headerShown: false, animation: 'shift' }} tabBar={(props) => <TabBar {...props} unread={unread} />}>
-      <Tabs.Screen name="index" />
-      <Tabs.Screen name="map" />
-      <Tabs.Screen name="messages" />
-      <Tabs.Screen name="profile" />
-    </Tabs>
+    <FiltersProvider>
+      <Tabs
+        screenOptions={{ headerShown: false, animation: "shift" }}
+        tabBar={(props) => <TabBar {...props} unread={unread} />}
+      >
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="map" />
+        <Tabs.Screen name="messages" />
+        <Tabs.Screen name="profile" />
+      </Tabs>
+    </FiltersProvider>
   );
 }

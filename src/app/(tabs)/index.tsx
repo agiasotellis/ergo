@@ -1,24 +1,45 @@
-import { router } from 'expo-router';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { FlatList, Pressable, RefreshControl, ScrollView, TextInput, View } from 'react-native';
-import { Camera, Map as MapLibreMap } from '@maplibre/maplibre-react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from "expo-router";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  FlatList,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  TextInput,
+  View,
+} from "react-native";
+import { Camera, Map as MapLibreMap } from "@maplibre/maplibre-react-native";
+import Animated, { FadeInDown } from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Icon } from '@/components/Icon';
-import { TaskCard } from '@/components/TaskCard';
-import { Avatar, Button, Chip, Empty, H1, IconButton, Loading, MAX_FONT_SCALE, Txt, font } from '@/components/ui';
-import { useI18n } from '@/i18n/I18nProvider';
-import { nearbyJobs } from '@/lib/api';
-import { useAuth } from '@/lib/auth';
-import { CATEGORIES } from '@/lib/categories';
-import { useLocation } from '@/lib/location';
-import { useUnreadNotifications } from '@/lib/notifications';
-import { bboxAround, useMapStyle } from '@/lib/mapStyle';
-import type { CategoryKey, NearbyJob } from '@/lib/types';
-import { useTheme } from '@/theme/ThemeProvider';
+import { FilterButton, FilterSheet } from "@/components/FilterSheet";
+import { Icon } from "@/components/Icon";
+import { TaskCard } from "@/components/TaskCard";
+import {
+  Avatar,
+  Button,
+  Chip,
+  Empty,
+  H1,
+  IconButton,
+  Loading,
+  MAX_FONT_SCALE,
+  Txt,
+  font,
+} from "@/components/ui";
+import { useI18n } from "@/i18n/I18nProvider";
+import { nearbyJobs } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
+import { CATEGORIES } from "@/lib/categories";
+import { applyFilters, useFilters } from "@/lib/filters";
+import { useLocation } from "@/lib/location";
+import { useUnreadNotifications } from "@/lib/notifications";
+import { bboxAround, useMapStyle } from "@/lib/mapStyle";
+import type { CategoryKey, NearbyJob } from "@/lib/types";
+import { useTheme } from "@/theme/ThemeProvider";
 
-const HOME_RADIUS_KM = 10;
+/** Home loads everything within the largest distance once; the filters narrow it down on the phone. */
+const FETCH_RADIUS_KM = 50;
 
 export default function Home() {
   const { c, isDark, setPref } = useTheme();
@@ -28,15 +49,17 @@ export default function Home() {
   const unreadNotes = useUnreadNotifications(userId);
   const loc = useLocation();
   const [cat, setCat] = useState<CategoryKey | null>(null);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [jobs, setJobs] = useState<NearbyJob[] | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(false);
+  const { filters, setFilters, reset: resetFilters, active } = useFilters();
+  const [filterSheet, setFilterSheet] = useState(false);
 
   const load = useCallback(async () => {
     try {
       setError(false);
-      setJobs(await nearbyJobs(loc.lat, loc.lng, HOME_RADIUS_KM, cat));
+      setJobs(await nearbyJobs(loc.lat, loc.lng, FETCH_RADIUS_KM, cat));
     } catch {
       setError(true);
       setJobs((j) => j ?? []);
@@ -53,49 +76,79 @@ export default function Home() {
     setRefreshing(false);
   };
 
-  const shown = useMemo(() => {
+  const searched = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return (jobs ?? []).filter((j) => !q || j.title.toLowerCase().includes(q) || j.description.toLowerCase().includes(q));
+    return (jobs ?? []).filter(
+      (j) =>
+        !q ||
+        j.title.toLowerCase().includes(q) ||
+        j.description.toLowerCase().includes(q),
+    );
   }, [jobs, query]);
+  const shown = useMemo(
+    () => applyFilters(searched, filters),
+    [searched, filters],
+  );
 
   const hour = new Date().getHours();
-  const first = profile?.full_name?.split(' ')[0];
-  const greet = `${hour < 12 ? t.home.greetMorning : t.home.greetEvening}${first ? `, ${first}` : ''}`;
+  const first = profile?.full_name?.split(" ")[0];
+  const greet = `${hour < 12 ? t.home.greetMorning : t.home.greetEvening}${first ? `, ${first}` : ""}`;
 
   const header = (
     <View style={{ gap: 16, paddingBottom: 12 }}>
-      <Animated.View entering={FadeInDown.duration(400)} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-        <Pressable accessibilityRole="button" accessibilityLabel={t.tabs.profile} onPress={() => router.navigate('/(tabs)/profile')}>
+      <Animated.View
+        entering={FadeInDown.duration(400)}
+        style={{ flexDirection: "row", alignItems: "center", gap: 12 }}
+      >
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t.tabs.profile}
+          onPress={() => router.navigate("/(tabs)/profile")}
+        >
           <Avatar name={profile?.full_name} url={profile?.avatar_url} />
         </Pressable>
         <View style={{ flex: 1 }}>
           <Txt size={13} muted>
             {greet}
           </Txt>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <Icon name="pin" size={16} color={c.primaryText} strokeWidth={2.2} />
-            <Txt size={16} weight="700" numberOfLines={1} style={{ flexShrink: 1 }}>
-              {loc.area ?? (loc.granted ? '…' : t.map.unknownArea)}
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+            <Icon
+              name="pin"
+              size={16}
+              color={c.primaryText}
+              strokeWidth={2.2}
+            />
+            <Txt
+              size={16}
+              weight="700"
+              numberOfLines={1}
+              style={{ flexShrink: 1 }}
+            >
+              {loc.area ?? (loc.granted ? "…" : t.map.unknownArea)}
             </Txt>
           </View>
         </View>
-        <View style={{ flexDirection: 'row', gap: 8 }}>
+        <View style={{ flexDirection: "row", gap: 8 }}>
           <IconButton
-            name={isDark ? 'sun' : 'moon'}
+            name={isDark ? "sun" : "moon"}
             label={`${t.profile.theme}: ${isDark ? t.profile.themeLight : t.profile.themeDark}`}
-            onPress={() => setPref(isDark ? 'light' : 'dark')}
+            onPress={() => setPref(isDark ? "light" : "dark")}
           />
           <View>
             <IconButton
               name="bell"
-              label={unreadNotes ? `${t.notifications.title}, ${unreadNotes}` : t.notifications.title}
-              onPress={() => router.push('/notifications')}
+              label={
+                unreadNotes
+                  ? `${t.notifications.title}, ${unreadNotes}`
+                  : t.notifications.title
+              }
+              onPress={() => router.push("/notifications")}
             />
             {unreadNotes > 0 && (
               <View
                 pointerEvents="none"
                 style={{
-                  position: 'absolute',
+                  position: "absolute",
                   top: -2,
                   right: -2,
                   minWidth: 20,
@@ -104,13 +157,20 @@ export default function Home() {
                   borderRadius: 10,
                   borderWidth: 2,
                   borderColor: c.bg,
-                  backgroundColor: '#FF6A3D',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  backgroundColor: "#FF6A3D",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
-                <Txt size={10} weight="800" color="#0F1F3D" center style={{ lineHeight: 12 }} maxFontSizeMultiplier={1}>
-                  {unreadNotes > 9 ? '9+' : String(unreadNotes)}
+                <Txt
+                  size={10}
+                  weight="800"
+                  color="#0F1F3D"
+                  center
+                  style={{ lineHeight: 12 }}
+                  maxFontSizeMultiplier={1}
+                >
+                  {unreadNotes > 9 ? "9+" : String(unreadNotes)}
                 </Txt>
               </View>
             )}
@@ -121,31 +181,59 @@ export default function Home() {
       <Animated.View entering={FadeInDown.delay(60).duration(400)}>
         <H1>
           {t.home.hero1}
-          {'\n'}
+          {"\n"}
           {t.home.hero2}
         </H1>
       </Animated.View>
 
-      <Animated.View entering={FadeInDown.delay(120).duration(400)} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, height: 52, paddingHorizontal: 16, borderRadius: 18, backgroundColor: c.card }}>
-        <Icon name="search" color={c.muted} size={20} />
-        <TextInput
-          accessibilityLabel={t.home.search}
-          value={query}
-          onChangeText={setQuery}
-          placeholder={t.home.search}
-          placeholderTextColor={c.muted}
-          maxFontSizeMultiplier={MAX_FONT_SCALE}
-          style={{ flex: 1, fontSize: 15, fontFamily: font['400'], color: c.ink, paddingVertical: 0 }}
-          returnKeyType="search"
-        />
+      <Animated.View
+        entering={FadeInDown.delay(120).duration(400)}
+        style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
+      >
+        <View
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 10,
+            height: 52,
+            paddingHorizontal: 16,
+            borderRadius: 18,
+            backgroundColor: c.card,
+          }}
+        >
+          <Icon name="search" color={c.muted} size={20} />
+          <TextInput
+            accessibilityLabel={t.home.search}
+            value={query}
+            onChangeText={setQuery}
+            placeholder={t.home.search}
+            placeholderTextColor={c.muted}
+            maxFontSizeMultiplier={MAX_FONT_SCALE}
+            style={{
+              flex: 1,
+              fontSize: 15,
+              fontFamily: font["400"],
+              color: c.ink,
+              paddingVertical: 0,
+            }}
+            returnKeyType="search"
+          />
+        </View>
+        <FilterButton count={active} onPress={() => setFilterSheet(true)} />
       </Animated.View>
 
       <Animated.View entering={FadeInDown.delay(180).duration(400)}>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t.home.mapCard}
-          onPress={() => router.navigate('/(tabs)/map')}
-          style={({ pressed }) => ({ height: 150, borderRadius: 26, overflow: 'hidden', transform: [{ scale: pressed ? 0.98 : 1 }] })}
+          onPress={() => router.navigate("/(tabs)/map")}
+          style={({ pressed }) => ({
+            height: 150,
+            borderRadius: 26,
+            overflow: "hidden",
+            transform: [{ scale: pressed ? 0.98 : 1 }],
+          })}
         >
           {/* Static preview: gestures off, tapping opens the full map. */}
           <View pointerEvents="none" style={{ flex: 1 }}>
@@ -165,12 +253,27 @@ export default function Home() {
               <Camera bounds={bboxAround(loc.lat, loc.lng, 2.5)} duration={0} />
             </MapLibreMap>
           </View>
-          <Txt size={9} color={c.muted} style={{ position: 'absolute', right: 10, top: 6 }} maxFontSizeMultiplier={1}>
+          <Txt
+            size={9}
+            color={c.muted}
+            style={{ position: "absolute", right: 10, top: 6 }}
+            maxFontSizeMultiplier={1}
+          >
             © OpenStreetMap
           </Txt>
-          <View style={{ position: 'absolute', left: 14, bottom: 14, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 16, backgroundColor: c.card }}>
+          <View
+            style={{
+              position: "absolute",
+              left: 14,
+              bottom: 14,
+              paddingHorizontal: 14,
+              paddingVertical: 10,
+              borderRadius: 16,
+              backgroundColor: c.card,
+            }}
+          >
             <Txt size={15} weight="700">
-              {t.home.tasksWithin(jobs?.length ?? 0, HOME_RADIUS_KM)}
+              {t.home.tasksWithin(shown.length, filters.radius)}
             </Txt>
             <Txt size={13} weight="600" color={c.primaryText}>
               {t.home.mapCard}
@@ -179,19 +282,53 @@ export default function Home() {
         </Pressable>
       </Animated.View>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }} style={{ marginHorizontal: -20 }}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ gap: 8 }}
+        style={{ marginHorizontal: -20 }}
+      >
         <View style={{ width: 12 }} />
-        <Chip label={t.categories.all} selected={!cat} onPress={() => setCat(null)} />
+        <Chip
+          label={t.categories.all}
+          selected={!cat}
+          onPress={() => setCat(null)}
+        />
         {CATEGORIES.map((k) => (
-          <Chip key={k.key} label={t.categories[k.key]} selected={cat === k.key} onPress={() => setCat(k.key)} />
+          <Chip
+            key={k.key}
+            label={t.categories[k.key]}
+            selected={cat === k.key}
+            onPress={() => setCat(k.key)}
+          />
         ))}
         <View style={{ width: 12 }} />
       </ScrollView>
 
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginTop: 4 }}>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "baseline",
+          marginTop: 4,
+        }}
+      >
         <Txt size={18} weight="800">
-          {t.home.nearest}
+          {filters.sort === "near"
+            ? t.home.nearest
+            : t.filters.sorts[filters.sort]}
         </Txt>
+        {active > 0 && (
+          <Pressable
+            accessibilityRole="button"
+            onPress={resetFilters}
+            hitSlop={8}
+          >
+            <Txt size={13} weight="700" color={c.primaryText}>
+              {t.filters.clear}
+            </Txt>
+          </Pressable>
+        )}
         {!loc.granted && !loc.loading && (
           <Pressable accessibilityRole="button" onPress={loc.refresh}>
             <Txt size={12} weight="600" color={c.primaryText}>
@@ -209,23 +346,77 @@ export default function Home() {
   );
 
   return (
-    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: c.bg }}>
+    <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: c.bg }}>
       <FlatList
         data={shown}
         keyExtractor={(j) => j.id}
         ListHeaderComponent={header}
         contentContainerStyle={{ padding: 20, paddingBottom: 130, gap: 12 }}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={c.primary} colors={[c.primary]} />}
-        renderItem={({ item, index }) => <TaskCard job={item} index={index} onPress={() => router.push(`/task/${item.id}`)} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={c.primary}
+            colors={[c.primary]}
+          />
+        }
+        renderItem={({ item, index }) => (
+          <TaskCard
+            job={item}
+            index={index}
+            onPress={() => router.push(`/task/${item.id}`)}
+          />
+        )}
         ListEmptyComponent={
           jobs === null ? (
             <Loading />
           ) : error ? (
-            <Empty title={t.common.error} action={<Button title={t.common.retry} variant="secondary" size="md" onPress={load} />} />
+            <Empty
+              title={t.common.error}
+              action={
+                <Button
+                  title={t.common.retry}
+                  variant="secondary"
+                  size="md"
+                  onPress={load}
+                />
+              }
+            />
+          ) : searched.length > 0 && active > 0 ? (
+            <Empty
+              title={t.filters.none}
+              body={t.filters.noneBody}
+              action={
+                <Button
+                  title={t.filters.clear}
+                  variant="secondary"
+                  size="md"
+                  onPress={resetFilters}
+                />
+              }
+            />
           ) : (
-            <Empty title={t.home.emptyTitle} body={t.home.emptyBody} action={<Button title={t.home.postFirst} size="md" icon="plus" onPress={() => router.push('/post')} />} />
+            <Empty
+              title={t.home.emptyTitle}
+              body={t.home.emptyBody}
+              action={
+                <Button
+                  title={t.home.postFirst}
+                  size="md"
+                  icon="plus"
+                  onPress={() => router.push("/post")}
+                />
+              }
+            />
           )
         }
+      />
+      <FilterSheet
+        visible={filterSheet}
+        value={filters}
+        jobs={searched}
+        onClose={() => setFilterSheet(false)}
+        onApply={setFilters}
       />
     </SafeAreaView>
   );

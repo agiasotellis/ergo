@@ -2,11 +2,12 @@ import { Camera, GeoJSONSource, Layer, Map as MapLibreMap, Marker, NativeUserLoc
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Pressable, View } from 'react-native';
+import { Alert, Pressable, ScrollView, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, SlideInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CategoryTile } from '@/components/CategoryTile';
+import { FilterButton, FilterSheet } from '@/components/FilterSheet';
 import { Icon } from '@/components/Icon';
 import { Avatar, Button, IconButton, Txt } from '@/components/ui';
 import { useI18n } from '@/i18n/I18nProvider';
@@ -14,12 +15,12 @@ import { useAuth } from '@/lib/auth';
 import { nearbyJobs, startConversation } from '@/lib/api';
 import { categoryColors } from '@/lib/categories';
 import { euro, km, when } from '@/lib/format';
+import { RADIUS_OPTIONS, applyFilters, useFilters } from '@/lib/filters';
 import { useLocation } from '@/lib/location';
 import { bboxAround, circlePolygon, useMapStyle } from '@/lib/mapStyle';
 import type { NearbyJob } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 
-const RADII = [1, 3, 5, 10, 25];
 // The whole world is available (zoom 1 ≈ all continents); ergo isn't limited to Greece.
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 19;
@@ -75,7 +76,10 @@ export default function MapScreen() {
   const mapRef = useRef<MapRef>(null);
   const cameraRef = useRef<CameraRef>(null);
   const mapStyle = useMapStyle(isDark, lang);
-  const [radius, setRadius] = useState(5);
+  // Distance and the other filters are shared with Home (see lib/filters).
+  const { filters, setFilters, setRadius, active } = useFilters();
+  const radius = filters.radius;
+  const [filterSheet, setFilterSheet] = useState(false);
   // null = follow the device location; set when the user searches another area.
   const [searchCenter, setSearchCenter] = useState<{ lat: number; lng: number } | null>(null);
   const center = searchCenter ?? { lat: loc.lat, lng: loc.lng };
@@ -119,12 +123,23 @@ export default function MapScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loc.lat, loc.lng]);
 
+  // Pins follow the same price / date / sort filters as the Home list.
+  const pins = useMemo(() => applyFilters(jobs, filters), [jobs, filters]);
+
+  // Zoom to the circle whenever the distance changes (chips here or the filters sheet).
+  const firstRadius = useRef(true);
+  useEffect(() => {
+    if (firstRadius.current) {
+      firstRadius.current = false;
+      return;
+    }
+    fit(center.lat, center.lng, radius);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [radius]);
+
   const ring = useMemo(() => circlePolygon(center.lat, center.lng, radius), [center.lat, center.lng, radius]);
 
-  const pickRadius = (r: number) => {
-    setRadius(r);
-    fit(center.lat, center.lng, r);
-  };
+  const pickRadius = (r: number) => setRadius(r);
 
   const recenter = async () => {
     setMoved(null);
@@ -191,7 +206,7 @@ export default function MapScreen() {
           <Layer id="search-ring-line" type="line" paint={{ 'line-color': c.primary, 'line-width': 1.5, 'line-opacity': 0.8 }} />
         </GeoJSONSource>
         {loc.granted && <NativeUserLocation />}
-        {jobs.map((j) => (
+        {pins.map((j) => (
           <PricePin key={j.id} job={j} selected={selected?.id === j.id} onPress={() => openPin(j)} />
         ))}
       </MapLibreMap>
@@ -206,13 +221,21 @@ export default function MapScreen() {
             </Txt>
             <View style={{ paddingHorizontal: 10, paddingVertical: 6, borderRadius: 12, backgroundColor: c.inv }}>
               <Txt size={12} weight="700" color={c.invInk}>
-                {t.map.nearby(jobs.length)}
+                {t.map.nearby(pins.length)}
               </Txt>
             </View>
           </View>
+          <FilterButton count={active} onPress={() => setFilterSheet(true)} />
         </View>
-        <View accessibilityRole="radiogroup" accessibilityLabel={t.map.radius} style={{ flexDirection: 'row', backgroundColor: c.card, borderRadius: 18, padding: 4, gap: 2, alignSelf: 'flex-start' }}>
-          {RADII.map((r) => {
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={{ flexGrow: 0, alignSelf: 'flex-start', maxWidth: '100%', borderRadius: 18, backgroundColor: c.card }}
+          contentContainerStyle={{ padding: 4, gap: 2 }}
+          accessibilityRole="radiogroup"
+          accessibilityLabel={t.map.radius}
+        >
+          {RADIUS_OPTIONS.map((r) => {
             const on = r === radius;
             return (
               <Pressable
@@ -220,7 +243,7 @@ export default function MapScreen() {
                 accessibilityRole="radio"
                 accessibilityState={{ checked: on }}
                 onPress={() => pickRadius(r)}
-                style={{ height: 40, minWidth: 56, paddingHorizontal: 10, borderRadius: 14, backgroundColor: on ? c.primary : 'transparent', alignItems: 'center', justifyContent: 'center' }}
+                style={{ height: 40, minWidth: 52, paddingHorizontal: 10, borderRadius: 14, backgroundColor: on ? c.primary : 'transparent', alignItems: 'center', justifyContent: 'center' }}
               >
                 <Txt size={13} weight="700" color={on ? '#FFFFFF' : c.ink}>
                   {lang === 'el' ? `${r} χλμ.` : `${r} km`}
@@ -228,7 +251,7 @@ export default function MapScreen() {
               </Pressable>
             );
           })}
-        </View>
+        </ScrollView>
         {moved && (
           <Animated.View entering={FadeIn} style={{ alignSelf: 'center' }}>
             <Button title={t.map.searchHere} size="md" variant="inverse" icon="refresh" onPress={searchHere} />
@@ -296,6 +319,7 @@ export default function MapScreen() {
           </View>
         </Animated.View>
       )}
+      <FilterSheet visible={filterSheet} value={filters} jobs={jobs} onClose={() => setFilterSheet(false)} onApply={setFilters} />
     </View>
   );
 }
