@@ -25,6 +25,7 @@ import { DUR, EASE_OUT } from '@/theme/motion';
 
 // The whole world is available (zoom 1 ≈ all continents); ergo isn't limited to Greece.
 const MIN_ZOOM = 1;
+const MAX_PINS = 100;
 const MAX_ZOOM = 19;
 
 /** Price pin drawn as a native view on the map. */
@@ -127,6 +128,8 @@ export default function MapScreen() {
 
   // Pins follow the same price / date / sort filters as the Home list.
   const pins = useMemo(() => applyFilters(jobs, filters), [jobs, filters]);
+  // Each pin is a native view; drawing hundreds makes panning stutter, so show the nearest 100.
+  const drawn = useMemo(() => (pins.length > MAX_PINS ? [...pins].sort((a, b) => a.distance_km - b.distance_km).slice(0, MAX_PINS) : pins), [pins]);
 
   // Zoom to the circle whenever the distance changes (chips here or the filters sheet).
   const firstRadius = useRef(true);
@@ -208,7 +211,7 @@ export default function MapScreen() {
           <Layer id="search-ring-line" type="line" paint={{ 'line-color': c.primary, 'line-width': 1.5, 'line-opacity': 0.8 }} />
         </GeoJSONSource>
         {loc.granted && <NativeUserLocation />}
-        {pins.map((j) => (
+        {drawn.map((j) => (
           <PricePin key={j.id} job={j} selected={selected?.id === j.id} onPress={() => openPin(j)} />
         ))}
       </MapLibreMap>

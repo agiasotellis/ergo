@@ -19,6 +19,7 @@ import {
   pickPhoto,
   sendMessage,
   sendPhotoMessage,
+  isRateLimited,
   unblockUser,
   type PickedPhoto,
 } from '@/lib/api';
@@ -95,9 +96,10 @@ export default function Chat() {
     try {
       const m = await sendMessage(id, userId, body);
       setMsgs((list) => (list.some((x) => x.id === m.id) ? list : [...list, m]));
-    } catch {
+    } catch (e) {
       setDraft(body);
-      blockedError();
+      if (isRateLimited(e)) Alert.alert('ergo', t.common.rateLimited);
+      else blockedError();
     } finally {
       setSending(false);
     }

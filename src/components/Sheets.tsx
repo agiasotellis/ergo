@@ -4,7 +4,7 @@ import Animated, { SlideInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useI18n } from '@/i18n/I18nProvider';
-import { blockUser, sendReport } from '@/lib/api';
+import { blockUser, isRateLimited, sendReport } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import type { ReportReason, ReportTarget } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -96,8 +96,8 @@ export function ReportSheet({ target, onClose, onBlocked }: { target: ReportTarg
       }
       onClose();
       Alert.alert('ergo', t.safety.thanks);
-    } catch {
-      Alert.alert('ergo', t.common.error);
+    } catch (e) {
+      Alert.alert('ergo', isRateLimited(e) ? t.common.rateLimited : t.common.error);
     } finally {
       setBusy(false);
     }

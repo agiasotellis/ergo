@@ -1,5 +1,6 @@
 import * as ImagePicker from 'expo-image-picker';
 
+import { shrinkPhoto } from './photos';
 import { supabase } from './supabase';
 import type { AppNotification, Application, ReportReason, ReportTarget, CategoryKey, Conversation, Job, Message, NearbyJob, Profile, ProfileStats, Review } from './types';
 
@@ -100,10 +101,10 @@ export async function pickAndUploadPhoto(userId: string, bucket: 'job-photos' | 
   const picked = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.7, allowsEditing: true });
   if (picked.canceled || !picked.assets[0]) return null;
   const asset = picked.assets[0];
-  const ext = (asset.mimeType?.split('/')[1] ?? 'jpg').replace('jpeg', 'jpg');
-  const path = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-  const body = await (await fetch(asset.uri)).arrayBuffer();
-  const up = await supabase.storage.from(bucket).upload(path, body, { contentType: asset.mimeType ?? 'image/jpeg' });
+  const photo = await shrinkPhoto(asset.uri, asset.width, asset.height);
+  const path = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`;
+  const body = await (await fetch(photo.uri)).arrayBuffer();
+  const up = await supabase.storage.from(bucket).upload(path, body, { contentType: photo.mimeType });
   if (up.error) throw new Error(up.error.message);
   return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
 }
@@ -184,9 +185,10 @@ export async function messages(conversationId: string) {
     .from('messages')
     .select('*')
     .eq('conversation_id', conversationId)
-    .order('created_at', { ascending: true })
-    .limit(500);
-  return must<Message[]>(res) ?? [];
+    // Newest 300, shown oldest-first (asking for the oldest 500 hid new messages in long chats).
+    .order('created_at', { ascending: false })
+    .limit(300);
+  return (must<Message[]>(res) ?? []).reverse();
 }
 
 export async function sendMessage(conversationId: string, senderId: string, body: string) {
@@ -262,7 +264,8 @@ export async function pickPhoto(source: 'camera' | 'library'): Promise<PickedPho
     picked = await ImagePicker.launchCameraAsync(opts);
   } else picked = await ImagePicker.launchImageLibraryAsync(opts);
   if (picked.canceled || !picked.assets[0]) return null;
-  return { uri: picked.assets[0].uri, mimeType: picked.assets[0].mimeType ?? 'image/jpeg' };
+  const a = picked.assets[0];
+  return shrinkPhoto(a.uri, a.width, a.height);
 }
 
 /** Uploads to the private chat-photos bucket (folder = conversation) and posts the message. */
@@ -319,4 +322,9 @@ export async function sendReport(me: string, target: ReportTarget, reason: Repor
     details: details.trim() || null,
   });
   if (error && error.code !== '23505') throw error;
+}
+
+/** True when the database refused because of the anti-spam limits. */
+export function isRateLimited(e: unknown) {
+  return e instanceof Error ? e.message.includes('rate_limited') : typeof e === 'object' && !!e && String((e as { message?: string }).message).includes('rate_limited');
 }

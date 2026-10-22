@@ -11,7 +11,7 @@ import { DateTimeSheet } from '@/components/DateTimeSheet';
 import { Icon } from '@/components/Icon';
 import { Button, Card, Field, H1, IconButton, Loading, MAX_FONT_SCALE, Txt, font } from '@/components/ui';
 import { useI18n } from '@/i18n/I18nProvider';
-import { createJob, getJob, pickAndUploadPhoto, updateJob } from '@/lib/api';
+import { createJob, getJob, isRateLimited, pickAndUploadPhoto, updateJob } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { peekEditDraft } from '@/lib/editDraft';
 import { CATEGORIES } from '@/lib/categories';
@@ -145,8 +145,8 @@ export function TaskForm({ editId }: { editId?: string }) {
         scheduled_at: scheduledFor(whenSel, customDate),
       });
       setCreated(job);
-    } catch {
-      Alert.alert('ergo', t.common.error);
+    } catch (e) {
+      Alert.alert('ergo', isRateLimited(e) ? t.common.rateLimited : t.common.error);
     } finally {
       setSaving(false);
     }

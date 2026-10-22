@@ -22,6 +22,7 @@ import {
   getJob,
   getProfile,
   getStats,
+  isRateLimited,
   leaveReview,
   myApplication,
   myReviewForJob,
@@ -52,6 +53,15 @@ export default function TaskDetail() {
   const [reviewed, setReviewed] = useState(true);
   const [sheet, setSheet] = useState(offer === '1');
   const [amount, setAmount] = useState(0);
+  // Text while the offer amount is being typed; the typed value counts even if not yet committed.
+  const [amountText, setAmountText] = useState<string | null>(null);
+  const typedAmount = amountText == null ? NaN : Math.round(Number(amountText));
+  const finalAmount = Number.isFinite(typedAmount) && typedAmount > 0 ? Math.min(100000, typedAmount) : amount;
+  const commitAmount = () => {
+    if (amountText == null) return;
+    setAmount(finalAmount);
+    setAmountText(null);
+  };
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
   const [stars, setStars] = useState(5);
@@ -95,8 +105,8 @@ export default function TaskDetail() {
     try {
       await fn();
       await load();
-    } catch {
-      Alert.alert('ergo', t.common.error);
+    } catch (e) {
+      Alert.alert('ergo', isRateLimited(e) ? t.common.rateLimited : t.common.error);
     } finally {
       setBusy(false);
     }
@@ -452,20 +462,34 @@ export default function TaskDetail() {
           <Txt muted>{t.task.offerHint}</Txt>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: c.soft, borderRadius: 24, padding: 12 }}>
             <IconButton name="minus" label="−5 €" onPress={() => setAmount((a) => Math.max(5, a - 5))} size={56} />
-            <Animated.View key={amount} entering={ZoomIn.duration(180)} style={{ flex: 1, alignItems: 'center' }}>
-              <Txt size={36} weight="900" numberOfLines={1} adjustsFontSizeToFit>
-                {euro(amount, lang)}
+            {/* Tap the amount to type it; the buttons still step by 5 €. */}
+            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+              <TextInput
+                accessibilityLabel={t.task.yourOffer}
+                value={amountText ?? String(amount)}
+                onFocus={() => setAmountText(String(amount))}
+                onChangeText={(v) => setAmountText(v.replace(/[^0-9]/g, '').slice(0, 6))}
+                onBlur={commitAmount}
+                onSubmitEditing={commitAmount}
+                keyboardType="number-pad"
+                returnKeyType="done"
+                selectTextOnFocus
+                maxFontSizeMultiplier={MAX_FONT_SCALE}
+                style={{ minWidth: 40, fontSize: 36, fontFamily: font['900'], color: c.ink, textAlign: 'right', paddingVertical: 0, includeFontPadding: false }}
+              />
+              <Txt size={36} weight="900" style={{ lineHeight: 42, marginLeft: 4 }}>
+                €
               </Txt>
-            </Animated.View>
-            <IconButton name="plus" label="+5 €" onPress={() => setAmount((a) => a + 5)} size={56} />
+            </View>
+            <IconButton name="plus" label="+5 €" onPress={() => setAmount((a) => Math.min(100000, a + 5))} size={56} />
           </View>
           <Field label={t.task.note} value={note} onChangeText={setNote} maxLength={500} />
           <Button
-            title={t.task.send}
+            title={`${t.task.send} · ${euro(finalAmount, lang)}`}
             loading={busy}
             onPress={() =>
               run(async () => {
-                await sendOffer(job.id, userId!, amount, note.trim());
+                await sendOffer(job.id, userId!, finalAmount, note.trim());
                 setSheet(false);
               })
             }

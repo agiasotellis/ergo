@@ -7,7 +7,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { CategoryTile } from '@/components/CategoryTile';
 import { Icon } from '@/components/Icon';
 import type { IconName } from '@/components/icons';
-import { Avatar, Badge, Card, Empty, H1, H2, Segmented, Stars, Txt } from '@/components/ui';
+import { Sheet } from '@/components/Sheets';
+import { Avatar, Badge, Button, Card, Empty, Field, H1, H2, Segmented, Stars, Txt } from '@/components/ui';
 import { useI18n } from '@/i18n/I18nProvider';
 import { deleteMyAccount, getStats, myJobs, pickAndUploadPhoto, reviewsFor, updateProfile } from '@/lib/api';
 import { useAppLock } from '@/lib/appLock';
@@ -41,6 +42,30 @@ export default function Profile() {
   const { c, pref, setPref } = useTheme();
   const { t, lang, setLang } = useI18n();
   const { userId, profile, refreshProfile, signOut } = useAuth();
+  const [editing, setEditing] = useState(false);
+  const [name, setName] = useState('');
+  const [bio, setBio] = useState('');
+  const [savingProfile, setSavingProfile] = useState(false);
+
+  const openEditor = () => {
+    setName(profile?.full_name ?? '');
+    setBio(profile?.bio ?? '');
+    setEditing(true);
+  };
+  const saveProfile = async () => {
+    if (!userId) return;
+    if (name.trim().length < 2) return Alert.alert('ergo', t.profile.nameTooShort);
+    setSavingProfile(true);
+    try {
+      await updateProfile(userId, { full_name: name.trim(), bio: bio.trim() || null });
+      await refreshProfile();
+      setEditing(false);
+    } catch {
+      Alert.alert('ergo', t.common.error);
+    } finally {
+      setSavingProfile(false);
+    }
+  };
   const lock = useAppLock();
   const [stats, setStats] = useState<ProfileStats | null>(null);
   const [tab, setTab] = useState<'worker' | 'poster'>('worker');
@@ -115,6 +140,12 @@ export default function Profile() {
             <Txt size={24} weight="900" center numberOfLines={2} style={{ letterSpacing: -0.4 }}>
               {profile?.full_name || '—'}
             </Txt>
+            {!!profile?.bio && (
+              <Txt size={14} color={c.body} center style={{ lineHeight: 20 }}>
+                {profile.bio}
+              </Txt>
+            )}
+            <Button title={t.profile.edit} variant="secondary" size="md" icon="pencil" onPress={openEditor} style={{ marginTop: 2 }} />
             <View style={{ flexDirection: 'row', gap: 8, width: '100%', marginTop: 6 }}>
               {[
                 { v: `★ ${rating(stats?.worker_rating ?? stats?.poster_rating, lang)}`, l: t.profile.rating },
@@ -261,6 +292,15 @@ export default function Profile() {
           </Card>
         </View>
       </ScrollView>
+      <Sheet visible={editing} onClose={() => setEditing(false)}>
+        <Txt size={22} weight="900">
+          {t.profile.edit}
+        </Txt>
+        <Field label={t.auth.name} icon="user" value={name} onChangeText={setName} maxLength={80} autoComplete="name" />
+        <Field label={t.profile.bio} value={bio} onChangeText={setBio} placeholder={t.profile.bioPh} multiline maxLength={500} />
+        <Txt size={12} muted style={{ alignSelf: 'flex-end' }}>{`${bio.length}/500`}</Txt>
+        <Button title={t.common.save} loading={savingProfile} onPress={saveProfile} />
+      </Sheet>
     </SafeAreaView>
   );
 }
