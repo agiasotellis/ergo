@@ -213,6 +213,49 @@ export default function TaskDetail() {
             <TaskProgress step={job.status === 'open' ? 0 : job.status === 'assigned' ? 1 : 2} labels={[t.task.stepPosted, t.task.stepProgress, t.task.stepDone]} />
           )}
 
+          {job.status === 'completed' && !!job.assigned_to && (isOwner || isWorker) && !reviewed && (
+            <Animated.View entering={FadeIn}>
+              <Card style={{ gap: 12, borderWidth: 1.5, borderColor: c.warn }}>
+                <H2>{t.task.leaveReview}</H2>
+                <View style={{ flexDirection: 'row', gap: 6 }} accessibilityRole="adjustable" accessibilityValue={{ min: 1, max: 5, now: stars }}>
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <Pressable key={n} accessibilityRole="button" accessibilityLabel={`${n}`} onPress={() => setStars(n)} hitSlop={6}>
+                      <Txt size={32} color={n <= stars ? '#F5A524' : c.line}>
+                        ★
+                      </Txt>
+                    </Pressable>
+                  ))}
+                </View>
+                <TextInput
+                  value={comment}
+                  onChangeText={setComment}
+                  placeholder={t.task.reviewPlaceholder}
+                  placeholderTextColor={c.muted}
+                  multiline
+                  maxFontSizeMultiplier={MAX_FONT_SCALE}
+                  style={{ minHeight: 72, fontFamily: font['400'], fontSize: 15, borderRadius: 16, borderWidth: 1.5, borderColor: c.line, padding: 12, color: c.ink, textAlignVertical: 'top' }}
+                />
+                <Button
+                  title={t.common.save}
+                  loading={busy}
+                  onPress={() =>
+                    run(async () => {
+                      await leaveReview({
+                        job_id: job.id,
+                        reviewer_id: userId!,
+                        reviewee_id: isOwner ? job.assigned_to! : job.poster_id,
+                        reviewee_role: isOwner ? 'worker' : 'poster',
+                        rating: stars,
+                        comment: comment.trim(),
+                      });
+                      Alert.alert('ergo', t.task.reviewThanks);
+                    })
+                  }
+                />
+              </Card>
+            </Animated.View>
+          )}
+
           {job.status === 'assigned' && (isOwner || isWorker) && (
             <Animated.View entering={FadeInDown.duration(DUR.base).easing(EASE_OUT)}>
               <Card style={{ gap: 12, backgroundColor: c.okSoft }}>
@@ -335,48 +378,6 @@ export default function TaskDetail() {
             </View>
           )}
 
-          {job.status === 'completed' && !!job.assigned_to && (isOwner || isWorker) && !reviewed && (
-            <Animated.View entering={FadeIn}>
-              <Card style={{ gap: 12, borderWidth: 1.5, borderColor: c.line }}>
-                <H2>{t.task.leaveReview}</H2>
-                <View style={{ flexDirection: 'row', gap: 6 }} accessibilityRole="adjustable" accessibilityValue={{ min: 1, max: 5, now: stars }}>
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <Pressable key={n} accessibilityRole="button" accessibilityLabel={`${n}`} onPress={() => setStars(n)} hitSlop={6}>
-                      <Txt size={32} color={n <= stars ? '#F5A524' : c.line}>
-                        ★
-                      </Txt>
-                    </Pressable>
-                  ))}
-                </View>
-                <TextInput
-                  value={comment}
-                  onChangeText={setComment}
-                  placeholder={t.task.reviewPlaceholder}
-                  placeholderTextColor={c.muted}
-                  multiline
-                  maxFontSizeMultiplier={MAX_FONT_SCALE}
-                  style={{ minHeight: 72, fontFamily: font['400'], fontSize: 15, borderRadius: 16, borderWidth: 1.5, borderColor: c.line, padding: 12, color: c.ink, textAlignVertical: 'top' }}
-                />
-                <Button
-                  title={t.common.save}
-                  loading={busy}
-                  onPress={() =>
-                    run(async () => {
-                      await leaveReview({
-                        job_id: job.id,
-                        reviewer_id: userId!,
-                        reviewee_id: isOwner ? job.assigned_to! : job.poster_id,
-                        reviewee_role: isOwner ? 'worker' : 'poster',
-                        rating: stars,
-                        comment: comment.trim(),
-                      });
-                      Alert.alert('ergo', t.task.reviewThanks);
-                    })
-                  }
-                />
-              </Card>
-            </Animated.View>
-          )}
         </View>
       </ScrollView>
 

@@ -46,6 +46,7 @@ export default function Notifications() {
     completed: { icon: 'check', bg: c.okSoft, fg: c.ok },
     cancelled: { icon: 'close', bg: c.dangerSoft, fg: c.danger },
     review: { icon: 'star', bg: c.warnSoft, fg: c.warn },
+    review_request: { icon: 'star', bg: c.warnSoft, fg: c.warn },
   };
 
   const text = (n: AppNotification) => {
@@ -61,6 +62,8 @@ export default function Notifications() {
         return t.notifications.cancelled;
       case 'review':
         return t.notifications.review(name, n.data.rating ?? 5);
+      case 'review_request':
+        return t.notifications.reviewRequest(name);
     }
   };
 

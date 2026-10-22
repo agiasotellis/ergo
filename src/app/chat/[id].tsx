@@ -23,6 +23,7 @@ import {
   type PickedPhoto,
 } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { euro } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
 import type { Conversation, Message, ReportTarget } from '@/lib/types';
 import { openProfile } from '@/lib/nav';
@@ -169,6 +170,7 @@ export default function Chat() {
           contentContainerStyle={{ padding: 16, gap: 8 }}
           onContentSizeChange={() => listRef.current?.scrollToEnd({ animated: true })}
           renderItem={({ item }) => {
+            if (item.kind === 'system') return <TaskNote message={item} jobId={conv.job_id} jobStatus={conv.job?.status} />;
             const me = item.sender_id === userId;
             const photo = item.local_uri ?? (item.image_path ? urls[item.image_path] : undefined);
             const isPhoto = !!item.image_path || !!item.local_uri;
@@ -326,5 +328,56 @@ export default function Chat() {
         </Pressable>
       </Modal>
     </SafeAreaView>
+  );
+}
+
+/** Automatic note about the shared task, shown in the reader's language. */
+function TaskNote({ message, jobId, jobStatus }: { message: Message; jobId: string; jobStatus?: string }) {
+  const { c } = useTheme();
+  const { t, lang } = useI18n();
+  const event = message.meta?.event;
+  const look =
+    event === 'completed'
+      ? { icon: 'check' as const, bg: c.okSoft, fg: c.ok, title: t.chat.completed, body: t.chat.completedBody }
+      : event === 'cancelled'
+        ? { icon: 'close' as const, bg: c.dangerSoft, fg: c.danger, title: t.chat.cancelled, body: '' }
+        : {
+            icon: 'check' as const,
+            bg: c.primarySoft,
+            fg: c.primaryText,
+            title: t.chat.assigned,
+            body: message.meta?.amount != null ? t.chat.assignedBody(euro(message.meta.amount, lang)) : '',
+          };
+  const action = event === 'completed' ? t.chat.leaveReview : t.chat.viewTask;
+  return (
+    <Animated.View entering={FadeIn.duration(DUR.base)} style={{ alignSelf: 'center', width: '92%', marginVertical: 6 }}>
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => router.push(`/task/${jobId}`)}
+        style={({ pressed }) => ({ backgroundColor: look.bg, borderRadius: 18, padding: 14, gap: 6, alignItems: 'center', opacity: pressed ? 0.8 : 1 })}
+      >
+        <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: c.card, alignItems: 'center', justifyContent: 'center' }}>
+          <Icon name={look.icon} color={look.fg} size={18} strokeWidth={2.8} />
+        </View>
+        <Txt weight="800" color={look.fg} center>
+          {look.title}
+        </Txt>
+        {!!message.meta?.title && (
+          <Txt size={13} weight="600" center numberOfLines={2}>
+            {message.meta.title}
+          </Txt>
+        )}
+        {!!look.body && (
+          <Txt size={13} color={c.body} center>
+            {look.body}
+          </Txt>
+        )}
+        {(event !== 'cancelled' || jobStatus) && (
+          <Txt size={13} weight="800" color={look.fg} style={{ marginTop: 2 }}>
+            {`${action} →`}
+          </Txt>
+        )}
+      </Pressable>
+    </Animated.View>
   );
 }

@@ -5,7 +5,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryTile } from '@/components/CategoryTile';
-import { Avatar, Card, Empty, H1, Loading, Txt } from '@/components/ui';
+import { Avatar, Badge, Card, Empty, H1, Loading, Txt } from '@/components/ui';
 import { useI18n } from '@/i18n/I18nProvider';
 import { myConversations } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
@@ -76,9 +76,19 @@ export default function Messages() {
                       {ago(item.last_message_at, lang)}
                     </Txt>
                   </View>
-                  <Txt size={13} muted numberOfLines={1}>
-                    {item.job?.title}
-                  </Txt>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                    {/* The two people are owner and helper on this task. */}
+                    {item.job && item.job.assigned_to === item.worker_id && item.job.status !== 'open' && (
+                      <Badge
+                        label={item.job.status === 'assigned' ? `🤝 ${t.task.status.assigned}` : t.task.status[item.job.status]}
+                        bg={item.job.status === 'assigned' ? c.warnSoft : item.job.status === 'completed' ? c.okSoft : c.dangerSoft}
+                        fg={item.job.status === 'assigned' ? c.warn : item.job.status === 'completed' ? c.ok : c.danger}
+                      />
+                    )}
+                    <Txt size={13} muted numberOfLines={1} style={{ flex: 1 }}>
+                      {item.job?.title}
+                    </Txt>
+                  </View>
                   {!!item.last_message && (
                     <Txt size={14} numberOfLines={1} color={c.body}>
                       {item.last_message === '📷' ? `📷 ${t.chat.photo}` : item.last_message}

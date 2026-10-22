@@ -162,7 +162,7 @@ export async function myConversations() {
   const res = await supabase
     .from('conversations')
     .select(
-      `*, job:jobs(id, title, category, status), poster:profiles!conversations_poster_id_fkey(${PERSON}), worker:profiles!conversations_worker_id_fkey(${PERSON})`
+      `*, job:jobs(id, title, category, status, assigned_to), poster:profiles!conversations_poster_id_fkey(${PERSON}), worker:profiles!conversations_worker_id_fkey(${PERSON})`
     )
     .order('last_message_at', { ascending: false });
   return must<Conversation[]>(res) ?? [];
@@ -172,7 +172,7 @@ export async function getConversation(id: string) {
   const res = await supabase
     .from('conversations')
     .select(
-      `*, job:jobs(id, title, category, status), poster:profiles!conversations_poster_id_fkey(${PERSON}), worker:profiles!conversations_worker_id_fkey(${PERSON})`
+      `*, job:jobs(id, title, category, status, assigned_to), poster:profiles!conversations_poster_id_fkey(${PERSON}), worker:profiles!conversations_worker_id_fkey(${PERSON})`
     )
     .eq('id', id)
     .single();

@@ -40,6 +40,11 @@ function compose(lang: 'el' | 'en', p: Payload): { title: string; body: string }
       return { title: el ? 'Η εργασία ολοκληρώθηκε' : 'Task completed', body: task };
     case 'cancelled':
       return { title: el ? 'Η εργασία ακυρώθηκε' : 'Task cancelled', body: task };
+    case 'review_request':
+      return {
+        title: el ? 'Πώς πήγε; ⭐' : 'How did it go? ⭐',
+        body: el ? `Άφησε κριτική για ${who} · ${task}` : `Leave a review for ${who} · ${task}`,
+      };
     case 'review':
       return { title: `${el ? 'Νέα κριτική' : 'New review'} ${'★'.repeat(Math.max(1, Math.min(5, Number(d.rating ?? 5))))}`, body: `${who} · ${task}` };
     case 'message':

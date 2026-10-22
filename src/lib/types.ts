@@ -60,7 +60,7 @@ export type Conversation = {
   worker_id: string;
   last_message: string | null;
   last_message_at: string;
-  job?: Pick<Job, 'id' | 'title' | 'category' | 'status'> | null;
+  job?: Pick<Job, 'id' | 'title' | 'category' | 'status' | 'assigned_to'> | null;
   poster?: Pick<Profile, 'id' | 'full_name' | 'avatar_url'> | null;
   worker?: Pick<Profile, 'id' | 'full_name' | 'avatar_url'> | null;
 };
@@ -72,6 +72,9 @@ export type Message = {
   body: string;
   /** Private storage path in the chat-photos bucket, when the message is a photo. */
   image_path?: string | null;
+  /** 'system' = automatic note about the shared task (assigned / completed / cancelled). */
+  kind?: 'text' | 'system';
+  meta?: { event?: 'assigned' | 'completed' | 'cancelled'; amount?: number; title?: string } | null;
   read_at: string | null;
   created_at: string;
   /** Local-only: preview shown while a photo uploads. */
@@ -91,7 +94,7 @@ export type Review = {
   job?: Pick<Job, 'id' | 'title'> | null;
 };
 
-export type NotificationType = 'offer' | 'accepted' | 'completed' | 'cancelled' | 'review';
+export type NotificationType = 'offer' | 'accepted' | 'completed' | 'cancelled' | 'review' | 'review_request';
 
 export type AppNotification = {
   id: string;
