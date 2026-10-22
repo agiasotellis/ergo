@@ -1,6 +1,6 @@
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { FlatList, RefreshControl, View } from 'react-native';
+import { FlatList, Pressable, RefreshControl, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -12,6 +12,7 @@ import { markNotificationsRead, myNotifications } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { ago, euro } from '@/lib/format';
 import type { AppNotification, NotificationType } from '@/lib/types';
+import { openProfile } from '@/lib/nav';
 import { useTheme } from '@/theme/ThemeProvider';
 
 export default function Notifications() {
@@ -106,12 +107,12 @@ export default function Notifications() {
                 onPress={item.job_id ? () => router.push(`/task/${item.job_id}`) : undefined}
                 style={{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderWidth: 1.5, borderColor: unread ? c.primary : 'transparent' }}
               >
-                <View>
+                <Pressable accessibilityRole="button" accessibilityLabel={item.actor?.full_name ?? ''} onPress={() => openProfile(item.actor_id, userId)} hitSlop={4}>
                   <Avatar name={item.actor?.full_name} url={item.actor?.avatar_url} size={48} />
                   <View style={{ position: 'absolute', right: -5, bottom: -5, width: 24, height: 24, borderRadius: 12, backgroundColor: l.bg, borderWidth: 2, borderColor: c.card, alignItems: 'center', justifyContent: 'center' }}>
                     <Icon name={l.icon} color={l.fg} size={12} strokeWidth={3} />
                   </View>
-                </View>
+                </Pressable>
                 <View style={{ flex: 1, gap: 2 }}>
                   <Txt size={14} weight={unread ? '700' : '500'} numberOfLines={2}>
                     {text(item)}

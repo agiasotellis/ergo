@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { memo, useEffect, useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, TextInput, View } from 'react-native';
-import Animated, { FadeIn, ZoomIn, ZoomOut, interpolateColor, useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { FadeIn, ZoomIn, ZoomOut, interpolateColor, useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryTile } from '@/components/CategoryTile';
@@ -19,6 +19,7 @@ import { euro, when as formatWhen } from '@/lib/format';
 import { useLocation } from '@/lib/location';
 import type { CategoryKey, Job } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
+import { DUR, EASE_OUT, smooth } from '@/theme/motion';
 
 type When = 'today' | 'tomorrow' | 'week' | 'flexible' | 'custom';
 const MAX_BUDGET = 100000;
@@ -160,7 +161,7 @@ export function TaskForm({ editId }: { editId?: string }) {
   if (created) {
     return (
       <Animated.View entering={FadeIn} style={{ flex: 1, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24, paddingVertical: 32, gap: 16 }}>
-        <Animated.View entering={ZoomIn.springify().damping(12)} style={{ width: 120, height: 120, borderRadius: 60, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' }}>
+        <Animated.View entering={ZoomIn.duration(DUR.base).easing(EASE_OUT)} style={{ width: 120, height: 120, borderRadius: 60, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' }}>
           <Icon name="check" color={c.primary} size={56} strokeWidth={2.6} />
         </Animated.View>
         <H1 center style={{ color: '#FFFFFF', maxWidth: 340 }}>
@@ -206,7 +207,7 @@ export function TaskForm({ editId }: { editId?: string }) {
             <Field label={t.post.details} value={desc} onChangeText={setDesc} placeholder={t.post.detailsPh} multiline maxLength={2000} />
             <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap' }}>
               {photos.map((p) => (
-                <Animated.View key={p} entering={ZoomIn.springify().damping(14)} exiting={ZoomOut.duration(150)}>
+                <Animated.View key={p} entering={ZoomIn.duration(DUR.base).easing(EASE_OUT)} exiting={ZoomOut.duration(150)}>
                   <Image source={{ uri: p }} style={{ width: 72, height: 72, borderRadius: 18 }} contentFit="cover" />
                   <Pressable
                     accessibilityRole="button"
@@ -323,7 +324,7 @@ export function TaskForm({ editId }: { editId?: string }) {
   );
 }
 
-/** Category tile: springs and tints on the UI thread when chosen, so switching feels instant. */
+/** Category tile: tints and lifts smoothly on the UI thread when chosen, so switching feels instant. */
 const CategoryOption = memo(function CategoryOption({ cat, label, on, onSelect }: { cat: CategoryKey; label: string; on: boolean; onSelect: (k: CategoryKey) => void }) {
   const { c } = useTheme();
   const sel = useSharedValue(on ? 1 : 0);
@@ -331,12 +332,12 @@ const CategoryOption = memo(function CategoryOption({ cat, label, on, onSelect }
   const pop = useSharedValue(1);
 
   useEffect(() => {
-    sel.value = withSpring(on ? 1 : 0, { damping: 16, stiffness: 240 });
-    if (on) pop.value = withSequence(withTiming(1.18, { duration: 120 }), withSpring(1, { damping: 8, stiffness: 260 }));
+    sel.value = withTiming(on ? 1 : 0, smooth());
+    if (on) pop.value = withSequence(withTiming(1.06, smooth(DUR.fast)), withTiming(1, smooth()));
   }, [on, sel, pop]);
 
   const tile = useAnimatedStyle(() => ({
-    transform: [{ scale: press.value * (1 + sel.value * 0.03) }],
+    transform: [{ scale: press.value * (1 + sel.value * 0.015) }],
     borderColor: interpolateColor(sel.value, [0, 1], [c.card, c.primary]),
     backgroundColor: interpolateColor(sel.value, [0, 1], [c.card, c.primarySoft]),
   }));
@@ -348,10 +349,10 @@ const CategoryOption = memo(function CategoryOption({ cat, label, on, onSelect }
       accessibilityState={{ checked: on }}
       accessibilityLabel={label}
       onPressIn={() => {
-        press.value = withTiming(0.94, { duration: 90 });
+        press.value = withTiming(0.97, smooth(DUR.fast));
       }}
       onPressOut={() => {
-        press.value = withSpring(1, { damping: 12, stiffness: 300 });
+        press.value = withTiming(1, smooth(DUR.fast));
       }}
       onPress={() => {
         if (!on) Haptics.selectionAsync().catch(() => {});
@@ -371,7 +372,7 @@ const CategoryOption = memo(function CategoryOption({ cat, label, on, onSelect }
         </View>
         {on && (
           <Animated.View
-            entering={ZoomIn.springify().damping(12)}
+            entering={ZoomIn.duration(DUR.base).easing(EASE_OUT)}
             exiting={ZoomOut.duration(120)}
             style={{ position: 'absolute', top: 8, right: 8, width: 20, height: 20, borderRadius: 10, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' }}
           >

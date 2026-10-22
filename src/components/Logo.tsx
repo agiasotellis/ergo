@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { Text, View } from 'react-native';
-import Animated, { useAnimatedProps, useSharedValue, withDelay, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedProps, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
+
+import { DUR, smooth } from '@/theme/motion';
 import Svg, { Circle, G, Path } from 'react-native-svg';
 
 import { brand } from '@/theme/tokens';
@@ -15,7 +17,7 @@ export function LogoMark({ width = 120, animate = false }: { width?: number; ani
   useEffect(() => {
     if (!animate) return;
     arm.value = withDelay(250, withTiming(0, { duration: 450 }));
-    ray.value = withDelay(650, withSpring(0, { damping: 14 }));
+    ray.value = withDelay(650, withTiming(0, smooth(DUR.slow)));
   }, [animate, arm, ray]);
 
   const armProps = useAnimatedProps(() => ({ strokeDashoffset: arm.value }));

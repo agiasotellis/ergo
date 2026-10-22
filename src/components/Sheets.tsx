@@ -11,6 +11,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { Icon } from './Icon';
 import type { IconName } from './icons';
 import { Button, Field, Txt } from './ui';
+import { DUR, EASE_OUT } from '@/theme/motion';
 
 /** Bottom sheet frame shared by the menus below. */
 export function Sheet({ visible, onClose, children }: { visible: boolean; onClose: () => void; children: ReactNode }) {
@@ -22,7 +23,7 @@ export function Sheet({ visible, onClose, children }: { visible: boolean; onClos
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <Pressable accessibilityRole="button" accessibilityLabel={t.common.cancel} onPress={onClose} style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' }} />
         <Animated.View
-          entering={SlideInDown.springify().damping(20)}
+          entering={SlideInDown.duration(DUR.base).easing(EASE_OUT)}
           style={{ backgroundColor: c.card, borderTopLeftRadius: 32, borderTopRightRadius: 32, paddingTop: 12, paddingHorizontal: 20, paddingBottom: Math.max(insets.bottom, 12) + 12, gap: 12 }}
         >
           <View style={{ width: 40, height: 5, borderRadius: 3, backgroundColor: c.line, alignSelf: 'center' }} />

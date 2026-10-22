@@ -20,6 +20,11 @@ module.exports = defineConfig([
             'FunctionDeclaration[id.name=/^(Symbol|Object|Array|Map|Set|WeakMap|Promise|Error|Number|String|Boolean|Date|JSON|Math|Proxy|Reflect|Intl|Function)$/], ClassDeclaration[id.name=/^(Symbol|Object|Array|Map|Set|WeakMap|Promise|Error|Number|String|Boolean|Date|JSON|Math|Proxy|Reflect|Intl|Function)$/], VariableDeclarator[id.name=/^(Symbol|Object|Array|Map|Set|WeakMap|Promise|Error|Number|String|Boolean|Date|JSON|Math|Proxy|Reflect|Intl|Function)$/], ImportSpecifier[local.name=/^(Symbol|Object|Array|Map|Set|WeakMap|Promise|Error|Number|String|Boolean|Date|JSON|Math|Proxy|Reflect|Intl|Function)$/]',
           message: 'Do not name things after JavaScript globals (React Compiler output calls e.g. Symbol.for).',
         },
+        {
+          // Not implemented in Hermes on Android: `new Intl.RelativeTimeFormat(...)` crashes the screen.
+          selector: "MemberExpression[object.name='Intl'][property.name=/^(RelativeTimeFormat|ListFormat|DisplayNames|Segmenter|DurationFormat)$/]",
+          message: 'This Intl API is missing in Hermes (Android). Format the text by hand (see lib/format.ts).',
+        },
       ],
     },
   },

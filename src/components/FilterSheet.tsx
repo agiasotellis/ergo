@@ -188,7 +188,7 @@ export function FilterButton({ count, onPress, size = 52 }: { count: number; onP
         backgroundColor: on ? c.inv : c.card,
         alignItems: 'center',
         justifyContent: 'center',
-        transform: [{ scale: pressed ? 0.94 : 1 }],
+        transform: [{ scale: pressed ? 0.97 : 1 }],
       })}
     >
       <Icon name="sliders" color={on ? c.invInk : c.ink} size={20} strokeWidth={2.2} />

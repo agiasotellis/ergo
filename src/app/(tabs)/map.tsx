@@ -19,7 +19,9 @@ import { RADIUS_OPTIONS, applyFilters, useFilters } from '@/lib/filters';
 import { useLocation } from '@/lib/location';
 import { bboxAround, circlePolygon, useMapStyle } from '@/lib/mapStyle';
 import type { NearbyJob } from '@/lib/types';
+import { openProfile } from '@/lib/nav';
 import { useTheme } from '@/theme/ThemeProvider';
+import { DUR, EASE_OUT } from '@/theme/motion';
 
 // The whole world is available (zoom 1 ≈ all continents); ergo isn't limited to Greece.
 const MIN_ZOOM = 1;
@@ -270,7 +272,7 @@ export default function MapScreen() {
       {selected && (
         <Animated.View
           key={selected.id}
-          entering={SlideInDown.springify().damping(20)}
+          entering={SlideInDown.duration(DUR.base).easing(EASE_OUT)}
           style={{ position: 'absolute', left: 12, right: 12, bottom: 96 + Math.max(insets.bottom, 12), backgroundColor: c.card, borderRadius: 28, padding: 16, gap: 12, elevation: 12, shadowColor: '#000', shadowOpacity: 0.15, shadowRadius: 16, shadowOffset: { width: 0, height: 6 } }}
         >
           <Pressable accessibilityRole="button" accessibilityLabel={t.map.details} onPress={() => router.push(`/task/${selected.id}`)} style={{ flexDirection: 'row', gap: 12 }}>
@@ -302,12 +304,13 @@ export default function MapScreen() {
               {selected.description}
             </Txt>
           )}
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <Pressable accessibilityRole="button" onPress={() => openProfile(selected.poster_id, userId)} style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
             <Avatar name={selected.poster_name} url={selected.poster_avatar} size={32} />
             <Txt size={14} weight="700" numberOfLines={1} style={{ flex: 1 }}>
               {selected.poster_id === userId ? t.common.you : selected.poster_name || '—'}
             </Txt>
-          </View>
+            {selected.poster_id !== userId && <Icon name="chevron" color={c.muted} size={16} />}
+          </Pressable>
           <View style={{ flexDirection: 'row', gap: 8 }}>
             {selected.poster_id !== userId && (
               <IconButton name="chat" label={t.task.message} bg={c.primarySoft} color={c.primaryText} size={46} onPress={() => openChat(selected)} />

@@ -40,6 +40,20 @@ export async function myJobs(userId: string) {
   return must<Job[]>(res) ?? [];
 }
 
+/** Someone's open tasks (for their public profile). */
+export async function openJobsOf(userId: string) {
+  let res = await supabase.from('jobs').select(JOB).eq('poster_id', userId).eq('status', 'open').order('created_at', { ascending: false }).limit(20);
+  if (missingColumn(res.error)) res = await supabase.from('jobs').select(JOB_LEGACY).eq('poster_id', userId).eq('status', 'open').order('created_at', { ascending: false }).limit(20);
+  return must<Job[]>(res) ?? [];
+}
+
+/** How many tasks this person finished as a helper. */
+export async function helpedCount(userId: string) {
+  const { count, error } = await supabase.from('jobs').select('id', { count: 'exact', head: true }).eq('assigned_to', userId).eq('status', 'completed');
+  if (error) throw error;
+  return count ?? 0;
+}
+
 export type NewJob = {
   title: string;
   description: string;

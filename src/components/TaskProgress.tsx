@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withDelay, withRepeat, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withDelay, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
+
+import { smooth } from '@/theme/motion';
 
 import { useTheme } from '@/theme/ThemeProvider';
 import { Icon } from './Icon';
@@ -12,7 +14,7 @@ export function TaskProgress({ step, labels }: { step: 0 | 1 | 2; labels: [strin
   const fill = useSharedValue(0);
 
   useEffect(() => {
-    fill.value = withDelay(200, withSpring(step / 2, { damping: 18, stiffness: 90 }));
+    fill.value = withDelay(200, withTiming(step / 2, smooth(700)));
   }, [step, fill]);
 
   const bar = useAnimatedStyle(() => ({ width: `${fill.value * 100}%` }));

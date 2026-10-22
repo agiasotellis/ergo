@@ -25,7 +25,9 @@ import {
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import type { Conversation, Message, ReportTarget } from '@/lib/types';
+import { openProfile } from '@/lib/nav';
 import { useTheme } from '@/theme/ThemeProvider';
+import { DUR, EASE_OUT } from '@/theme/motion';
 
 const PHOTO = 220;
 
@@ -136,10 +138,12 @@ export default function Chat() {
       <View style={{ backgroundColor: c.card, borderBottomLeftRadius: 28, borderBottomRightRadius: 28, padding: 16, paddingTop: 8, gap: 12 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <IconButton name="back" label={t.common.back} bg={c.soft} onPress={() => router.back()} />
-          <Avatar name={other?.full_name} url={other?.avatar_url} />
-          <Txt size={16} weight="700" style={{ flex: 1 }} numberOfLines={1}>
-            {other?.full_name || '—'}
-          </Txt>
+          <Pressable accessibilityRole="button" onPress={() => openProfile(otherId, userId)} style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <Avatar name={other?.full_name} url={other?.avatar_url} />
+            <Txt size={16} weight="700" style={{ flex: 1 }} numberOfLines={1}>
+              {other?.full_name || '—'}
+            </Txt>
+          </Pressable>
           <IconButton name="more" label={t.safety.more} bg={c.soft} onPress={() => setMenu(true)} />
         </View>
         {conv.job && (
@@ -265,7 +269,7 @@ export default function Chat() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 opacity: !draft.trim() ? 0.5 : 1,
-                transform: [{ scale: pressed ? 0.92 : 1 }],
+                transform: [{ scale: pressed ? 0.97 : 1 }],
               })}
             >
               <Icon name="send" color="#FFFFFF" size={20} strokeWidth={2.4} />
@@ -310,7 +314,7 @@ export default function Chat() {
       <Modal visible={!!viewer} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setViewer(null)}>
         <Pressable accessibilityRole="button" accessibilityLabel={t.chat.close} onPress={() => setViewer(null)} style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.92)', justifyContent: 'center' }}>
           {viewer && (
-            <Animated.View entering={ZoomIn.springify().damping(18)} style={{ width: '100%', aspectRatio: 3 / 4, maxHeight: '85%' }}>
+            <Animated.View entering={ZoomIn.duration(DUR.base).easing(EASE_OUT)} style={{ width: '100%', aspectRatio: 3 / 4, maxHeight: '85%' }}>
               <Image source={{ uri: viewer }} style={{ flex: 1 }} contentFit="contain" />
             </Animated.View>
           )}

@@ -2,7 +2,7 @@ import type { BottomTabBarProps } from 'expo-router/tabs';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Pressable, View, type LayoutChangeEvent } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useI18n } from '@/i18n/I18nProvider';
@@ -10,14 +10,14 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { Icon } from './Icon';
 import type { IconName } from './icons';
 import { Txt } from './ui';
+import { DUR, smooth } from '@/theme/motion';
 
 const ICON: Record<string, IconName> = { index: 'home', map: 'map', messages: 'chat', profile: 'user' };
 const ITEM = 48;
-const SPRING = { damping: 17, stiffness: 190, mass: 0.8 };
 
 /**
  * Floating, fully rounded, icon-only tab bar with a centre "post a task" button.
- * A pill glides to the selected tab and the icon pops when it becomes active.
+ * A pill glides to the selected tab and the icon lifts slightly when it becomes active.
  */
 export function TabBar({ state, navigateToTab, unread = 0 }: BottomTabBarProps & { unread?: number }) {
   const { c } = useTheme();
@@ -33,7 +33,7 @@ export function TabBar({ state, navigateToTab, unread = 0 }: BottomTabBarProps &
     const x = xs[state.index];
     if (x == null) return;
     // First placement jumps; later changes glide.
-    pillX.value = pillX.value < 0 ? x : withSpring(x, SPRING);
+    pillX.value = pillX.value < 0 ? x : withTiming(x, smooth(DUR.slow));
   }, [state.index, xs, pillX]);
 
   const pillStyle = useAnimatedStyle(() => ({ transform: [{ translateX: pillX.value }], opacity: pillX.value < 0 ? 0 : 1 }));
@@ -70,7 +70,7 @@ export function TabBar({ state, navigateToTab, unread = 0 }: BottomTabBarProps &
         backgroundColor: c.primary,
         alignItems: 'center',
         justifyContent: 'center',
-        transform: [{ scale: pressed ? 0.92 : 1 }, { rotate: pressed ? '45deg' : '0deg' }],
+        transform: [{ scale: pressed ? 0.95 : 1 }],
       })}
     >
       <Icon name="plus" color="#FFFFFF" size={26} strokeWidth={2.6} />
@@ -127,15 +127,15 @@ function TabItem({
   onLayout: (e: LayoutChangeEvent) => void;
 }) {
   const { c } = useTheme();
-  const scale = useSharedValue(focused ? 1.1 : 1);
+  const scale = useSharedValue(focused ? 1.06 : 1);
   const lift = useSharedValue(0);
 
   useEffect(() => {
     if (focused) {
-      scale.value = withSequence(withTiming(0.82, { duration: 90 }), withSpring(1.1, { damping: 9, stiffness: 260 }));
-      lift.value = withSequence(withTiming(-4, { duration: 140 }), withSpring(0, { damping: 10, stiffness: 200 }));
+      scale.value = withTiming(1.06, smooth());
+      lift.value = withSequence(withTiming(-2, smooth(DUR.fast)), withTiming(0, smooth()));
     } else {
-      scale.value = withSpring(1, SPRING);
+      scale.value = withTiming(1, smooth());
     }
   }, [focused, scale, lift]);
 

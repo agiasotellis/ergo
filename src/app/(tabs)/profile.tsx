@@ -14,6 +14,7 @@ import { useAppLock } from '@/lib/appLock';
 import { useAuth } from '@/lib/auth';
 import { ago, euro, rating } from '@/lib/format';
 import type { Job, ProfileStats, Review } from '@/lib/types';
+import { openProfile } from '@/lib/nav';
 import { useTheme, type ThemePref } from '@/theme/ThemeProvider';
 
 function Row({ icon, label, children, onPress, danger }: { icon: IconName; label: string; children?: React.ReactNode; onPress?: () => void; danger?: boolean }) {
@@ -154,7 +155,7 @@ export default function Profile() {
             reviews.map((r, i) => (
               <Animated.View key={r.id} entering={FadeInDown.delay(i * 60)}>
                 <Card style={{ gap: 10 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                  <Pressable accessibilityRole="button" onPress={() => openProfile(r.reviewer_id, userId)} style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                     <Avatar name={r.reviewer?.full_name} url={r.reviewer?.avatar_url} size={40} />
                     <View style={{ flex: 1 }}>
                       <Txt weight="700">{r.reviewer?.full_name || '—'}</Txt>
@@ -163,7 +164,7 @@ export default function Profile() {
                       </Txt>
                     </View>
                     <Stars value={r.rating} />
-                  </View>
+                  </Pressable>
                   {!!r.comment && <Txt color={c.body}>{r.comment}</Txt>}
                 </Card>
               </Animated.View>

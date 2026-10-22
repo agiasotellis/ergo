@@ -8,12 +8,13 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { CategoryTile } from './CategoryTile';
 import { Icon } from './Icon';
 import { Card, Txt } from './ui';
+import { DUR, EASE_OUT } from '@/theme/motion';
 
 export function TaskCard({ job, index = 0, onPress }: { job: NearbyJob; index?: number; onPress: () => void }) {
   const { c } = useTheme();
   const { t, lang } = useI18n();
   return (
-    <Animated.View entering={FadeInDown.delay(Math.min(index, 8) * 50).springify().damping(18)}>
+    <Animated.View entering={FadeInDown.delay(Math.min(index, 8) * 50).duration(DUR.base).easing(EASE_OUT)}>
       <Card onPress={onPress} style={{ flexDirection: 'row', gap: 14, padding: 14 }}>
         <CategoryTile cat={job.category} />
         <View style={{ flex: 1, gap: 4 }}>

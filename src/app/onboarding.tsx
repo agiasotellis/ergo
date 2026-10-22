@@ -11,6 +11,7 @@ import { useI18n } from '@/i18n/I18nProvider';
 import { euro } from '@/lib/format';
 import { setPref } from '@/lib/storage';
 import { useTheme } from '@/theme/ThemeProvider';
+import { DUR, EASE_OUT } from '@/theme/motion';
 
 function finish() {
   setPref('onboarded', true);
@@ -24,7 +25,7 @@ function StepPost() {
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 22 }}>
       <View style={{ flexDirection: 'row', gap: 18 }}>
         {(['home', 'pets', 'cleaning'] as const).map((k, i) => (
-          <Animated.View key={k} entering={ZoomIn.delay(150 + i * 100).springify()}>
+          <Animated.View key={k} entering={ZoomIn.delay(150 + i * 100).duration(DUR.base).easing(EASE_OUT)}>
             <CategoryTile cat={k} size={64} />
           </Animated.View>
         ))}
@@ -42,7 +43,7 @@ function StepPost() {
           {euro(45, lang)}
         </Txt>
       </Animated.View>
-      <Animated.View entering={ZoomIn.delay(700).springify()} style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' }}>
+      <Animated.View entering={ZoomIn.delay(700).duration(DUR.base).easing(EASE_OUT)} style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' }}>
         <Icon name="plus" color="#FFFFFF" size={28} strokeWidth={2.6} />
       </Animated.View>
     </View>
@@ -66,7 +67,7 @@ function StepMap() {
       {pins.map(([x, y, p], i) => (
         <Animated.View
           key={i}
-          entering={ZoomIn.delay(400 + i * 150).springify()}
+          entering={ZoomIn.delay(400 + i * 150).duration(DUR.base).easing(EASE_OUT)}
           style={{ position: 'absolute', left: `${x}%`, top: `${y}%`, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 16, backgroundColor: i === 1 ? c.inv : c.card }}
         >
           <Txt size={14} weight="800" color={i === 1 ? c.invInk : c.ink}>
@@ -84,13 +85,13 @@ function StepDeal() {
   const a = lang === 'el' ? ['Μπορείς αύριο στις 18:00;', `Ναι! Για ${euro(45, lang)} είμαστε εντάξει;`, `Συμφωνία στα ${euro(45, lang)}`] : ['Can you do tomorrow at 18:00?', `Yes! Is ${euro(45, lang)} okay?`, `Deal at ${euro(45, lang)}`];
   return (
     <View style={{ flex: 1, padding: 24, justifyContent: 'center', gap: 12 }}>
-      <Animated.View entering={SlideInLeft.delay(150).springify().damping(18)} style={{ alignSelf: 'flex-start', maxWidth: '80%', backgroundColor: c.card, padding: 14, borderRadius: 20, borderBottomLeftRadius: 6 }}>
+      <Animated.View entering={SlideInLeft.delay(150).duration(DUR.base).easing(EASE_OUT)} style={{ alignSelf: 'flex-start', maxWidth: '80%', backgroundColor: c.card, padding: 14, borderRadius: 20, borderBottomLeftRadius: 6 }}>
         <Txt>{a[0]}</Txt>
       </Animated.View>
-      <Animated.View entering={SlideInRight.delay(450).springify().damping(18)} style={{ alignSelf: 'flex-end', maxWidth: '80%', backgroundColor: c.primary, padding: 14, borderRadius: 20, borderBottomRightRadius: 6 }}>
+      <Animated.View entering={SlideInRight.delay(450).duration(DUR.base).easing(EASE_OUT)} style={{ alignSelf: 'flex-end', maxWidth: '80%', backgroundColor: c.primary, padding: 14, borderRadius: 20, borderBottomRightRadius: 6 }}>
         <Txt color="#FFFFFF">{a[1]}</Txt>
       </Animated.View>
-      <Animated.View entering={ZoomIn.delay(800).springify()} style={{ alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: c.okSoft, paddingHorizontal: 16, paddingVertical: 12, borderRadius: 20, marginTop: 6 }}>
+      <Animated.View entering={ZoomIn.delay(800).duration(DUR.base).easing(EASE_OUT)} style={{ alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: c.okSoft, paddingHorizontal: 16, paddingVertical: 12, borderRadius: 20, marginTop: 6 }}>
         <Icon name="check" color={c.ok} size={20} strokeWidth={3} />
         <Txt weight="800" color={c.ok}>
           {a[2]}
@@ -140,7 +141,7 @@ export default function Onboarding() {
       </View>
 
       <View style={{ marginHorizontal: 20, marginTop: 8, height: Math.min(380, Math.round(height * 0.44)), borderRadius: 36, backgroundColor: c.primarySoft, overflow: 'hidden' }}>
-        <Animated.View key={step} entering={(dir === 'f' ? SlideInRight : SlideInLeft).springify().damping(20)} style={{ flex: 1 }}>
+        <Animated.View key={step} entering={(dir === 'f' ? SlideInRight : SlideInLeft).duration(DUR.base).easing(EASE_OUT)} style={{ flex: 1 }}>
           <cur.Art />
         </Animated.View>
       </View>

@@ -178,7 +178,7 @@ export function IconButton({
         backgroundColor: bg ?? c.card,
         alignItems: 'center',
         justifyContent: 'center',
-        transform: [{ scale: pressed ? 0.94 : 1 }],
+        transform: [{ scale: pressed ? 0.97 : 1 }],
       })}
     >
       <Icon name={name} color={color ?? c.ink} size={20} strokeWidth={2.2} />
@@ -211,7 +211,7 @@ export function Chip({ label, selected, onPress }: { label: string; selected?: b
         borderRadius: 20,
         backgroundColor: selected ? c.inv : c.card,
         justifyContent: 'center',
-        transform: [{ scale: pressed ? 0.95 : 1 }],
+        transform: [{ scale: pressed ? 0.97 : 1 }],
       })}
     >
       <Txt size={14} weight="600" color={selected ? c.invInk : c.ink} numberOfLines={1}>

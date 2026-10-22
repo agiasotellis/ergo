@@ -25,14 +25,29 @@ export function when(iso: string | null | undefined, lang: Lang, flexible: strin
   return d.toLocaleString(locale, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 }
 
+/**
+ * "πριν από 5 λεπτά" / "5 min ago". Written by hand: Hermes (the app's JS engine on Android)
+ * has no Intl.RelativeTimeFormat, and calling it crashes the screen.
+ */
 export function ago(iso: string, lang: Lang): string {
-  const diff = (Date.now() - new Date(iso).getTime()) / 1000;
-  const rtf = new Intl.RelativeTimeFormat(lang === 'el' ? 'el' : 'en', { numeric: 'auto' });
-  if (diff < 60) return rtf.format(0, 'second');
-  if (diff < 3600) return rtf.format(-Math.round(diff / 60), 'minute');
-  if (diff < 86400) return rtf.format(-Math.round(diff / 3600), 'hour');
-  if (diff < 86400 * 30) return rtf.format(-Math.round(diff / 86400), 'day');
-  return rtf.format(-Math.round(diff / (86400 * 30)), 'month');
+  const s = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000);
+  const el = lang === 'el';
+  const n = (v: number) => Math.max(1, Math.round(v));
+  if (s < 60) return el ? 'τώρα' : 'just now';
+  if (s < 3600) {
+    const m = n(s / 60);
+    return el ? `πριν από ${m} ${m === 1 ? 'λεπτό' : 'λεπτά'}` : `${m} min ago`;
+  }
+  if (s < 86400) {
+    const h = n(s / 3600);
+    return el ? `πριν από ${h} ${h === 1 ? 'ώρα' : 'ώρες'}` : `${h} ${h === 1 ? 'hour' : 'hours'} ago`;
+  }
+  const d = n(s / 86400);
+  if (d === 1) return el ? 'χθες' : 'yesterday';
+  if (d < 7) return el ? `πριν από ${d} ημέρες` : `${d} days ago`;
+  const date = new Date(iso);
+  const sameYear = date.getFullYear() === new Date().getFullYear();
+  return date.toLocaleDateString(el ? 'el-GR' : 'en-GB', { day: 'numeric', month: 'short', ...(sameYear ? {} : { year: 'numeric' }) });
 }
 
 export function initials(name: string | null | undefined): string {

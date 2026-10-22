@@ -33,7 +33,9 @@ import { setEditDraft } from '@/lib/editDraft';
 import { categoryColors } from '@/lib/categories';
 import { euro, rating, when } from '@/lib/format';
 import type { Application, Job, Profile, ProfileStats, ReportTarget } from '@/lib/types';
+import { openProfile } from '@/lib/nav';
 import { useTheme } from '@/theme/ThemeProvider';
+import { DUR, EASE_OUT } from '@/theme/motion';
 
 export default function TaskDetail() {
   const { id, offer } = useLocalSearchParams<{ id: string; offer?: string }>();
@@ -151,7 +153,7 @@ export default function TaskDetail() {
           {job.photos[0] ? (
             <Image source={{ uri: job.photos[0] }} style={{ position: 'absolute', inset: 0 }} contentFit="cover" />
           ) : (
-            <Animated.View entering={ZoomIn.springify()} style={{ width: 120, height: 120, borderRadius: 36, backgroundColor: c.card, alignItems: 'center', justifyContent: 'center' }}>
+            <Animated.View entering={ZoomIn.duration(DUR.base).easing(EASE_OUT)} style={{ width: 120, height: 120, borderRadius: 36, backgroundColor: c.card, alignItems: 'center', justifyContent: 'center' }}>
               <CategoryTile cat={job.category} size={84} />
             </Animated.View>
           )}
@@ -212,7 +214,7 @@ export default function TaskDetail() {
           )}
 
           {job.status === 'assigned' && (isOwner || isWorker) && (
-            <Animated.View entering={FadeInDown.springify().damping(18)}>
+            <Animated.View entering={FadeInDown.duration(DUR.base).easing(EASE_OUT)}>
               <Card style={{ gap: 12, backgroundColor: c.okSoft }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                   <LiveDot color={c.ok} />
@@ -221,7 +223,7 @@ export default function TaskDetail() {
                   </Txt>
                 </View>
                 {isOwner && helper && (
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                  <Pressable accessibilityRole="button" onPress={() => openProfile(helper.id, userId)} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                     <Avatar name={helper.full_name} url={helper.avatar_url} size={48} />
                     <View style={{ flex: 1 }}>
                       <Txt size={16} weight="800" numberOfLines={1}>
@@ -230,7 +232,7 @@ export default function TaskDetail() {
                       <Txt size={13} color={c.body}>{`${t.task.agreed}: ${euro(agreed, lang)}`}</Txt>
                     </View>
                     <IconButton name="chat" label={t.task.message} bg={c.card} color={c.primaryText} onPress={() => openChat(helper.id)} />
-                  </View>
+                  </Pressable>
                 )}
                 {isWorker && <Txt size={13} color={c.body}>{`${t.task.agreed}: ${euro(agreed, lang)}`}</Txt>}
                 <Txt size={13} color={c.body}>
@@ -241,7 +243,10 @@ export default function TaskDetail() {
           )}
 
           {poster && (
-            <Card style={{ flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 1.5, borderColor: c.line }}>
+            <Card
+              onPress={() => openProfile(poster.id, userId)}
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 1.5, borderColor: c.line }}
+            >
               <Avatar name={poster.full_name} url={poster.avatar_url} size={48} />
               <View style={{ flex: 1 }}>
                 <Txt weight="700">{isOwner ? t.common.you : poster.full_name || '—'}</Txt>
@@ -286,7 +291,7 @@ export default function TaskDetail() {
               {apps.length === 0 && <Txt muted>{t.task.noOffers}</Txt>}
               {apps.map((a) => (
                 <Card key={a.id} style={{ gap: 10, borderWidth: 1.5, borderColor: a.status === 'accepted' ? c.ok : c.line }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                  <Pressable accessibilityRole="button" onPress={() => openProfile(a.applicant_id, userId)} style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                     <Avatar name={a.applicant?.full_name} url={a.applicant?.avatar_url} size={40} />
                     <Txt weight="700" style={{ flex: 1 }} numberOfLines={1}>
                       {a.applicant?.full_name || '—'}
@@ -294,7 +299,7 @@ export default function TaskDetail() {
                     <Txt size={18} weight="800">
                       {euro(a.amount ?? job.budget, lang)}
                     </Txt>
-                  </View>
+                  </Pressable>
                   {!!a.message && <Txt color={c.body}>{a.message}</Txt>}
                   <View style={{ flexDirection: 'row', gap: 10 }}>
                     <Button title={t.task.message} variant="secondary" size="md" style={{ flex: 1 }} onPress={() => openChat(a.applicant_id)} />
@@ -438,7 +443,7 @@ export default function TaskDetail() {
 
       <Modal visible={sheet && !isOwner && !mine} transparent animationType="fade" onRequestClose={() => setSheet(false)} statusBarTranslucent>
         <Pressable accessibilityRole="button" accessibilityLabel={t.common.cancel} onPress={() => setSheet(false)} style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' }} />
-        <Animated.View entering={SlideInDown.springify().damping(20)} style={{ backgroundColor: c.card, borderTopLeftRadius: 32, borderTopRightRadius: 32, padding: 20, paddingBottom: Math.max(insets.bottom, 12) + 20, gap: 16 }}>
+        <Animated.View entering={SlideInDown.duration(DUR.base).easing(EASE_OUT)} style={{ backgroundColor: c.card, borderTopLeftRadius: 32, borderTopRightRadius: 32, padding: 20, paddingBottom: Math.max(insets.bottom, 12) + 20, gap: 16 }}>
           <View style={{ width: 40, height: 5, borderRadius: 3, backgroundColor: c.line, alignSelf: 'center' }} />
           <Txt size={22} weight="900">
             {t.task.yourOffer}

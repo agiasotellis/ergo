@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useI18n } from '@/i18n/I18nProvider';
 import { useTheme } from '@/theme/ThemeProvider';
 import { Button, IconButton, Txt } from './ui';
+import { DUR, EASE_OUT } from '@/theme/motion';
 
 const CELL = 44;
 const MONTHS_AHEAD = 6;
@@ -98,7 +99,7 @@ export function DateTimeSheet({
     <Modal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
       <Pressable accessibilityRole="button" accessibilityLabel={t.common.cancel} onPress={onClose} style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' }} />
       <Animated.View
-        entering={SlideInDown.springify().damping(20)}
+        entering={SlideInDown.duration(DUR.base).easing(EASE_OUT)}
         style={{ backgroundColor: c.card, borderTopLeftRadius: 32, borderTopRightRadius: 32, paddingTop: 12, paddingHorizontal: 20, paddingBottom: Math.max(insets.bottom, 12) + 16, gap: 14 }}
       >
         <View style={{ width: 40, height: 5, borderRadius: 3, backgroundColor: c.line, alignSelf: 'center' }} />
@@ -137,7 +138,7 @@ export function DateTimeSheet({
                 >
                   {on && (
                     <Animated.View
-                      entering={ZoomIn.springify().damping(14)}
+                      entering={ZoomIn.duration(DUR.base).easing(EASE_OUT)}
                       style={{ position: 'absolute', width: CELL - 4, height: CELL - 4, borderRadius: (CELL - 4) / 2, backgroundColor: c.primary }}
                     />
                   )}
