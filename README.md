@@ -75,7 +75,7 @@ In the same Google Cloud project (APIs & Services → Credentials, after setting
 1. **Web application** OAuth client → copy the client ID and secret.
 2. **Android** OAuth client → package `com.agiasotellis.ergo` + the same SHA-1 fingerprints as above.
 3. Supabase → Authentication → Providers → **Google**: enable it, paste the **Web** client ID and secret, and turn on **Skip nonce check** (needed for the native Android flow).
-4. Add the Web client ID as the `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` secret.
+4. The Web client ID is set in `src/lib/env.ts` (it is public). The `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` secret can override it.
 
 The debug key's SHA-1 is `5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:F6:25`. Add it too if you test builds signed with the debug key.
 
