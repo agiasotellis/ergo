@@ -55,3 +55,13 @@ export function initials(name: string | null | undefined): string {
   if (!parts.length) return '?';
   return (parts[0][0] + (parts[1]?.[0] ?? '')).toUpperCase();
 }
+
+/** Average over all of someone's reviews (as helper and as task owner), weighted by count. */
+export function overallRating(s: { worker_rating: number | string | null; worker_reviews: number | string; poster_rating: number | string | null; poster_reviews: number | string } | null | undefined) {
+  if (!s) return { rating: null as number | null, count: 0 };
+  const wn = Number(s.worker_reviews) || 0, pn = Number(s.poster_reviews) || 0;
+  const count = wn + pn;
+  if (!count) return { rating: null as number | null, count: 0 };
+  const sum = (wn ? Number(s.worker_rating) * wn : 0) + (pn ? Number(s.poster_rating) * pn : 0);
+  return { rating: sum / count, count };
+}

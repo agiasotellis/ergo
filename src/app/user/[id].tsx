@@ -11,7 +11,7 @@ import { Avatar, Card, Empty, H2, IconButton, Loading, Segmented, Stars, Txt } f
 import { useI18n } from '@/i18n/I18nProvider';
 import { getProfile, getStats, helpedCount, openJobsOf, reviewsFor } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
-import { ago, euro, rating, when } from '@/lib/format';
+import { ago, euro, overallRating, rating, when } from '@/lib/format';
 import { openProfile } from '@/lib/nav';
 import type { Job, Profile, ProfileStats, ReportTarget, Review } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -66,8 +66,7 @@ export default function UserProfile() {
   }
 
   const name = profile.full_name || '—';
-  const totalReviews = (stats?.worker_reviews ?? 0) + (stats?.poster_reviews ?? 0);
-  const overall = stats?.worker_rating ?? stats?.poster_rating;
+  const { rating: overall, count: totalReviews } = overallRating(stats);
   const since = new Date(profile.created_at).toLocaleDateString(lang === 'el' ? 'el-GR' : 'en-GB', { month: 'long', year: 'numeric' });
   const roleRating = tab === 'worker' ? stats?.worker_rating : stats?.poster_rating;
   const roleCount = tab === 'worker' ? stats?.worker_reviews : stats?.poster_reviews;

@@ -35,7 +35,7 @@ import { useAuth } from '@/lib/auth';
 import { setEditDraft } from '@/lib/editDraft';
 import { taskLink } from '@/lib/env';
 import { categoryColors } from '@/lib/categories';
-import { euro, rating, when } from '@/lib/format';
+import { euro, overallRating, rating, when } from '@/lib/format';
 import type { Application, Job, Profile, ProfileStats, ReportTarget } from '@/lib/types';
 import { openProfile } from '@/lib/nav';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -341,7 +341,7 @@ export default function TaskDetail() {
               <Avatar name={poster.full_name} url={poster.avatar_url} size={48} />
               <View style={{ flex: 1 }}>
                 <Txt weight="700">{isOwner ? t.common.you : poster.full_name || '—'}</Txt>
-                <Txt size={13} muted>{`★ ${rating(stats?.poster_rating, lang)} · ${stats?.poster_reviews ?? 0} ${t.profile.reviewsCount.toLowerCase()}`}</Txt>
+                <Txt size={13} muted>{`★ ${rating(overallRating(stats).rating, lang)} · ${t.profile.reviewsN(overallRating(stats).count)}`}</Txt>
               </View>
               {!isOwner && <IconButton name="chat" label={t.task.message} bg={c.primarySoft} color={c.primaryText} onPress={() => openChat(job.poster_id)} />}
             </Card>

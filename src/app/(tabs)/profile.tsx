@@ -13,7 +13,7 @@ import { useI18n } from '@/i18n/I18nProvider';
 import { deleteMyAccount, getStats, getTaskAlert, myJobs, pickAndUploadPhoto, reviewsFor, updateProfile } from '@/lib/api';
 import { useAppLock } from '@/lib/appLock';
 import { useAuth } from '@/lib/auth';
-import { ago, euro, km, rating } from '@/lib/format';
+import { ago, euro, km, overallRating, rating } from '@/lib/format';
 import type { Job, ProfileStats, Review, TaskAlert } from '@/lib/types';
 import { openProfile } from '@/lib/nav';
 import { useTheme, type ThemePref } from '@/theme/ThemeProvider';
@@ -154,9 +154,9 @@ export default function Profile() {
             <Button title={t.profile.edit} variant="secondary" size="md" icon="pencil" onPress={openEditor} style={{ marginTop: 2 }} />
             <View style={{ flexDirection: 'row', gap: 8, width: '100%', marginTop: 6 }}>
               {[
-                { v: `★ ${rating(stats?.worker_rating ?? stats?.poster_rating, lang)}`, l: t.profile.rating },
+                { v: `★ ${rating(overallRating(stats).rating, lang)}`, l: t.profile.rating },
                 { v: String(doneCount), l: t.profile.done },
-                { v: String((stats?.worker_reviews ?? 0) + (stats?.poster_reviews ?? 0)), l: t.profile.reviewsCount },
+                { v: String(overallRating(stats).count), l: t.profile.reviewsCount },
               ].map((s) => (
                 <View key={s.l} style={{ flex: 1, minWidth: 0, backgroundColor: c.soft, borderRadius: 18, paddingVertical: 14, paddingHorizontal: 6, alignItems: 'center', justifyContent: 'center', gap: 2 }}>
                   <Txt size={20} weight="800" center numberOfLines={1}>
