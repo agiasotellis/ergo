@@ -72,6 +72,11 @@ export default function Chat() {
         setMsgs((list) => (list.some((x) => x.id === m.id) ? list : [...list, m]));
         if (userId && m.sender_id !== userId) markRead(id, userId);
       })
+      // Read receipts: the other person opening the chat sets read_at on our messages.
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages', filter: `conversation_id=eq.${id}` }, (payload) => {
+        const m = payload.new as Message;
+        setMsgs((list) => list.map((x) => (x.id === m.id ? { ...x, read_at: m.read_at } : x)));
+      })
       .subscribe();
     return () => {
       supabase.removeChannel(ch);
@@ -137,6 +142,8 @@ export default function Chat() {
   const otherId = conv.poster_id === userId ? conv.worker_id : conv.poster_id;
   const other = conv.poster_id === userId ? conv.worker : conv.poster;
   const time = (iso: string) => new Date(iso).toLocaleTimeString(lang === 'el' ? 'el-GR' : 'en-GB', { hour: '2-digit', minute: '2-digit' });
+  // "Seen" goes under my latest message, once the other person has read it.
+  const lastMine = [...msgs].reverse().find((m) => m.sender_id === userId && m.kind !== 'system' && !m.id.startsWith('local-'));
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: c.bg }}>
@@ -213,14 +220,20 @@ export default function Chat() {
                   ) : (
                     <Txt color={me ? '#FFFFFF' : c.ink}>{item.body}</Txt>
                   )}
-                  <Txt
-                    size={11}
-                    color={me ? 'rgba(255,255,255,0.8)' : c.muted}
-                    style={{ alignSelf: 'flex-end', marginTop: 2, marginRight: isPhoto ? 8 : 0, marginBottom: isPhoto ? 2 : 0 }}
-                  >
-                    {time(item.created_at)}
-                  </Txt>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, alignSelf: 'flex-end', marginTop: 2, marginRight: isPhoto ? 8 : 0, marginBottom: isPhoto ? 2 : 0 }}>
+                    <Txt size={11} color={me ? 'rgba(255,255,255,0.8)' : c.muted}>
+                      {time(item.created_at)}
+                    </Txt>
+                    {me && !uploading && <Ticks read={!!item.read_at} label={item.read_at ? t.chat.seen : t.chat.sent} />}
+                  </View>
                 </Pressable>
+                {me && item.id === lastMine?.id && !!item.read_at && (
+                  <Animated.View entering={FadeIn.duration(DUR.base)}>
+                    <Txt size={11} muted style={{ alignSelf: 'flex-end', marginTop: 3, marginRight: 4 }}>
+                      {t.chat.seenAt(time(item.read_at))}
+                    </Txt>
+                  </Animated.View>
+                )}
               </Animated.View>
             );
           }}
@@ -332,6 +345,15 @@ export default function Chat() {
         </Pressable>
       </Modal>
     </SafeAreaView>
+  );
+}
+
+/** ✓ sent, ✓✓ read (shown on my own messages). */
+function Ticks({ read, label }: { read: boolean; label: string }) {
+  return (
+    <View accessible accessibilityLabel={label}>
+      <Icon d={read ? 'M1.5 12.5l4.5 4.5L15.5 7.5M9.5 15.5l1.5 1.5L20.5 7.5' : 'M5 12.5l4.5 4.5L19 7.5'} size={15} strokeWidth={2.6} color={read ? '#FFFFFF' : 'rgba(255,255,255,0.6)'} />
+    </View>
   );
 }
 
