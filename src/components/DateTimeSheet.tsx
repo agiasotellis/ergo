@@ -120,35 +120,40 @@ export function DateTimeSheet({
               </Txt>
             ))}
           </View>
-          <Animated.View key={month.getTime()} entering={(dir === 1 ? FadeInRight : FadeInLeft).duration(220)} style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 6 }}>
-            {cells.map((d, i) => {
-              if (!d) return <View key={`b${i}`} style={{ width: `${100 / 7}%`, height: CELL }} />;
-              const past = d < today;
-              const on = sameDay(d, day);
-              const isNow = sameDay(d, today);
-              return (
-                <Pressable
-                  key={d.getTime()}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected: on, disabled: past }}
-                  accessibilityLabel={`${d.getDate()} ${t.post.months[d.getMonth()]}`}
-                  disabled={past}
-                  onPress={() => setDay(d)}
-                  style={{ width: `${100 / 7}%`, height: CELL, alignItems: 'center', justifyContent: 'center' }}
-                >
-                  {on && (
-                    <Animated.View
-                      entering={ZoomIn.duration(DUR.base).easing(EASE_OUT)}
-                      style={{ position: 'absolute', width: CELL - 4, height: CELL - 4, borderRadius: (CELL - 4) / 2, backgroundColor: c.primary }}
-                    />
-                  )}
-                  <Txt size={15} weight={on || isNow ? '800' : '500'} color={on ? '#FFFFFF' : past ? c.line : isNow ? c.primaryText : c.ink}>
-                    {d.getDate()}
-                  </Txt>
-                  {isNow && !on && <View style={{ position: 'absolute', bottom: 6, width: 4, height: 4, borderRadius: 2, backgroundColor: c.primaryText }} />}
-                </Pressable>
-              );
-            })}
+          {/* One row per week with 7 equal cells (percent widths can round past the row and wrap early). */}
+          <Animated.View key={month.getTime()} entering={(dir === 1 ? FadeInRight : FadeInLeft).duration(220)} style={{ marginTop: 6 }}>
+            {Array.from({ length: cells.length / 7 }, (_, w) => (
+              <View key={w} style={{ flexDirection: 'row' }}>
+                {cells.slice(w * 7, w * 7 + 7).map((d, i) => {
+                  if (!d) return <View key={`b${i}`} style={{ flex: 1, height: CELL }} />;
+                  const past = d < today;
+                  const on = sameDay(d, day);
+                  const isNow = sameDay(d, today);
+                  return (
+                    <Pressable
+                      key={d.getTime()}
+                      accessibilityRole="button"
+                      accessibilityState={{ selected: on, disabled: past }}
+                      accessibilityLabel={`${d.getDate()} ${t.post.months[d.getMonth()]}`}
+                      disabled={past}
+                      onPress={() => setDay(d)}
+                      style={{ flex: 1, height: CELL, alignItems: 'center', justifyContent: 'center' }}
+                    >
+                      {on && (
+                        <Animated.View
+                          entering={ZoomIn.duration(DUR.base).easing(EASE_OUT)}
+                          style={{ position: 'absolute', width: CELL - 4, height: CELL - 4, borderRadius: (CELL - 4) / 2, backgroundColor: c.primary }}
+                        />
+                      )}
+                      <Txt size={15} weight={on || isNow ? '800' : '500'} color={on ? '#FFFFFF' : past ? c.line : isNow ? c.primaryText : c.ink}>
+                        {d.getDate()}
+                      </Txt>
+                      {isNow && !on && <View style={{ position: 'absolute', bottom: 6, width: 4, height: 4, borderRadius: 2, backgroundColor: c.primaryText }} />}
+                    </Pressable>
+                  );
+                })}
+              </View>
+            ))}
           </Animated.View>
         </View>
 
