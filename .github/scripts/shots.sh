@@ -19,8 +19,7 @@ import re, sys, xml.etree.ElementTree as ET
 path, pat, which = sys.argv[1], re.compile(sys.argv[2]), sys.argv[3]
 hits = []
 for n in ET.parse(path).iter('node'):
-    label = (n.get('text') or '') + '|' + (n.get('content-desc') or '')
-    if pat.search(label):
+    if pat.search(n.get('text') or '') or pat.search(n.get('content-desc') or ''):
         x1, y1, x2, y2 = map(int, re.findall(r'\d+', n.get('bounds')))
         if x2 > x1 and y2 > y1:
             hits.append(((x1 + x2) // 2, (y1 + y2) // 2))
@@ -46,6 +45,15 @@ PY
 )
   adb shell input tap $xy
 }
+# waitfor <regex> <seconds>: polls the screen until a node matches.
+waitfor() {
+  local end=$((SECONDS + ${2:-60}))
+  while [ $SECONDS -lt $end ]; do
+    if dump && grep -qE "$1" "$UI"; then return 0; fi
+    sleep 3
+  done
+  echo "waitfor: timed out on $1"; cp "$UI" "$OUT/ui-$(date +%s).xml" 2>/dev/null; return 1
+}
 shot() { dismiss; sleep 1; adb exec-out screencap -p > "$OUT/$1.png"; echo "shot $1"; }
 open() { adb shell am start -W -a android.intent.action.VIEW -d "$1" "$PKG" > /dev/null; sleep "${2:-8}"; }
 
@@ -55,18 +63,19 @@ adb emu geo fix 23.7445 37.9685
 adb install -r -g "$APK" || { echo "INSTALL_FAILED"; exit 0; }
 adb shell pm grant "$PKG" android.permission.POST_NOTIFICATIONS 2>/dev/null || true
 adb shell monkey -p "$PKG" -c android.intent.category.LAUNCHER 1 > /dev/null 2>&1
-sleep 25; dismiss
+waitfor 'Ξεκίνα' 120; dismiss
+tap 'Ξεκίνα'; waitfor 'Παράλειψη' 30
+tap 'Παράλειψη'; waitfor 'Συνέχεια με Google' 30
 adb emu geo fix 23.7445 37.9685
-
-tap 'Ξεκίνα'; sleep 4
-tap 'Παράλειψη'; sleep 5
+tap '^Σύνδεση$' first; sleep 3
 shot 00-auth
 field 0; sleep 1; adb shell input text 'agiasotellis+review@gmail.com'; sleep 1
 field 1; sleep 1; adb shell input text "$REVIEW_PASSWORD"; sleep 1
-adb shell input keyevent 4; sleep 2
-tap '^Σύνδεση' last; sleep 15
+tap 'Καλώς ήρθες ξανά'; sleep 2
+tap '^Σύνδεση$' last
+waitfor 'Συναρμολόγηση|Βόλτα σκύλου|Μεταφορά' 60 || { shot 00-login-failed; }
 adb emu geo fix 23.7445 37.9685
-sleep 5
+sleep 6
 shot 01-home
 
 open 'ergo://map' 15;                                             shot 02-map

@@ -46,7 +46,7 @@ jobs:
       - name: Push screenshots
         if: always()
         run: |
-          mkdir -p /tmp/out && cp "$RUNNER_TEMP"/shots/*.png /tmp/out/ 2>/dev/null || true
+          mkdir -p /tmp/out && cp "$RUNNER_TEMP"/shots/*.png "$RUNNER_TEMP"/shots/*.xml /tmp/out/ 2>/dev/null || true
           cp "$RUNNER_TEMP"/smoke/emulator.log /tmp/out/ 2>/dev/null || true
           cd /tmp/out
           git init -q -b store-shots
