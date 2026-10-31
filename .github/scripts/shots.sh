@@ -63,9 +63,10 @@ adb emu geo fix 23.7445 37.9685
 adb install -r -g "$APK" || { echo "INSTALL_FAILED"; exit 0; }
 adb shell pm grant "$PKG" android.permission.POST_NOTIFICATIONS 2>/dev/null || true
 adb shell monkey -p "$PKG" -c android.intent.category.LAUNCHER 1 > /dev/null 2>&1
-waitfor 'Ξεκίνα' 120; dismiss
-tap 'Ξεκίνα'; waitfor 'Παράλειψη' 30
-tap 'Παράλειψη'; waitfor 'Συνέχεια με Google' 30
+sleep 30; dismiss
+# The welcome screen's entrance animations don't finish on the CI emulator; go to sign-in directly.
+open 'ergo://auth' 10
+waitfor 'Συνέχεια με Google' 60
 adb emu geo fix 23.7445 37.9685
 tap '^Σύνδεση$' first; sleep 3
 shot 00-auth
