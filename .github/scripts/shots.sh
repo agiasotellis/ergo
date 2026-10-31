@@ -58,6 +58,8 @@ shot() { dismiss; sleep 1; adb exec-out screencap -p > "$OUT/$1.png"; echo "shot
 open() { adb shell am start -W -a android.intent.action.VIEW -d "$1" "$PKG" > /dev/null; sleep "${2:-8}"; }
 
 adb wait-for-device
+adb shell settings put global auto_time_zone 0
+adb shell service call alarm 3 s16 Europe/Athens > /dev/null
 adb shell settings put secure location_mode 3
 adb emu geo fix 23.7445 37.9685
 adb install -r -g "$APK" || { echo "INSTALL_FAILED"; exit 0; }
@@ -79,7 +81,7 @@ adb emu geo fix 23.7445 37.9685
 sleep 6
 shot 01-home
 
-open 'ergo://map' 15;                                             shot 02-map
+open 'ergo://map' 45;                                             shot 02-map
 open 'ergo://task/e0000000-0000-4000-8000-000000000001';          shot 03-task
 open 'ergo://task/e0000000-0000-4000-8000-000000000010';          shot 04-own-task-offers
 adb shell input swipe 540 1700 540 700 400; sleep 2;               shot 05-own-task-offers-scrolled
