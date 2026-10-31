@@ -96,6 +96,8 @@ jobs:
           KEY_PW: ${{ secrets.ERGO_UPLOAD_KEY_PASSWORD }}
         run: |
           if [ -n "$KEYSTORE_B64" ]; then
+            # Pasted secrets often carry a trailing space or newline; gradle trims them too.
+            STORE_PW="$(printf '%s' "$STORE_PW" | tr -d '[:space:]')"; KEY_ALIAS="$(printf '%s' "$KEY_ALIAS" | tr -d '[:space:]')"; KEY_PW="$(printf '%s' "$KEY_PW" | tr -d '[:space:]')"
             echo "$KEYSTORE_B64" | tr -d ' \r\n' | base64 -d > "$RUNNER_TEMP/ergo-upload.jks"
             # Checks the secrets without printing them: file hash prefix, lengths, and whether keytool can open the key.
             {

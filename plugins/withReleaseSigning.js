@@ -17,9 +17,9 @@ const RELEASE_SIGNING = `
         release {
             if (System.getenv('ERGO_UPLOAD_STORE_FILE')) {
                 storeFile file(System.getenv('ERGO_UPLOAD_STORE_FILE'))
-                storePassword System.getenv('ERGO_UPLOAD_STORE_PASSWORD')
-                keyAlias System.getenv('ERGO_UPLOAD_KEY_ALIAS')
-                keyPassword System.getenv('ERGO_UPLOAD_KEY_PASSWORD')
+                storePassword System.getenv('ERGO_UPLOAD_STORE_PASSWORD')?.trim()
+                keyAlias System.getenv('ERGO_UPLOAD_KEY_ALIAS')?.trim()
+                keyPassword System.getenv('ERGO_UPLOAD_KEY_PASSWORD')?.trim()
             }
         }`;
 
