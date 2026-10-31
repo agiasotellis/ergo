@@ -104,6 +104,7 @@ jobs:
               if keytool -list -v -keystore "$RUNNER_TEMP/ergo-upload.jks" -storepass "$STORE_PW" -alias "$KEY_ALIAS" 2>&1 | grep -E "SHA1:|SHA256:"; then echo "KEYSTORE_OK"; else
                 echo "KEYSTORE_FAILED: $(keytool -list -keystore "$RUNNER_TEMP/ergo-upload.jks" -storepass "$STORE_PW" 2>&1 | head -3)"; fi
             } | tee -a "$RUNNER_TEMP/steps.log"
+            grep -q KEYSTORE_OK "$RUNNER_TEMP/steps.log" || { echo "::error::The upload key secrets don't match the keystore."; exit 1; }
             echo "ERGO_UPLOAD_STORE_FILE=$RUNNER_TEMP/ergo-upload.jks" >> "$GITHUB_ENV"
             echo "Signing with the ergo upload key."
           else
