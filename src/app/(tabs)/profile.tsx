@@ -1,6 +1,6 @@
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Alert, Pressable, ScrollView, Switch, View } from 'react-native';
+import { Alert, Linking, Pressable, ScrollView, Switch, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -15,6 +15,7 @@ import { useAppLock } from '@/lib/appLock';
 import { useAuth } from '@/lib/auth';
 import { ago, euro, km, overallRating, rating } from '@/lib/format';
 import type { Job, ProfileStats, Review, TaskAlert } from '@/lib/types';
+import { LINK_HOST } from '@/lib/env';
 import { openProfile } from '@/lib/nav';
 import { useTheme, type ThemePref } from '@/theme/ThemeProvider';
 
@@ -290,6 +291,9 @@ export default function Profile() {
               <Icon name="chevron" color={c.muted} size={18} />
             </Row>
             <Row icon="block" label={t.safety.blockedList} onPress={() => router.push('/blocked')}>
+              <Icon name="chevron" color={c.muted} size={18} />
+            </Row>
+            <Row icon="shield" label={t.profile.privacy} onPress={() => Linking.openURL(`https://${LINK_HOST}/privacy?lang=${lang}`)}>
               <Icon name="chevron" color={c.muted} size={18} />
             </Row>
             <Row
