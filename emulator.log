@@ -1,0 +1,100 @@
++ SDK=/usr/local/lib/android/sdk
++ SDKM=/usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager
++ AVDM=/usr/local/lib/android/sdk/cmdline-tools/latest/bin/avdmanager
++ IMG='system-images;android-34;google_apis;x86_64'
++ export ANDROID_AVD_HOME=/home/runner/.android/avd
++ ANDROID_AVD_HOME=/home/runner/.android/avd
++ export ANDROID_USER_HOME=/home/runner/.android
++ ANDROID_USER_HOME=/home/runner/.android
++ mkdir -p /home/runner/.android/avd
++ ls -la /dev/kvm
+crw-rw-rw- 1 root kvm 10, 232 Oct 31 21:29 /dev/kvm
++ yes
++ /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+yes: standard output: Broken pipe
++ /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --install platform-tools emulator 'system-images;android-34;google_apis;x86_64'
++ export PATH=/usr/local/lib/android/sdk/platform-tools:/usr/local/lib/android/sdk/emulator:/snap/bin:/home/runner/.local/bin:/opt/pipx_bin:/home/runner/.cargo/bin:/home/runner/.config/composer/vendor/bin:/usr/local/.ghcup/bin:/home/runner/.dotnet/tools:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
++ PATH=/usr/local/lib/android/sdk/platform-tools:/usr/local/lib/android/sdk/emulator:/snap/bin:/home/runner/.local/bin:/opt/pipx_bin:/home/runner/.cargo/bin:/home/runner/.config/composer/vendor/bin:/usr/local/.ghcup/bin:/home/runner/.dotnet/tools:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
++ echo no
++ /usr/local/lib/android/sdk/cmdline-tools/latest/bin/avdmanager create avd -n ci -k 'system-images;android-34;google_apis;x86_64' --force -d pixel_6
+Loading local repository...                                                     [=========                              ] 25% Loading local repository...       Auto-selecting single ABI x86_64
++ /usr/local/lib/android/sdk/emulator/emulator -list-avds
++ /usr/local/lib/android/sdk/emulator/emulator -avd ci -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -accel auto -memory 4096
+ci
++ timeout 300 adb wait-for-device
+* daemon not running; starting now at tcp:5037
+* daemon started successfully
+++ seq 1 120
++ for i in $(seq 1 120)
+++ adb shell getprop sys.boot_completed
+++ tr -d '\r'
++ '[' '' = 1 ']'
++ sleep 5
++ for i in $(seq 1 120)
+++ adb shell getprop sys.boot_completed
+++ tr -d '\r'
++ '[' '' = 1 ']'
++ sleep 5
++ for i in $(seq 1 120)
+++ adb shell getprop sys.boot_completed
+++ tr -d '\r'
++ '[' '' = 1 ']'
++ sleep 5
++ for i in $(seq 1 120)
+++ adb shell getprop sys.boot_completed
+++ tr -d '\r'
++ '[' '' = 1 ']'
++ sleep 5
++ for i in $(seq 1 120)
+++ adb shell getprop sys.boot_completed
+++ tr -d '\r'
++ '[' '' = 1 ']'
++ sleep 5
++ for i in $(seq 1 120)
+++ adb shell getprop sys.boot_completed
+++ tr -d '\r'
++ '[' 1 = 1 ']'
++ break
+++ adb shell getprop sys.boot_completed
+++ tr -d '\r'
++ '[' 1 '!=' 1 ']'
++ adb shell settings put global window_animation_scale 0
++ adb shell settings put global transition_animation_scale 0
++ adb shell settings put global animator_duration_scale 0
++ adb shell input keyevent 82
++ bash .github/scripts/shots.sh
+OK
+Performing Streamed Install
+Success
+OK
+shot 00-auth
+OK
+shot 01-home
+shot 02-map
+shot 03-task
+shot 04-own-task-offers
+shot 05-own-task-offers-scrolled
+shot 06-chat
+shot 07-post
+shot 08-profile
+shot 09-profile-scrolled
+shot 10-alerts
+shot 11-messages
+total 2884
+drwxr-xr-x 2 runner runner   4096 Oct 31 21:34 .
+drwxr-xr-x 6 runner runner   4096 Oct 31 21:30 ..
+-rw-r--r-- 1 runner runner 166679 Oct 31 21:31 00-auth.png
+-rw-r--r-- 1 runner runner 348013 Oct 31 21:32 01-home.png
+-rw-r--r-- 1 runner runner 520061 Oct 31 21:33 02-map.png
+-rw-r--r-- 1 runner runner 190285 Oct 31 21:33 03-task.png
+-rw-r--r-- 1 runner runner 205375 Oct 31 21:33 04-own-task-offers.png
+-rw-r--r-- 1 runner runner 264875 Oct 31 21:33 05-own-task-offers-scrolled.png
+-rw-r--r-- 1 runner runner 191801 Oct 31 21:33 06-chat.png
+-rw-r--r-- 1 runner runner 188642 Oct 31 21:33 07-post.png
+-rw-r--r-- 1 runner runner 236176 Oct 31 21:34 08-profile.png
+-rw-r--r-- 1 runner runner 294417 Oct 31 21:34 09-profile-scrolled.png
+-rw-r--r-- 1 runner runner 209503 Oct 31 21:34 10-alerts.png
+-rw-r--r-- 1 runner runner 108906 Oct 31 21:34 11-messages.png
++ adb emu kill
+OK: killing emulator, bye bye
+OK
