@@ -1,10 +1,10 @@
-# Android build 40: cancelled
+# Android build 41: cancelled
 
 Disk: /dev/root       145G   43G  103G  30% /
 
 - Commit: a92033545e0065e1e87e110256601e2a05d0e890
-- Run: https://github.com/agiasotellis/ergo/actions/runs/41237710975
-- Release: https://github.com/agiasotellis/ergo/releases/tag/build-40
+- Run: https://github.com/agiasotellis/ergo/actions/runs/41237957446
+- Release: https://github.com/agiasotellis/ergo/releases/tag/build-41
 
 | Step | Result |
 |---|---|
@@ -20,7 +20,7 @@ Files:
 
 ## Launch test
 ```
-(skipped for test builds)
+(no result) emulator log:
 ```
 
 ## Other steps (tail)
@@ -28,7 +28,7 @@ Files:
 npm warn deprecated uuid@7.0.3: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
 npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
 
-added 845 packages, and audited 846 packages in 47s
+added 845 packages, and audited 846 packages in 29s
 
 180 packages are looking for funding
   run `npm fund` for details
@@ -70,10 +70,10 @@ For more details see https://docs.gradle.org/9.4.1/release-notes.html
 
 To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.4.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
 Daemon will be stopped at the end of the build 
+> Task :expo-gradle-plugin:expo-autolinking-plugin-shared:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:settings-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
 > Task :gradle-plugin:shared:checkKotlinGradlePluginConfigurationErrors SKIPPED
 > Task :expo-gradle-plugin:expo-autolinking-settings-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
-> Task :gradle-plugin:settings-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
-> Task :expo-gradle-plugin:expo-autolinking-plugin-shared:checkKotlinGradlePluginConfigurationErrors SKIPPED
 > Task :expo-gradle-plugin:expo-autolinking-settings-plugin:pluginDescriptors
 > Task :gradle-plugin:settings-plugin:pluginDescriptors
 > Task :gradle-plugin:settings-plugin:processResources
@@ -96,4 +96,20 @@ Daemon will be stopped at the end of the build
 > Task :expo-gradle-plugin:expo-autolinking-settings-plugin:compileJava NO-SOURCE
 > Task :expo-gradle-plugin:expo-autolinking-settings-plugin:classes
 > Task :expo-gradle-plugin:expo-autolinking-settings-plugin:jar
+> Task :gradle-plugin:react-native-gradle-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-module-gradle-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-gradle-plugin:expo-max-sdk-override-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-gradle-plugin:expo-autolinking-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-module-gradle-plugin:pluginDescriptors
+> Task :expo-module-gradle-plugin:processResources
+> Task :expo-gradle-plugin:expo-max-sdk-override-plugin:pluginDescriptors
+> Task :expo-gradle-plugin:expo-max-sdk-override-plugin:processResources
+> Task :expo-gradle-plugin:expo-autolinking-plugin:pluginDescriptors
+> Task :expo-gradle-plugin:expo-autolinking-plugin:processResources
+> Task :gradle-plugin:react-native-gradle-plugin:pluginDescriptors
+> Task :gradle-plugin:react-native-gradle-plugin:processResources
+> Task :expo-gradle-plugin:expo-max-sdk-override-plugin:compileKotlin
+> Task :expo-gradle-plugin:expo-max-sdk-override-plugin:compileJava NO-SOURCE
+> Task :expo-gradle-plugin:expo-max-sdk-override-plugin:classes
+> Task :expo-gradle-plugin:expo-max-sdk-override-plugin:jar
 ```
