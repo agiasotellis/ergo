@@ -39,5 +39,5 @@ adb shell settings put global transition_animation_scale 0
 adb shell settings put global animator_duration_scale 0
 adb shell input keyevent 82
 
-bash .github/scripts/smoke.sh
+bash ".github/scripts/${SMOKE_SCRIPT:-smoke.sh}"
 adb emu kill || true

@@ -1,0 +1,56 @@
+name: Store screenshots
+
+# Runs the latest test-build APK on an emulator, signs in with a test account and captures
+# the main screens. The PNGs are pushed to the `store-shots` branch.
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Release tag with an x86_64 APK (e.g. build-45)'
+        required: true
+      password:
+        description: 'Temporary password of the review account'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  shots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p dist
+          gh release download "${{ inputs.release }}" -R "${{ github.repository }}" -p '*.apk' -D dist
+          ls -la dist
+
+      - name: Enable KVM for the emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Capture screens
+        timeout-minutes: 30
+        env:
+          SMOKE_SCRIPT: shots.sh
+          REVIEW_PASSWORD: ${{ inputs.password }}
+        run: bash .github/scripts/emulator.sh
+
+      - name: Push screenshots
+        if: always()
+        run: |
+          mkdir -p /tmp/out && cp "$RUNNER_TEMP"/shots/*.png /tmp/out/ 2>/dev/null || true
+          cp "$RUNNER_TEMP"/smoke/emulator.log /tmp/out/ 2>/dev/null || true
+          cd /tmp/out
+          git init -q -b store-shots
+          git config user.name "ergo-ci"
+          git config user.email "ci@users.noreply.github.com"
+          git add -A && git commit -qm "Store screenshots ${{ github.run_number }}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" store-shots
