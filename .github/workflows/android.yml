@@ -91,9 +91,19 @@ jobs:
       - name: Prepare upload keystore
         env:
           KEYSTORE_B64: ${{ secrets.ERGO_UPLOAD_KEYSTORE_BASE64 }}
+          STORE_PW: ${{ secrets.ERGO_UPLOAD_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ERGO_UPLOAD_KEY_ALIAS }}
+          KEY_PW: ${{ secrets.ERGO_UPLOAD_KEY_PASSWORD }}
         run: |
           if [ -n "$KEYSTORE_B64" ]; then
-            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/ergo-upload.jks"
+            echo "$KEYSTORE_B64" | tr -d ' \r\n' | base64 -d > "$RUNNER_TEMP/ergo-upload.jks"
+            # Checks the secrets without printing them: file hash prefix, lengths, and whether keytool can open the key.
+            {
+              echo "keystore sha256: $(sha256sum "$RUNNER_TEMP/ergo-upload.jks" | cut -c1-16)  size: $(stat -c%s "$RUNNER_TEMP/ergo-upload.jks")"
+              echo "lengths: store_pw=${#STORE_PW} alias=${#KEY_ALIAS} key_pw=${#KEY_PW}"
+              if keytool -list -v -keystore "$RUNNER_TEMP/ergo-upload.jks" -storepass "$STORE_PW" -alias "$KEY_ALIAS" 2>&1 | grep -E "SHA1:|SHA256:"; then echo "KEYSTORE_OK"; else
+                echo "KEYSTORE_FAILED: $(keytool -list -keystore "$RUNNER_TEMP/ergo-upload.jks" -storepass "$STORE_PW" 2>&1 | head -3)"; fi
+            } | tee -a "$RUNNER_TEMP/steps.log"
             echo "ERGO_UPLOAD_STORE_FILE=$RUNNER_TEMP/ergo-upload.jks" >> "$GITHUB_ENV"
             echo "Signing with the ergo upload key."
           else
@@ -207,7 +217,7 @@ jobs:
             echo
             echo "## Gradle"
             echo '```'
-            if [ -f "$RUNNER_TEMP/gradle.log" ]; then grep -nE "FAILURE|What went wrong|error:|e: |BUILD (SUCCESSFUL|FAILED)" "$RUNNER_TEMP/gradle.log" | tail -60; echo '---'; tail -120 "$RUNNER_TEMP/gradle.log"; else echo "Gradle did not run."; fi
+            if [ -f "$RUNNER_TEMP/gradle.log" ]; then grep -nE "FAILURE|What went wrong|error:|e: |BUILD (SUCCESSFUL|FAILED)" "$RUNNER_TEMP/gradle.log" | tail -60; grep -A15 "What went wrong" "$RUNNER_TEMP/gradle.log" | head -40; echo '---'; tail -120 "$RUNNER_TEMP/gradle.log"; else echo "Gradle did not run."; fi
             echo '```'
           } > "$RUNNER_TEMP/STATUS.md"
           git config user.name "ergo-ci"
