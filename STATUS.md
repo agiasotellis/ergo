@@ -1,10 +1,10 @@
-# Android build 52: success
+# Android build 53: success
 
 Disk: /dev/root       145G   57G   89G  39% /
 
-- Commit: f0a0c411d9a3dc5ba12794ef79b943bb2ce5947d
-- Run: https://github.com/agiasotellis/ergo/actions/runs/41243790476
-- Release: https://github.com/agiasotellis/ergo/releases/tag/build-52
+- Commit: b037ba0f4db80b55ec8434bbf223ec61bf669c56
+- Run: https://github.com/agiasotellis/ergo/actions/runs/45131616744
+- Release: https://github.com/agiasotellis/ergo/releases/tag/build-53
 
 | Step | Result |
 |---|---|
@@ -18,171 +18,171 @@ Disk: /dev/root       145G   57G   89G  39% /
 
 Files:
     total 105028
-    drwxr-xr-x  2 runner runner      4096 Oct 31 21:33 .
-    drwxr-xr-x 15 runner runner      4096 Oct 31 21:33 ..
-    -rw-r--r--  1 runner runner 107539820 Oct 31 21:33 ergo-1.0.0-build52.apk
+    drwxr-xr-x  2 runner runner      4096 Nov 23 07:52 .
+    drwxr-xr-x 15 runner runner      4096 Nov 23 07:52 ..
+    -rw-r--r--  1 runner runner 107539820 Nov 23 07:52 ergo-1.0.0-build53.apk
 
 ## Launch test
 ```
 APP_RUNNING after ~70s
 === crash / fatal ===
-10-31 21:35:13.233 D/AndroidRuntime( 3966): >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
-10-31 21:35:13.239 I/AndroidRuntime( 3966): Using default boot image
-10-31 21:35:13.240 I/AndroidRuntime( 3966): Leaving lock profiling enabled
-10-31 21:35:13.400 D/AndroidRuntime( 3966): Calling main entry com.android.commands.monkey.Monkey
-10-31 21:35:13.660 I/AndroidRuntime( 3966): VM exiting with result code 0.
+11-23 07:54:38.560 D/AndroidRuntime( 4466): >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+11-23 07:54:38.565 I/AndroidRuntime( 4466): Using default boot image
+11-23 07:54:38.565 I/AndroidRuntime( 4466): Leaving lock profiling enabled
+11-23 07:54:38.696 D/AndroidRuntime( 4466): Calling main entry com.android.commands.monkey.Monkey
+11-23 07:54:39.112 I/AndroidRuntime( 4466): VM exiting with result code 0.
 
 === React Native / Expo ===
-10-31 21:35:29.195 W/RecoverableKeyStoreGms( 4635): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3071)
-10-31 21:35:29.195 W/RecoverableKeyStoreGms( 4635): 	at android.os.Parcel.createException(Parcel.java:3041)
-10-31 21:35:29.195 W/RecoverableKeyStoreGms( 4635): 	at android.os.Parcel.readException(Parcel.java:3024)
-10-31 21:35:29.195 W/RecoverableKeyStoreGms( 4635): 	at android.os.Parcel.readException(Parcel.java:2966)
-10-31 21:35:29.284 E/dlpn    ( 4597): RuntimeException while executing runnable dlqc{qze@eb5aafd} with executor MoreExecutors.directExecutor()
-10-31 21:35:29.284 E/dlpn    ( 4597): java.lang.NullPointerException: Attempt to get length of null array
-10-31 21:35:29.681 W/PeoplePU( 4635): java.lang.IllegalArgumentException: Unknown component: ComponentInfo{com.google.android.syncadapters.contacts/com.google.android.syncadapters.contacts.ProxyGalProvider}
-10-31 21:35:29.681 W/PeoplePU( 4635): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3061)
-10-31 21:35:29.681 W/PeoplePU( 4635): 	at android.os.Parcel.createException(Parcel.java:3041)
-10-31 21:35:29.681 W/PeoplePU( 4635): 	at android.os.Parcel.readException(Parcel.java:3024)
-10-31 21:35:29.681 W/PeoplePU( 4635): 	at android.os.Parcel.readException(Parcel.java:2966)
-10-31 21:35:29.681 W/PeoplePU( 4635): Caused by: android.os.RemoteException: Remote stack trace:
-10-31 21:35:29.687 W/PeoplePU( 4635): android.content.pm.PackageManager$NameNotFoundException: ComponentInfo{com.google.android.gms/com.google.android.gms.people.sync.focus.ContactsSyncAdapterService}
-10-31 21:35:29.811 W/Conscrypt( 4635): Could not set socket write timeout: java.net.SocketException: Socket closed
-10-31 21:35:29.813 I/SemanticLocation( 4597): java.io.FileNotFoundException: /data/user/0/com.google.android.gms/files/model_bundle_metadata.pb: open failed: ENOENT (No such file or directory)
-10-31 21:35:29.813 I/SemanticLocation( 4597): Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
-10-31 21:35:29.827 I/SemanticLocation( 4597): java.io.FileNotFoundException: /data/user/0/com.google.android.gms/files/model_bundle_metadata.pb: open failed: ENOENT (No such file or directory)
-10-31 21:35:29.827 I/SemanticLocation( 4597): Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
-10-31 21:35:29.936 W/Conscrypt( 4635): Could not set socket write timeout: java.net.SocketException: Socket closed
-10-31 21:35:32.436 E/AmbientMusicServiceMana( 1689): oxe: java.lang.reflect.InvocationTargetException
-10-31 21:35:32.436 E/AmbientMusicServiceMana( 1689): Caused by: java.lang.reflect.InvocationTargetException
-10-31 21:35:32.436 E/AmbientMusicServiceMana( 1689): Caused by: java.lang.IllegalStateException: No underlying SoundTriggerModule available
-10-31 21:35:32.690 W/CorpusConfigHelper( 1734): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
-10-31 21:35:32.690 W/CorpusConfigHelper( 1734): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
-10-31 21:35:32.800 W/CorpusConfigHelper( 1734): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
-10-31 21:35:32.800 W/CorpusConfigHelper( 1734): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
-10-31 21:35:32.990 W/CorpusConfigHelper( 1734): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
-10-31 21:35:32.990 W/CorpusConfigHelper( 1734): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
-10-31 21:35:33.163 W/CorpusConfigHelper( 1734): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
-10-31 21:35:33.163 W/CorpusConfigHelper( 1734): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
-10-31 21:35:33.306 W/CorpusConfigHelper( 1734): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
-10-31 21:35:33.306 W/CorpusConfigHelper( 1734): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
-10-31 21:35:33.344 E/AppOps  (  519): java.lang.SecurityException: Specified package "android" under uid 10179 but it is not
-10-31 21:35:33.344 E/AppOps  (  519): java.lang.SecurityException: Specified package "android" under uid 10179 but it is not
-10-31 21:35:33.344 E/AppOps  (  519): java.lang.SecurityException: Specified package "android" under uid 10179 but it is not
-10-31 21:35:33.344 E/AppOps  (  519): java.lang.SecurityException: Specified package "android" under uid 10179 but it is not
-10-31 21:35:33.434 W/CorpusConfigHelper( 1734): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
-10-31 21:35:33.434 W/CorpusConfigHelper( 1734): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
-10-31 21:35:33.545 E/AppOps  (  519): java.lang.SecurityException: Specified package "android" under uid 10179 but it is not
-10-31 21:35:33.545 E/AppOps  (  519): java.lang.SecurityException: Specified package "android" under uid 10179 but it is not
-10-31 21:35:33.545 E/AppOps  (  519): java.lang.SecurityException: Specified package "android" under uid 10179 but it is not
-10-31 21:35:33.545 E/AppOps  (  519): java.lang.SecurityException: Specified package "android" under uid 10179 but it is not
-10-31 21:35:33.569 W/CorpusConfigHelper( 1734): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
-10-31 21:35:33.569 W/CorpusConfigHelper( 1734): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
-10-31 21:35:33.736 W/CorpusConfigHelper( 1734): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
-10-31 21:35:33.736 W/CorpusConfigHelper( 1734): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
-10-31 21:35:33.972 W/CorpusConfigHelper( 1734): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
-10-31 21:35:33.972 W/CorpusConfigHelper( 1734): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
-10-31 21:35:34.133 W/CorpusConfigHelper( 1734): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
-10-31 21:35:34.133 W/CorpusConfigHelper( 1734): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
-10-31 21:35:34.189 W/PeoplePU( 4635): android.content.pm.PackageManager$NameNotFoundException: ComponentInfo{com.google.android.gms/com.google.android.gms.people.sync.focus.ContactsSyncAdapterService}
-10-31 21:35:34.189 W/PeoplePU( 4635): java.lang.IllegalArgumentException: Unknown component: ComponentInfo{com.google.android.syncadapters.contacts/com.google.android.syncadapters.contacts.ContactsSyncAdapterService}
-10-31 21:35:34.189 W/PeoplePU( 4635): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3061)
-10-31 21:35:34.189 W/PeoplePU( 4635): 	at android.os.Parcel.createException(Parcel.java:3041)
-10-31 21:35:34.189 W/PeoplePU( 4635): 	at android.os.Parcel.readException(Parcel.java:3024)
-10-31 21:35:34.189 W/PeoplePU( 4635): 	at android.os.Parcel.readException(Parcel.java:2966)
-10-31 21:35:34.189 W/PeoplePU( 4635): Caused by: android.os.RemoteException: Remote stack trace:
-10-31 21:35:34.192 W/PeoplePU( 4635): java.lang.IllegalArgumentException: Unknown component: ComponentInfo{com.google.android.syncadapters.contacts/com.google.android.syncadapters.contacts.ContactsSyncAdapterService}
-10-31 21:35:34.192 W/PeoplePU( 4635): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3061)
-10-31 21:35:34.192 W/PeoplePU( 4635): 	at android.os.Parcel.createException(Parcel.java:3041)
-10-31 21:35:34.192 W/PeoplePU( 4635): 	at android.os.Parcel.readException(Parcel.java:3024)
-10-31 21:35:34.192 W/PeoplePU( 4635): 	at android.os.Parcel.readException(Parcel.java:2966)
-10-31 21:35:34.193 W/PeoplePU( 4635): java.lang.IllegalArgumentException: Unknown component: ComponentInfo{com.google.android.syncadapters.contacts/com.google.android.syncadapters.contacts.ProxyGalProvider}
-10-31 21:35:34.193 W/PeoplePU( 4635): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3061)
-10-31 21:35:34.193 W/PeoplePU( 4635): 	at android.os.Parcel.createException(Parcel.java:3041)
-10-31 21:35:34.193 W/PeoplePU( 4635): 	at android.os.Parcel.readException(Parcel.java:3024)
-10-31 21:35:34.193 W/PeoplePU( 4635): 	at android.os.Parcel.readException(Parcel.java:2966)
-10-31 21:35:34.217 W/WifiService(  519): Permission violation - getConfiguredNetworks not allowed for uid=10118, packageName=com.google.android.settings.intelligence, reason=java.lang.SecurityException: UID 10118 has no location permission
-10-31 21:35:34.751 W/CorpusConfigHelper( 1734): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
-10-31 21:35:34.751 W/CorpusConfigHelper( 1734): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
-10-31 21:35:35.142 W/ModernMediaScanner( 1673): Failed to visit /data/data/com.android.providers.downloads/cache/model.smfb.metadata: java.nio.file.NoSuchFileException: /data/data/com.android.providers.downloads/cache/model.smfb.metadata
-10-31 21:35:35.218 W/CorpusConfigHelper( 1734): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
-10-31 21:35:35.218 W/CorpusConfigHelper( 1734): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
-10-31 21:35:35.427 W/ModernMediaScanner( 1673): Failed to visit /data/data/com.android.providers.downloads/cache/model.smfb: java.nio.file.NoSuchFileException: /data/data/com.android.providers.downloads/cache/model.smfb
-10-31 21:35:35.740 W/ModernMediaScanner( 1673): Failed to visit /data/data/com.android.providers.downloads/cache/en.fb.metadata: java.nio.file.NoSuchFileException: /data/data/com.android.providers.downloads/cache/en.fb.metadata
-10-31 21:35:35.821 W/ModernMediaScanner( 1673): Failed to visit /data/data/com.android.providers.downloads/cache/en.fb: java.nio.file.NoSuchFileException: /data/data/com.android.providers.downloads/cache/en.fb
-10-31 21:35:36.309 W/ModernMediaScanner( 1673): Failed to visit /data/data/com.android.providers.downloads/cache/en.model.metadata: java.nio.file.NoSuchFileException: /data/data/com.android.providers.downloads/cache/en.model.metadata
-10-31 21:35:36.323 W/ModernMediaScanner( 1673): Failed to visit /data/data/com.android.providers.downloads/cache/en.model: java.nio.file.NoSuchFileException: /data/data/com.android.providers.downloads/cache/en.model
-10-31 21:35:36.490 E/AppOps  (  519): java.lang.SecurityException: Specified package "android" under uid 10179 but it is not
-10-31 21:35:36.490 E/AppOps  (  519): java.lang.SecurityException: Specified package "android" under uid 10179 but it is not
-10-31 21:35:36.491 E/AppOps  (  519): java.lang.SecurityException: Specified package "android" under uid 10179 but it is not
-10-31 21:35:36.491 E/AppOps  (  519): java.lang.SecurityException: Specified package "android" under uid 10179 but it is not
-10-31 21:35:38.542 W/ModernMediaScanner( 1673): Failed to visit /data/data/com.android.providers.downloads/cache/09252026-sms-denylist-metadata.txt: java.nio.file.NoSuchFileException: /data/data/com.android.providers.downloads/cache/09252026-sms-denylist-metadata.txt
-10-31 21:35:38.544 W/ModernMediaScanner( 1673): Failed to visit /data/data/com.android.providers.downloads/cache/09252026-sms-denylist.txt: java.nio.file.NoSuchFileException: /data/data/com.android.providers.downloads/cache/09252026-sms-denylist.txt
-10-31 21:35:38.553 W/ModernMediaScanner( 1673): Failed to visit /data/data/com.android.providers.downloads/cache/08202014-metadata.txt: java.nio.file.NoSuchFileException: /data/data/com.android.providers.downloads/cache/08202014-metadata.txt
-10-31 21:35:38.556 W/ModernMediaScanner( 1673): Failed to visit /data/data/com.android.providers.downloads/cache/08202014-pins.txt: java.nio.file.NoSuchFileException: /data/data/com.android.providers.downloads/cache/08202014-pins.txt
-10-31 21:35:38.565 W/ModernMediaScanner( 1673): Failed to visit /data/data/com.android.providers.downloads/cache/ifw-empty-metadata.txt: java.nio.file.NoSuchFileException: /data/data/com.android.providers.downloads/cache/ifw-empty-metadata.txt
-10-31 21:35:38.566 W/ModernMediaScanner( 1673): Failed to visit /data/data/com.android.providers.downloads/cache/ifw-empty.xml: java.nio.file.NoSuchFileException: /data/data/com.android.providers.downloads/cache/ifw-empty.xml
-10-31 21:35:39.761 W/CorpusConfigHelper( 1734): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
-10-31 21:35:39.761 W/CorpusConfigHelper( 1734): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
-10-31 21:35:39.774 W/PeoplePU( 4635): java.lang.IllegalArgumentException: Unknown component: ComponentInfo{com.google.android.syncadapters.contacts/com.google.android.syncadapters.contacts.ContactsSyncAdapterService}
-10-31 21:35:39.774 W/PeoplePU( 4635): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3061)
-10-31 21:35:39.774 W/PeoplePU( 4635): 	at android.os.Parcel.createException(Parcel.java:3041)
-10-31 21:35:39.774 W/PeoplePU( 4635): 	at android.os.Parcel.readException(Parcel.java:3024)
-10-31 21:35:39.774 W/PeoplePU( 4635): 	at android.os.Parcel.readException(Parcel.java:2966)
-10-31 21:35:39.774 W/PeoplePU( 4635): Caused by: android.os.RemoteException: Remote stack trace:
-10-31 21:35:39.776 W/PeoplePU( 4635): java.lang.IllegalArgumentException: Unknown component: ComponentInfo{com.google.android.syncadapters.contacts/com.google.android.syncadapters.contacts.ContactsSyncAdapterService}
-10-31 21:35:39.776 W/PeoplePU( 4635): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3061)
-10-31 21:35:39.776 W/PeoplePU( 4635): 	at android.os.Parcel.createException(Parcel.java:3041)
-10-31 21:35:39.776 W/PeoplePU( 4635): 	at android.os.Parcel.readException(Parcel.java:3024)
-10-31 21:35:39.776 W/PeoplePU( 4635): 	at android.os.Parcel.readException(Parcel.java:2966)
-10-31 21:35:39.776 W/PeoplePU( 4635): java.lang.IllegalArgumentException: Unknown component: ComponentInfo{com.google.android.syncadapters.contacts/com.google.android.syncadapters.contacts.ProxyGalProvider}
-10-31 21:35:39.776 W/PeoplePU( 4635): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3061)
-10-31 21:35:39.776 W/PeoplePU( 4635): 	at android.os.Parcel.createException(Parcel.java:3041)
-10-31 21:35:39.776 W/PeoplePU( 4635): 	at android.os.Parcel.readException(Parcel.java:3024)
-10-31 21:35:39.776 W/PeoplePU( 4635): 	at android.os.Parcel.readException(Parcel.java:2966)
-10-31 21:35:39.902 W/CorpusConfigHelper( 1734): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
-10-31 21:35:39.902 W/CorpusConfigHelper( 1734): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
-10-31 21:35:40.312 W/Vision  ( 4635): Error loading optional module com.google.android.gms.vision.ocr: ahbb: No acceptable module com.google.android.gms.vision.ocr found. Local version is 0 and remote version is 0.
-10-31 21:35:40.315 W/Vision  ( 4635): Error loading optional module com.google.android.gms.vision.ocr: ahbb: No acceptable module com.google.android.gms.vision.ocr found. Local version is 0 and remote version is 0.
-10-31 21:35:40.345 W/NetworkScheduler( 4597): java.lang.IllegalArgumentException: Only the following extra parameter types are supported: Integer, Long, Double, String, Boolean, and nested Bundles with the same restrictions.
-10-31 21:35:40.542 W/TapAndPay( 4597): java.lang.NullPointerException: NfcAdapter is null
-10-31 21:35:41.374 W/AsyncOperation( 4597): OperationException[Status{statusCode=Stale snapshot for com.google.android.gms.smartdevice(change count changed - expected 3  but was 2), resolution=null}]
-10-31 21:35:41.376 W/PhenotypeFlagCommitter( 4597): java.util.concurrent.ExecutionException: aard: 29501: Stale snapshot for com.google.android.gms.smartdevice(change count changed - expected 3  but was 2)
-10-31 21:35:41.376 W/PhenotypeCommitHelper( 4597): java.util.concurrent.ExecutionException: aard: 29501: Stale snapshot for com.google.android.gms.smartdevice(change count changed - expected 3  but was 2)
-10-31 21:35:41.628 W/CorpusConfigHelper( 1734): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
-10-31 21:35:41.628 W/CorpusConfigHelper( 1734): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
-10-31 21:35:41.718 W/PeoplePU( 4635): java.lang.IllegalArgumentException: Unknown component: ComponentInfo{com.google.android.syncadapters.contacts/com.google.android.syncadapters.contacts.ContactsSyncAdapterService}
-10-31 21:35:41.718 W/PeoplePU( 4635): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3061)
-10-31 21:35:41.718 W/PeoplePU( 4635): 	at android.os.Parcel.createException(Parcel.java:3041)
-10-31 21:35:41.718 W/PeoplePU( 4635): 	at android.os.Parcel.readException(Parcel.java:3024)
-10-31 21:35:41.718 W/PeoplePU( 4635): 	at android.os.Parcel.readException(Parcel.java:2966)
-10-31 21:35:41.718 W/PeoplePU( 4635): Caused by: android.os.RemoteException: Remote stack trace:
-10-31 21:35:41.719 W/PeoplePU( 4635): java.lang.IllegalArgumentException: Unknown component: ComponentInfo{com.google.android.syncadapters.contacts/com.google.android.syncadapters.contacts.ContactsSyncAdapterService}
-10-31 21:35:41.719 W/PeoplePU( 4635): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3061)
-10-31 21:35:41.719 W/PeoplePU( 4635): 	at android.os.Parcel.createException(Parcel.java:3041)
-10-31 21:35:41.719 W/PeoplePU( 4635): 	at android.os.Parcel.readException(Parcel.java:3024)
-10-31 21:35:41.719 W/PeoplePU( 4635): 	at android.os.Parcel.readException(Parcel.java:2966)
-10-31 21:35:41.719 W/PeoplePU( 4635): java.lang.IllegalArgumentException: Unknown component: ComponentInfo{com.google.android.syncadapters.contacts/com.google.android.syncadapters.contacts.ProxyGalProvider}
-10-31 21:35:41.719 W/PeoplePU( 4635): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3061)
-10-31 21:35:41.719 W/PeoplePU( 4635): 	at android.os.Parcel.createException(Parcel.java:3041)
-10-31 21:35:41.719 W/PeoplePU( 4635): 	at android.os.Parcel.readException(Parcel.java:3024)
-10-31 21:35:41.719 W/PeoplePU( 4635): 	at android.os.Parcel.readException(Parcel.java:2966)
-10-31 21:35:41.781 W/CorpusConfigHelper( 1734): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
-10-31 21:35:41.781 W/CorpusConfigHelper( 1734): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
-10-31 21:35:42.120 W/Vision  ( 4635): Error loading optional module com.google.android.gms.vision.ocr: ahbb: No acceptable module com.google.android.gms.vision.ocr found. Local version is 0 and remote version is 0.
-10-31 21:35:42.121 W/Vision  ( 4635): Error loading optional module com.google.android.gms.vision.ocr: ahbb: No acceptable module com.google.android.gms.vision.ocr found. Local version is 0 and remote version is 0.
-10-31 21:35:42.140 W/NetworkScheduler( 4597): java.lang.IllegalArgumentException: Only the following extra parameter types are supported: Integer, Long, Double, String, Boolean, and nested Bundles with the same restrictions.
-10-31 21:36:00.062 E/cr_CronetUrlRequestContext( 1734): Exception in upload method
-10-31 21:36:00.062 E/cr_CronetUrlRequestContext( 1734): com.google.android.apps.gsa.shared.r.d: Error code: 262182
-10-31 21:36:00.063 E/A       ( 1734): onError
-10-31 21:36:18.407 W/TapAndPay( 4597): java.lang.NullPointerException: NfcAdapter is null
-10-31 21:36:18.493 W/YouTubeMusic( 1715): Caused by: biqk: Exception in CronetUrlRequest: net::ERR_CONNECTION_CLOSED, ErrorCode=5, InternalErrorCode=-100, Retryable=true
-10-31 21:36:18.493 W/YouTubeMusic( 1715): 	at org.chromium.net.impl.CronetUrlRequest.onError(PG:6)
-10-31 21:36:18.590 E/d       ( 1734): RuntimeException while executing runnable cb{com.google.apps.tiktok.tracing.ej@a07ded7} with executor MoreExecutors.directExecutor()
-10-31 21:36:18.590 E/d       ( 1734): java.lang.NullPointerException: Attempt to read from field 'java.lang.String com.google.android.libraries.mdi.download.ae.b' on a null object reference in method 'void com.google.android.libraries.mdi.download.h.bq.gH(java.lang.Object)'
-10-31 21:36:18.590 E/d       ( 1734): RuntimeException while executing runnable cb{com.google.apps.tiktok.tracing.ej@844a071} with executor MoreExecutors.directExecutor()
-10-31 21:36:18.590 E/d       ( 1734): java.lang.NullPointerException: Attempt to read from field 'java.lang.String com.google.android.libraries.mdi.download.ae.b' on a null object reference in method 'void com.google.android.libraries.mdi.download.h.bq.gH(java.lang.Object)'
-10-31 21:36:18.594 E/d       ( 1734): RuntimeException while executing runnable cb{com.google.apps.tiktok.tracing.ej@53599e2} with executor MoreExecutors.directExecutor()
-10-31 21:36:18.594 E/d       ( 1734): java.lang.NullPointerException: Attempt to read from field 'java.lang.String com.google.android.libraries.mdi.download.ae.b' on a null object reference in method 'void com.google.android.libraries.mdi.download.h.bq.gH(java.lang.Object)'
+11-23 07:55:09.105 E/AppOps  (  522): java.lang.SecurityException: Specified package "android" under uid 10187 but it is not
+11-23 07:55:09.105 E/AppOps  (  522): java.lang.SecurityException: Specified package "android" under uid 10187 but it is not
+11-23 07:55:09.106 E/AppOps  (  522): java.lang.SecurityException: Specified package "android" under uid 10187 but it is not
+11-23 07:55:09.350 W/CorpusConfigHelper( 1715): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
+11-23 07:55:09.350 W/CorpusConfigHelper( 1715): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
+11-23 07:55:09.570 W/CorpusConfigHelper( 1715): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
+11-23 07:55:09.570 W/CorpusConfigHelper( 1715): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
+11-23 07:55:09.849 W/CorpusConfigHelper( 1715): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
+11-23 07:55:09.849 W/CorpusConfigHelper( 1715): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
+11-23 07:55:10.236 W/CorpusConfigHelper( 1715): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
+11-23 07:55:10.236 W/CorpusConfigHelper( 1715): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
+11-23 07:55:10.437 W/CorpusConfigHelper( 1715): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
+11-23 07:55:10.437 W/CorpusConfigHelper( 1715): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
+11-23 07:55:10.667 W/CorpusConfigHelper( 1715): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
+11-23 07:55:10.667 W/CorpusConfigHelper( 1715): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
+11-23 07:55:11.410 W/CorpusConfigHelper( 1715): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
+11-23 07:55:11.410 W/CorpusConfigHelper( 1715): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
+11-23 07:55:11.466 W/PeoplePU( 1452): android.content.pm.PackageManager$NameNotFoundException: ComponentInfo{com.google.android.gms/com.google.android.gms.people.sync.focus.ContactsSyncAdapterService}
+11-23 07:55:11.466 W/PeoplePU( 1452): java.lang.IllegalArgumentException: Unknown component: ComponentInfo{com.google.android.syncadapters.contacts/com.google.android.syncadapters.contacts.ContactsSyncAdapterService}
+11-23 07:55:11.466 W/PeoplePU( 1452): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3061)
+11-23 07:55:11.466 W/PeoplePU( 1452): 	at android.os.Parcel.createException(Parcel.java:3041)
+11-23 07:55:11.466 W/PeoplePU( 1452): 	at android.os.Parcel.readException(Parcel.java:3024)
+11-23 07:55:11.466 W/PeoplePU( 1452): 	at android.os.Parcel.readException(Parcel.java:2966)
+11-23 07:55:11.466 W/PeoplePU( 1452): Caused by: android.os.RemoteException: Remote stack trace:
+11-23 07:55:11.482 W/PeoplePU( 1452): java.lang.IllegalArgumentException: Unknown component: ComponentInfo{com.google.android.syncadapters.contacts/com.google.android.syncadapters.contacts.ContactsSyncAdapterService}
+11-23 07:55:11.482 W/PeoplePU( 1452): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3061)
+11-23 07:55:11.482 W/PeoplePU( 1452): 	at android.os.Parcel.createException(Parcel.java:3041)
+11-23 07:55:11.482 W/PeoplePU( 1452): 	at android.os.Parcel.readException(Parcel.java:3024)
+11-23 07:55:11.482 W/PeoplePU( 1452): 	at android.os.Parcel.readException(Parcel.java:2966)
+11-23 07:55:11.714 W/PeoplePU( 1452): java.lang.IllegalArgumentException: Unknown component: ComponentInfo{com.google.android.syncadapters.contacts/com.google.android.syncadapters.contacts.ProxyGalProvider}
+11-23 07:55:11.714 W/PeoplePU( 1452): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3061)
+11-23 07:55:11.714 W/PeoplePU( 1452): 	at android.os.Parcel.createException(Parcel.java:3041)
+11-23 07:55:11.714 W/PeoplePU( 1452): 	at android.os.Parcel.readException(Parcel.java:3024)
+11-23 07:55:11.714 W/PeoplePU( 1452): 	at android.os.Parcel.readException(Parcel.java:2966)
+11-23 07:55:11.839 W/ModernMediaScanner( 1641): Failed to visit /data/data/com.android.providers.downloads/cache/09252026-sms-denylist-metadata.txt: java.nio.file.NoSuchFileException: /data/data/com.android.providers.downloads/cache/09252026-sms-denylist-metadata.txt
+11-23 07:55:11.970 W/ModernMediaScanner( 1641): Failed to visit /data/data/com.android.providers.downloads/cache/09252026-sms-denylist.txt: java.nio.file.NoSuchFileException: /data/data/com.android.providers.downloads/cache/09252026-sms-denylist.txt
+11-23 07:55:12.119 W/ModernMediaScanner( 1641): Failed to visit /data/data/com.android.providers.downloads/cache/08202014-metadata.txt: java.nio.file.NoSuchFileException: /data/data/com.android.providers.downloads/cache/08202014-metadata.txt
+11-23 07:55:12.176 W/ModernMediaScanner( 1641): Failed to visit /data/data/com.android.providers.downloads/cache/08202014-pins.txt: java.nio.file.NoSuchFileException: /data/data/com.android.providers.downloads/cache/08202014-pins.txt
+11-23 07:55:12.184 W/CorpusConfigHelper( 1715): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
+11-23 07:55:12.184 W/CorpusConfigHelper( 1715): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
+11-23 07:55:12.378 W/ModernMediaScanner( 1641): Failed to visit /data/data/com.android.providers.downloads/cache/model.smfb.metadata: java.nio.file.NoSuchFileException: /data/data/com.android.providers.downloads/cache/model.smfb.metadata
+11-23 07:55:12.397 W/ModernMediaScanner( 1641): Failed to visit /data/data/com.android.providers.downloads/cache/model.smfb: java.nio.file.NoSuchFileException: /data/data/com.android.providers.downloads/cache/model.smfb
+11-23 07:55:12.561 W/CorpusConfigHelper( 1715): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
+11-23 07:55:12.561 W/CorpusConfigHelper( 1715): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
+11-23 07:55:12.746 W/ModernMediaScanner( 1641): Failed to visit /data/data/com.android.providers.downloads/cache/en.fb.metadata: java.nio.file.NoSuchFileException: /data/data/com.android.providers.downloads/cache/en.fb.metadata
+11-23 07:55:12.764 W/ModernMediaScanner( 1641): Failed to visit /data/data/com.android.providers.downloads/cache/en.fb: java.nio.file.NoSuchFileException: /data/data/com.android.providers.downloads/cache/en.fb
+11-23 07:55:12.802 W/AsyncOperation( 1405): OperationException[Status{statusCode=Stale snapshot for com.google.android.googlequicksearchbox(change count changed - expected 5  but was 4), resolution=null}]
+11-23 07:55:12.827 W/ModernMediaScanner( 1641): Failed to visit /data/data/com.android.providers.downloads/cache/en.model.metadata: java.nio.file.NoSuchFileException: /data/data/com.android.providers.downloads/cache/en.model.metadata
+11-23 07:55:12.848 W/ModernMediaScanner( 1641): Failed to visit /data/data/com.android.providers.downloads/cache/en.model: java.nio.file.NoSuchFileException: /data/data/com.android.providers.downloads/cache/en.model
+11-23 07:55:13.235 W/CorpusConfigHelper( 1715): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
+11-23 07:55:13.235 W/CorpusConfigHelper( 1715): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
+11-23 07:55:13.648 W/CorpusConfigHelper( 1715): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
+11-23 07:55:13.648 W/CorpusConfigHelper( 1715): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
+11-23 07:55:13.793 W/CorpusConfigHelper( 1715): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
+11-23 07:55:13.793 W/CorpusConfigHelper( 1715): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
+11-23 07:55:15.270 W/ActivityManager(  522): Scheduling restart of crashed service com.google.android.gms/.nearby.exposurenotification.WakeUpService in 21000ms for connection
+11-23 07:55:15.289 W/ActivityManager(  522): Scheduling restart of crashed service com.google.android.gms/.nearby.exposurenotification.service.ExposureMatchingService in 100981ms for start-requested
+11-23 07:55:15.290 W/ActivityManager(  522): Scheduling restart of crashed service com.google.android.gms/.nearby.exposurenotification.service.ExposureNotificationInternalService in 150980ms for start-requested
+11-23 07:55:15.891 W/ConfigFileUtils( 5481): Failed to read asset ChimeraModuleSetList.pb: java.io.FileNotFoundException: ChimeraModuleSetList.pb
+11-23 07:55:16.332 W/GmsPipelineLogger( 5448): java.lang.NullPointerException
+11-23 07:55:16.727 E/ChimeraUPLUtils( 5481): Failed to invoke updateComplete: android.os.DeadObjectException
+11-23 07:55:16.819 I/SemanticLocation( 5448): java.io.FileNotFoundException: /data/user/0/com.google.android.gms/files/model_bundle_metadata.pb: open failed: ENOENT (No such file or directory)
+11-23 07:55:16.819 I/SemanticLocation( 5448): Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
+11-23 07:55:16.856 I/SemanticLocation( 5448): java.io.FileNotFoundException: /data/user/0/com.google.android.gms/files/model_bundle_metadata.pb: open failed: ENOENT (No such file or directory)
+11-23 07:55:16.856 I/SemanticLocation( 5448): Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
+11-23 07:55:16.940 E/ChimeraUPLUtils( 5481): Failed to invoke updateComplete: android.os.DeadObjectException
+11-23 07:55:17.007 E/ChimeraUPLUtils( 5481): Failed to invoke updateComplete: android.os.DeadObjectException
+11-23 07:55:17.039 W/Conscrypt( 5448): Could not set socket write timeout: java.net.SocketException: Socket closed
+11-23 07:55:17.075 W/Conscrypt( 5448): Could not set socket write timeout: java.net.SocketException: Socket closed
+11-23 07:55:17.847 W/GLSUser ( 5448): [AppCertManager] Exception while requesting key: 
+11-23 07:55:17.847 W/GLSUser ( 5448): java.util.concurrent.ExecutionException: avvw: Parse Proto Exception.
+11-23 07:55:17.847 W/GLSUser ( 5448): Caused by: avvw: Parse Proto Exception.
+11-23 07:55:17.872 W/Conscrypt( 5448): Could not set socket write timeout: java.net.SocketException: Socket closed
+11-23 07:55:18.377 W/Conscrypt( 5448): Could not set socket write timeout: java.net.SocketException: Socket closed
+11-23 07:55:19.547 W/AsyncOperation( 5448): OperationException[Status{statusCode=Stale snapshot for com.google.android.gms.trustlet_onbody(change count changed - expected 1  but was 0), resolution=null}]
+11-23 07:55:19.709 E/RecoverySnapshotStorage(  522): Error reading snapshot for 10131 from disk
+11-23 07:55:19.709 E/RecoverySnapshotStorage(  522): java.io.FileNotFoundException: /data/system/recoverablekeystore/snapshots/10131.xml: open failed: ENOENT (No such file or directory)
+11-23 07:55:19.709 E/RecoverySnapshotStorage(  522): Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
+11-23 07:55:19.711 E/keystore2(  157):     3: Error::Rc(r#SYSTEM_ERROR)
+11-23 07:55:19.714 W/RecoverableKeyStoreGms( 5481): [WrappingKeyManager] InternalRecoveryServiceException during wrapping key generation [CONTEXT service_id=172 ]
+11-23 07:55:19.714 W/RecoverableKeyStoreGms( 5481): android.security.keystore.recovery.InternalRecoveryServiceException: Failed to import secret key.
+11-23 07:55:19.714 W/RecoverableKeyStoreGms( 5481): 	at android.security.keystore.recovery.RecoveryController.wrapUnexpectedServiceSpecificException(RecoveryController.java:783)
+11-23 07:55:19.714 W/RecoverableKeyStoreGms( 5481): Caused by: android.os.ServiceSpecificException: Failed to import secret key. (code 22)
+11-23 07:55:19.714 W/RecoverableKeyStoreGms( 5481): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3071)
+11-23 07:55:19.714 W/RecoverableKeyStoreGms( 5481): 	at android.os.Parcel.createException(Parcel.java:3041)
+11-23 07:55:19.714 W/RecoverableKeyStoreGms( 5481): 	at android.os.Parcel.readException(Parcel.java:3024)
+11-23 07:55:19.714 W/RecoverableKeyStoreGms( 5481): 	at android.os.Parcel.readException(Parcel.java:2966)
+11-23 07:55:19.752 E/dlpn    ( 5448): RuntimeException while executing runnable dlqc{qze@c4d1e1e} with executor MoreExecutors.directExecutor()
+11-23 07:55:19.752 E/dlpn    ( 5448): java.lang.NullPointerException: Attempt to get length of null array
+11-23 07:55:20.326 W/CardCollectorTask( 5189): android.os.DeadObjectException: Transaction failed on small parcel; remote process probably died, but this could also be caused by running out of binder buffer space
+11-23 07:55:20.551 W/PeoplePU( 5481): java.lang.IllegalArgumentException: Unknown component: ComponentInfo{com.google.android.syncadapters.contacts/com.google.android.syncadapters.contacts.ProxyGalProvider}
+11-23 07:55:20.551 W/PeoplePU( 5481): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3061)
+11-23 07:55:20.551 W/PeoplePU( 5481): 	at android.os.Parcel.createException(Parcel.java:3041)
+11-23 07:55:20.551 W/PeoplePU( 5481): 	at android.os.Parcel.readException(Parcel.java:3024)
+11-23 07:55:20.551 W/PeoplePU( 5481): 	at android.os.Parcel.readException(Parcel.java:2966)
+11-23 07:55:20.747 E/cr_CronetUrlRequestContext( 1715): Exception in upload method
+11-23 07:55:20.747 E/cr_CronetUrlRequestContext( 1715): com.google.android.apps.gsa.shared.r.d: Error code: 262182
+11-23 07:55:20.747 E/A       ( 1715): onError
+11-23 07:55:20.773 E/cr_CronetUrlRequestContext( 1715): Exception in upload method
+11-23 07:55:20.773 E/cr_CronetUrlRequestContext( 1715): com.google.android.apps.gsa.shared.r.d: Error code: 262182
+11-23 07:55:21.150 I/SemanticLocation( 5448): java.io.FileNotFoundException: /data/user/0/com.google.android.gms/files/model_bundle_metadata.pb: open failed: ENOENT (No such file or directory)
+11-23 07:55:21.150 I/SemanticLocation( 5448): Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
+11-23 07:55:21.155 I/SemanticLocation( 5448): java.io.FileNotFoundException: /data/user/0/com.google.android.gms/files/model_bundle_metadata.pb: open failed: ENOENT (No such file or directory)
+11-23 07:55:21.155 I/SemanticLocation( 5448): Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
+11-23 07:55:21.290 W/Conscrypt( 5481): Could not set socket write timeout: java.net.SocketException: Socket closed
+11-23 07:55:21.376 W/Conscrypt( 5481): Could not set socket write timeout: java.net.SocketException: Socket closed
+11-23 07:55:21.378 W/Conscrypt( 5481): Could not set socket write timeout: java.net.SocketException: Socket closed
+11-23 07:55:21.420 W/Conscrypt( 5481): Could not set socket write timeout: java.net.SocketException: Socket closed
+11-23 07:55:21.878 E/PhenotypeFlagCommitter( 5481): java.util.concurrent.TimeoutException: Timed out waiting for Task
+11-23 07:55:27.395 W/AsyncOperation( 5448): OperationException[Status{statusCode=Stale snapshot for com.google.android.gms.dtdi#com.google.android.gms(change count changed - expected 3  but was 1), resolution=null}]
+11-23 07:55:27.400 W/AsyncOperation( 5448): OperationException[Status{statusCode=Stale snapshot for com.google.android.gms.magictether(change count changed - expected 1  but was 0), resolution=null}]
+11-23 07:55:27.401 W/AsyncOperation( 5448): OperationException[Status{statusCode=Stale snapshot for com.google.android.gms.maps#com.google.android.gms(change count changed - expected 3  but was 1), resolution=null}]
+11-23 07:55:27.402 W/AsyncOperation( 5448): OperationException[Status{statusCode=Stale snapshot for com.google.android.gms.magictether(change count changed - expected 1  but was 0), resolution=null}]
+11-23 07:55:27.405 W/AsyncOperation( 5448): OperationException[Status{statusCode=Stale snapshot for com.google.android.gms.personalsafety(change count changed - expected 1  but was 0), resolution=null}]
+11-23 07:55:27.409 W/AsyncOperation( 5448): OperationException[Status{statusCode=Stale snapshot for com.google.android.gms.vision(change count changed - expected 1  but was 0), resolution=null}]
+11-23 07:55:27.409 W/AsyncOperation( 5448): OperationException[Status{statusCode=Stale snapshot for com.google.android.gms.phonesky_recovery(change count changed - expected 1  but was 0), resolution=null}]
+11-23 07:55:27.413 W/AsyncOperation( 5448): OperationException[Status{statusCode=Stale snapshot for com.google.android.gms.trustagent.activeunlock.primary#com.google.android.gms(change count changed - expected 3  but was 0), resolution=null}]
+11-23 07:55:28.379 W/Vision  ( 5481): Error loading optional module com.google.android.gms.vision.ocr: ahbb: No acceptable module com.google.android.gms.vision.ocr found. Local version is 0 and remote version is 0.
+11-23 07:55:28.383 W/Vision  ( 5481): Error loading optional module com.google.android.gms.vision.ocr: ahbb: No acceptable module com.google.android.gms.vision.ocr found. Local version is 0 and remote version is 0.
+11-23 07:55:28.437 W/NetworkScheduler( 5448): java.lang.IllegalArgumentException: Only the following extra parameter types are supported: Integer, Long, Double, String, Boolean, and nested Bundles with the same restrictions.
+11-23 07:55:28.618 W/TapAndPay( 5448): java.lang.NullPointerException: NfcAdapter is null
+11-23 07:55:28.969 W/TapAndPay( 5448): java.lang.NullPointerException: NfcAdapter is null
+11-23 07:55:31.701 W/PeoplePU( 5481): java.lang.IllegalArgumentException: Unknown component: ComponentInfo{com.google.android.syncadapters.contacts/com.google.android.syncadapters.contacts.ContactsSyncAdapterService}
+11-23 07:55:31.701 W/PeoplePU( 5481): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3061)
+11-23 07:55:31.701 W/PeoplePU( 5481): 	at android.os.Parcel.createException(Parcel.java:3041)
+11-23 07:55:31.701 W/PeoplePU( 5481): 	at android.os.Parcel.readException(Parcel.java:3024)
+11-23 07:55:31.701 W/PeoplePU( 5481): 	at android.os.Parcel.readException(Parcel.java:2966)
+11-23 07:55:31.701 W/PeoplePU( 5481): Caused by: android.os.RemoteException: Remote stack trace:
+11-23 07:55:31.702 W/PeoplePU( 5481): java.lang.IllegalArgumentException: Unknown component: ComponentInfo{com.google.android.syncadapters.contacts/com.google.android.syncadapters.contacts.ContactsSyncAdapterService}
+11-23 07:55:31.702 W/PeoplePU( 5481): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3061)
+11-23 07:55:31.702 W/PeoplePU( 5481): 	at android.os.Parcel.createException(Parcel.java:3041)
+11-23 07:55:31.702 W/PeoplePU( 5481): 	at android.os.Parcel.readException(Parcel.java:3024)
+11-23 07:55:31.702 W/PeoplePU( 5481): 	at android.os.Parcel.readException(Parcel.java:2966)
+11-23 07:55:31.703 W/PeoplePU( 5481): java.lang.IllegalArgumentException: Unknown component: ComponentInfo{com.google.android.syncadapters.contacts/com.google.android.syncadapters.contacts.ProxyGalProvider}
+11-23 07:55:31.703 W/PeoplePU( 5481): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3061)
+11-23 07:55:31.703 W/PeoplePU( 5481): 	at android.os.Parcel.createException(Parcel.java:3041)
+11-23 07:55:31.703 W/PeoplePU( 5481): 	at android.os.Parcel.readException(Parcel.java:3024)
+11-23 07:55:31.703 W/PeoplePU( 5481): 	at android.os.Parcel.readException(Parcel.java:2966)
+11-23 07:55:31.866 W/CorpusConfigHelper( 1715): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
+11-23 07:55:31.866 W/CorpusConfigHelper( 1715): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
+11-23 07:55:32.062 W/CorpusConfigHelper( 1715): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
+11-23 07:55:32.062 W/CorpusConfigHelper( 1715): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
+11-23 07:55:32.195 W/CorpusConfigHelper( 1715): android.util.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 123 column 2
+11-23 07:55:32.195 W/CorpusConfigHelper( 1715): 	at android.util.JsonReader.syntaxError(JsonReader.java:1162)
+11-23 07:55:33.818 E/d       ( 1715): RuntimeException while executing runnable cb{com.google.apps.tiktok.tracing.ej@f15cdbd} with executor MoreExecutors.directExecutor()
+11-23 07:55:33.818 E/d       ( 1715): java.lang.NullPointerException: Attempt to read from field 'java.lang.String com.google.android.libraries.mdi.download.ae.b' on a null object reference in method 'void com.google.android.libraries.mdi.download.h.bq.gH(java.lang.Object)'
+11-23 07:55:33.823 E/d       ( 1715): RuntimeException while executing runnable cb{com.google.apps.tiktok.tracing.ej@5688b9} with executor MoreExecutors.directExecutor()
+11-23 07:55:33.823 E/d       ( 1715): java.lang.NullPointerException: Attempt to read from field 'java.lang.String com.google.android.libraries.mdi.download.ae.b' on a null object reference in method 'void com.google.android.libraries.mdi.download.h.bq.gH(java.lang.Object)'
+11-23 07:55:33.856 E/d       ( 1715): RuntimeException while executing runnable cb{com.google.apps.tiktok.tracing.ej@6af97a4} with executor MoreExecutors.directExecutor()
+11-23 07:55:33.856 E/d       ( 1715): java.lang.NullPointerException: Attempt to read from field 'java.lang.String com.google.android.libraries.mdi.download.ae.b' on a null object reference in method 'void com.google.android.libraries.mdi.download.h.bq.gH(java.lang.Object)'
 ```
 
 ## Other steps (tail)
@@ -190,12 +190,12 @@ APP_RUNNING after ~70s
 npm warn deprecated uuid@7.0.3: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
 npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
 
-added 845 packages, and audited 846 packages in 9s
+added 845 packages, and audited 846 packages in 53s
 
 180 packages are looking for funding
   run `npm fund` for details
 
-31 vulnerabilities (1 low, 27 moderate, 3 high)
+18 vulnerabilities (15 moderate, 3 high)
 
 To address issues that do not require attention, run:
   npm audit fix
@@ -218,106 +218,133 @@ KEYSTORE_OK
 Build outputs:
 android/app/build/outputs/apk/release/app-release.apk
 total 105028
-drwxr-xr-x  2 runner runner      4096 Oct 31 21:33 .
-drwxr-xr-x 15 runner runner      4096 Oct 31 21:33 ..
--rw-r--r--  1 runner runner 107539820 Oct 31 21:33 ergo-1.0.0-build52.apk
+drwxr-xr-x  2 runner runner      4096 Nov 23 07:52 .
+drwxr-xr-x 15 runner runner      4096 Nov 23 07:52 ..
+-rw-r--r--  1 runner runner 107539820 Nov 23 07:52 ergo-1.0.0-build53.apk
 ```
 
 ## Gradle
 ```
-1064:w: file:///home/runner/work/ergo/ergo/android/app/src/main/java/com/agiasotellis/ergo/MainActivity.kt:40:20 'constructor(activity: ReactActivity, mainComponentName: String, fabricEnabled: Boolean): DefaultReactActivityDelegate' is deprecated. Creating DefaultReactActivityDelegate with flags is deprecated.
-1090:BUILD SUCCESSFUL in 2m 25s
+138:w: file:///home/runner/work/ergo/ergo/node_modules/react-native-worklets/android/build.gradle.kts:162:1: 'fun Project.android(configure: Action<LibraryExtension>): Unit' is deprecated. Replaced by com.android.build.api.dsl.LibraryExtension.
+174:w: file:///home/runner/work/ergo/ergo/node_modules/react-native-reanimated/android/build.gradle.kts:168:1: 'fun Project.android(configure: Action<LibraryExtension>): Unit' is deprecated. Replaced by com.android.build.api.dsl.LibraryExtension.
+324:Note: Some input files use or override a deprecated API.
+325:Note: Recompile with -Xlint:deprecation for details.
+326:Note: /home/runner/work/ergo/ergo/node_modules/@react-native-google-signin/google-signin/android/src/main/java/com/reactnativegooglesignin/RNGoogleSigninModule.java uses unchecked or unsafe operations.
+327:Note: Recompile with -Xlint:unchecked for details.
+366:Note: Some input files use or override a deprecated API.
+367:Note: Recompile with -Xlint:deprecation for details.
+368:Note: Some input files use unchecked or unsafe operations.
+369:Note: Recompile with -Xlint:unchecked for details.
+406:w: file:///home/runner/work/ergo/ergo/node_modules/react-native-keyboard-controller/android/src/main/java/com/reactnativekeyboardcontroller/extensions/ReactContext.kt:18:27 'fun getEventDispatcher(context: ReactContext, uiManagerType: Int): EventDispatcher?' is deprecated. UIManagerType is no longer needed.
+452:w: file:///home/runner/work/ergo/ergo/node_modules/@maplibre/maplibre-react-native/android/src/main/java/org/maplibre/reactnative/components/AbstractEvent.kt:16:25 'fun receiveEvent(targetTag: Int, eventName: String, params: WritableMap?): Unit' is deprecated. Use [RCTModernEventEmitter.receiveEvent] instead.
+514:Note: Some input files use or override a deprecated API.
+515:Note: Recompile with -Xlint:deprecation for details.
+526:Note: Some input files use or override a deprecated API.
+527:Note: Recompile with -Xlint:deprecation for details.
+528:Note: /home/runner/work/ergo/ergo/node_modules/@react-native-async-storage/async-storage/android/src/javaPackage/java/com/reactnativecommunity/asyncstorage/AsyncStoragePackage.java uses unchecked or unsafe operations.
+529:Note: Recompile with -Xlint:unchecked for details.
+541:Note: /home/runner/work/ergo/ergo/node_modules/@react-native-masked-view/masked-view/android/src/main/java/org/reactnative/maskedview/RNCMaskedViewPackage.java uses or overrides a deprecated API.
+542:Note: Recompile with -Xlint:deprecation for details.
+705:w: file:///home/runner/work/ergo/ergo/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/RNScreensPackage.kt:83:17 'constructor(name: String, className: String, canOverrideExistingModule: Boolean, needsEagerInit: Boolean, hasConstants: Boolean, isCxxModule: Boolean, isTurboModule: Boolean): ReactModuleInfo' is deprecated. This constructor is deprecated and will be removed in the future. Use ReactModuleInfo(String, String, boolean, boolean, boolean, boolean)].
+742:w: file:///home/runner/work/ergo/ergo/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/gamma/modals/formsheet/FormSheetContentView.kt:39:33 'fun getEventDispatcher(context: ReactContext, uiManagerType: Int): EventDispatcher?' is deprecated. UIManagerType is no longer needed.
+903:Note: Some input files use or override a deprecated API.
+904:Note: Recompile with -Xlint:deprecation for details.
+925:w: file:///home/runner/work/ergo/ergo/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NodesManager.kt:58:95 'fun resolveCustomDirectEventName(eventName: String): String?' is deprecated.
+926:w: file:///home/runner/work/ergo/ergo/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NodesManager.kt:232:29 'fun receiveEvent(surfaceId: Int, targetTag: Int, eventName: String, canCoalesceEvent: Boolean, customCoalesceKey: Int, params: WritableMap?, category: Int): Unit' is deprecated. Use the overload with eventTimestamp parameter instead.
+943:w: file:///home/runner/work/ergo/ergo/node_modules/@expo/dom-webview/android/src/main/java/expo/modules/webview/DomWebView.kt:254:18 'fun executeOnJavaScriptThread(runnable: Runnable): Unit' is deprecated. Use RuntimeContext.schedule instead.
+1335:w: file:///home/runner/work/ergo/ergo/android/app/src/main/java/com/agiasotellis/ergo/MainActivity.kt:40:20 'constructor(activity: ReactActivity, mainComponentName: String, fabricEnabled: Boolean): DefaultReactActivityDelegate' is deprecated. Creating DefaultReactActivityDelegate with flags is deprecated.
+1368:BUILD SUCCESSFUL in 20m 19s
 ---
-> Task :react-native-gesture-handler:bundleLibCompileToJarRelease
-> Task :react-native-gesture-handler:bundleLibRuntimeToDirRelease
-> Task :react-native-gesture-handler:bundleLibRuntimeToJarRelease
-> Task :react-native-gesture-handler:processReleaseJavaRes
-> Task :react-native-gesture-handler:createFullJarRelease
-> Task :react-native-gesture-handler:generateReleaseLintModel
-> Task :react-native-gesture-handler:extractReleaseAnnotations FROM-CACHE
-> Task :react-native-gesture-handler:mergeReleaseGeneratedProguardFiles
-> Task :react-native-gesture-handler:mergeReleaseConsumerProguardFiles
-> Task :react-native-gesture-handler:mergeReleaseJavaResource
-> Task :react-native-gesture-handler:syncReleaseLibJars FROM-CACHE
-> Task :react-native-gesture-handler:stripReleaseDebugSymbols
-> Task :react-native-gesture-handler:generateReleaseLintVitalModel
-> Task :react-native-gesture-handler:copyReleaseJniLibsProjectAndLocalJars
-> Task :react-native-gesture-handler:bundleReleaseLocalLintAar
-> Task :react-native-reanimated:bundleReleaseLocalLintAar
+> Task :expo-constants:assembleRelease
+> Task :expo-dom-webview:bundleReleaseAar
+> Task :expo-dom-webview:mergeReleaseResources
+> Task :expo-dom-webview:verifyReleaseResources
+> Task :expo-dom-webview:assembleRelease
+> Task :expo-log-box:bundleReleaseAar
+> Task :expo-log-box:mergeReleaseResources
+> Task :expo:mergeReleaseResources
+> Task :maplibre_maplibre-react-native:extractReleaseAnnotations
+> Task :expo-log-box:verifyReleaseResources
+> Task :expo-log-box:assembleRelease
+> Task :expo:verifyReleaseResources
+> Task :expo:assembleRelease
+> Task :expo-modules-core:bundleReleaseAar
+> Task :maplibre_maplibre-react-native:mergeReleaseResources
+> Task :expo-modules-core:mergeReleaseResources
+> Task :maplibre_maplibre-react-native:verifyReleaseResources
+> Task :react-native-async-storage_async-storage:bundleReleaseAar
+> Task :expo-modules-core:verifyReleaseResources
+> Task :expo-modules-core:assembleRelease
 > Task :react-native-gesture-handler:bundleReleaseAar
+> Task :react-native-async-storage_async-storage:mergeReleaseResources
+> Task :react-native-gesture-handler:mergeReleaseResources
+> Task :react-native-gesture-handler:verifyReleaseResources
 > Task :react-native-gesture-handler:assembleRelease
-> Task :react-native-reanimated:writeReleaseLintModelMetadata
-> Task :react-native-reanimated:lintVitalAnalyzeRelease SKIPPED
-> Task :react-native-reanimated:generateReleaseLintVitalModel
-> Task :react-native-gesture-handler:lintVitalAnalyzeRelease SKIPPED
+> Task :react-native-google-signin_google-signin:bundleReleaseAar
+> Task :react-native-async-storage_async-storage:verifyReleaseResources
+> Task :react-native-async-storage_async-storage:assembleRelease
+> Task :react-native-keyboard-controller:bundleReleaseAar
+> Task :react-native-google-signin_google-signin:mergeReleaseResources
+> Task :react-native-keyboard-controller:mergeReleaseResources
+> Task :react-native-keyboard-controller:verifyReleaseResources
+> Task :react-native-keyboard-controller:assembleRelease
+> Task :react-native-masked-view_masked-view:bundleReleaseAar
+> Task :react-native-google-signin_google-signin:verifyReleaseResources
+> Task :react-native-google-signin_google-signin:assembleRelease
+> Task :react-native-masked-view_masked-view:mergeReleaseResources
+> Task :maplibre_maplibre-react-native:syncReleaseLibJars
+> Task :maplibre_maplibre-react-native:bundleReleaseLocalLintAar
+> Task :react-native-masked-view_masked-view:verifyReleaseResources
+> Task :react-native-masked-view_masked-view:assembleRelease
+> Task :react-native-safe-area-context:bundleReleaseAar
+> Task :maplibre_maplibre-react-native:bundleReleaseAar
+> Task :maplibre_maplibre-react-native:assembleRelease
+> Task :react-native-screens:bundleReleaseAar
+> Task :react-native-safe-area-context:mergeReleaseResources
+> Task :react-native-safe-area-context:verifyReleaseResources
+> Task :react-native-safe-area-context:assembleRelease
+> Task :react-native-svg:bundleReleaseAar
+> Task :react-native-screens:mergeReleaseResources
 > Task :react-native-reanimated:bundleReleaseAar
-> Task :react-native-reanimated:mergeReleaseResources FROM-CACHE
-> Task :react-native-reanimated:verifyReleaseResources FROM-CACHE
+> Task :react-native-svg:mergeReleaseResources
+> Task :react-native-reanimated:mergeReleaseResources
+> Task :react-native-svg:verifyReleaseResources
+> Task :react-native-svg:assembleRelease
+> Task :react-native-reanimated:verifyReleaseResources
 > Task :react-native-reanimated:assembleRelease
-> Task :app:configureCMakeRelWithDebInfo[arm64-v8a]
-> Task :app:buildCMakeRelWithDebInfo[arm64-v8a]
-> Task :app:configureCMakeRelWithDebInfo[x86_64]
+> Task :react-native-screens:verifyReleaseResources
+> Task :react-native-screens:assembleRelease
+> Task :react-native-worklets:bundleReleaseAar
+> Task :react-native-worklets:mergeReleaseResources
+> Task :react-native-worklets:verifyReleaseResources
+> Task :react-native-worklets:assembleRelease
 > Task :app:buildCMakeRelWithDebInfo[x86_64]
-> Task :app:generateReleaseResValues
-> Task :app:generateReleaseResources FROM-CACHE
-> Task :app:processReleaseGoogleServices FROM-CACHE
-> Task :app:packageReleaseResources
-> Task :app:mergeReleaseNativeLibs
-> Task :app:processReleaseNavigationResources FROM-CACHE
-> Task :app:javaPreCompileRelease FROM-CACHE
-> Task :app:checkReleaseAarMetadata
-> Task :app:mapReleaseSourceSetPaths
-> Task :app:compileReleaseNavigationResources FROM-CACHE
-> Task :app:parseReleaseLocalResources
-> Task :app:stripReleaseDebugSymbols
-> Task :app:extractReleaseNativeSymbolTables FROM-CACHE
-> Task :app:generateReleaseRFile FROM-CACHE
-> Task :app:createReleaseCompatibleScreenManifests
-> Task :app:extractDeepLinksRelease FROM-CACHE
-
-> Task :app:processReleaseMainManifest
-/home/runner/work/ergo/ergo/android/app/src/main/AndroidManifest.xml:6:3-88 Warning:
-	uses-permission#android.permission.RECORD_AUDIO was tagged at AndroidManifest.xml:6 to remove other declarations but no other declaration present
-/home/runner/work/ergo/ergo/android/app/src/main/AndroidManifest.xml Warning:
-	provider#expo.modules.filesystem.FileSystemFileProvider@android:authorities was tagged at AndroidManifest.xml:0 to replace other declarations but no other declaration present
-/home/runner/work/ergo/ergo/android/app/src/main/AndroidManifest.xml Warning:
-	activity#expo.modules.imagepicker.ExpoCropImageActivity@android:exported was tagged at AndroidManifest.xml:0 to replace other declarations but no other declaration present
-
-> Task :app:expoReleaseOverrideMaxSdkConflicts
-[33m---------- Expo Max Sdk Override Plugin ----------[0m
-[32m>>> No 'android:maxSdkVersion' conflicts found[0m
-[33m--------------------------------------------------[0m
-
-> Task :app:mergeReleaseResources
-> Task :app:processReleaseManifest
-> Task :app:desugarReleaseFileDependencies FROM-CACHE
-> Task :app:mergeReleaseStartupProfile
-> Task :app:mergeReleaseNativeDebugMetadata
-> Task :app:mergeExtDexRelease FROM-CACHE
 > Task :app:generateReleaseAssets UP-TO-DATE
 > Task :app:mergeReleaseArtProfile
 > Task :app:mergeReleaseAssets
-> Task :app:processReleaseManifestForPackage
-> Task :app:compressReleaseAssets
 > Task :app:extractReleaseVersionControlInfo
 > Task :app:extractProguardFiles
+> Task :app:compressReleaseAssets
 > Task :app:collectReleaseDependencies
 > Task :app:sdkReleaseDependencyData
 > Task :app:validateSigningRelease
-> Task :app:writeReleaseAppMetadata
-> Task :app:writeReleaseSigningConfigVersions
-> Task :app:processReleaseResources
-> Task :app:optimizeReleaseResources
 
 > Task :app:compileReleaseKotlin
 w: file:///home/runner/work/ergo/ergo/android/app/src/main/java/com/agiasotellis/ergo/MainActivity.kt:40:20 'constructor(activity: ReactActivity, mainComponentName: String, fabricEnabled: Boolean): DefaultReactActivityDelegate' is deprecated. Creating DefaultReactActivityDelegate with flags is deprecated.
 
+> Task :app:writeReleaseAppMetadata
+> Task :app:writeReleaseSigningConfigVersions
+> Task :app:mergeReleaseNativeLibs
 > Task :app:compileReleaseJavaWithJavac
+> Task :app:stripReleaseDebugSymbols
 > Task :app:dexBuilderRelease
-> Task :app:mergeReleaseGlobalSynthetics FROM-CACHE
+> Task :app:optimizeReleaseResources
+> Task :app:mergeReleaseGlobalSynthetics
 > Task :app:generateReleaseLintVitalReportModel
 > Task :app:processReleaseJavaRes
+> Task :app:extractReleaseNativeSymbolTables
 > Task :app:mergeReleaseJavaResource
+> Task :app:mergeReleaseNativeDebugMetadata
 > Task :app:lintVitalAnalyzeRelease
 > Task :app:lintVitalReportRelease
 > Task :app:lintVitalRelease
@@ -326,7 +353,7 @@ w: file:///home/runner/work/ergo/ergo/android/app/src/main/java/com/agiasotellis
 > Task :app:packageRelease
 > Task :app:createReleaseApkListingFileRedirect
 > Task :app:assembleRelease
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/gradle-1793482267179.json
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/gradle-1795419154296.json
 
 [Incubating] Problems report is available at: file:///home/runner/work/ergo/ergo/android/build/reports/problems/problems-report.html
 
@@ -336,16 +363,16 @@ You can use '--warning-mode all' to show the individual deprecation warnings and
 
 For more on this, please refer to https://docs.gradle.org/9.4.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
 
-BUILD SUCCESSFUL in 2m 25s
-784 actionable tasks: 503 executed, 281 from cache
+BUILD SUCCESSFUL in 20m 19s
+784 actionable tasks: 690 executed, 94 from cache
 Cacheable calls:   724 / 736 (98.37%)
-  Hits:            724 / 724 (100.0%)
-    Direct:        724 / 724 (100.0%)
-    Preprocessed:    0 / 724 ( 0.00%)
-  Misses:            0 / 724 ( 0.00%)
+  Hits:              0 / 724 ( 0.00%)
+    Direct:          0
+    Preprocessed:    0
+  Misses:          724 / 724 (100.0%)
 Uncacheable calls:  12 / 736 ( 1.63%)
 Local storage:
   Cache size (GB): 0.3 / 3.0 ( 9.74%)
-  Hits:            724 / 724 (100.0%)
-  Misses:            0 / 724 ( 0.00%)
+  Hits:              0 / 724 ( 0.00%)
+  Misses:          724 / 724 (100.0%)
 ```
